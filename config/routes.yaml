@@ -1,0 +1,7 @@
+# index:
+#    path: /
+#    controller: App\Controller\LuckyController::number
+
+controllers:
+    resource: '../src/Controller'
+    type:     annotation
