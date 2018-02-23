@@ -4,8 +4,28 @@
 	Suivi des {{ parent() }}
 {% endblock %}
 
-{% block layout_h2 %}
-	Fiche mission GLA-Bénévole
+{% block layout_h3 %}
+	<div class="row justify-content-between">
+		<div class="col-md-8">
+			Fiche mission GLA-Bénévole
+		</div>
+		<div class="col-md-4">
+			<div class="row justify-content-between">
+				<a href="{{ path('app_missions_list') }}" class="btn btn-primary">
+			    <i class="fas fa-chevron-left"></i>
+			    Retour à la liste
+			  </a>
+				<a href="{{ path('app_missions_edit', {'id': mission.id}) }}" class="btn btn-outline-primary">
+			    <i class="fas fa-edit"></i>
+			    Modifier
+			  </a>
+			  <a href="{{ path('app_missions_delete', {'id': mission.id}) }}" class="btn btn-outline-danger">
+			    <i class="fas fa-trash-alt"></i>
+			    Supprimer
+			  </a>
+			</div>
+	</div>
+</div>
 {% endblock %}
 
 {% block content %}
@@ -48,13 +68,13 @@
 							Date prise en charge :
 						</div>
 						<div class="col-md-4 border">
-							{{ mission.dateAssigned|date('d/m/Y') }}
+							{{ mission.dateAssigned ? mission.dateAssigned|date('d/m/Y') }}
 						</div>
 						<div class="col-md-8 text-right">
 							Date fin mission :
 						</div>
 						<div class="col-md-4 border">
-							{{ mission.dateFinished|date('d/m/Y') }}
+							{{ mission.dateFinished ? mission.dateFinished|date('d/m/Y') }}
 						</div>
 					</div>
 				</div>
@@ -70,7 +90,7 @@
 			Adresse :
 		</div>
 		<div class="col-md-8 border">
-			{{ mission.address }}
+			{{ mission.accomodation.address }}
 		</div>
 	</div>
 
@@ -108,17 +128,6 @@
 	<hr>
 
 	<div>
-		<a href="{{ path('app_missions_list') }}" class="btn btn-primary">
-      <i class="fas fa-chevron-left"></i>
-      Retour à la liste
-    </a>
-		<a href="{{ path('app_missions_edit', {'id': mission.id}) }}" class="btn btn-outline-primary">
-      <i class="fas fa-edit"></i>
-      Modifier
-    </a>
-    <a href="{{ path('app_missions_delete', {'id': mission.id}) }}" class="btn btn-outline-danger">
-      <i class="fas fa-trash-alt"></i>
-      Supprimer
-    </a>
+		
   </div>
 {% endblock %}

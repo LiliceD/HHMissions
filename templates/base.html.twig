@@ -6,10 +6,12 @@
     <title>{% block title %}Fiches Mission{% endblock %}</title>
 
     {% block stylesheets %}
+
     	<!-- Bootstrap -->
     	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     	<!-- Font Awesome -->
     	<script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
+    
     {% endblock %}
   </head>
 
@@ -33,6 +35,14 @@
 		<br>
 		
     {% block body %}
+      <div class="container">
+        <h3>{% block layout_h3 %}Fiches Mission{% endblock %}</h3>
+
+        <hr>
+        
+        {% block content %}
+        {% endblock %}
+      </div>
     {% endblock %}
 
     {% block javascripts %}

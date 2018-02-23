@@ -1,0 +1,49 @@
+Logging
+
+base.html.twig
+	Responsiveness
+	Menu "Logement"
+
+/logement
+	/list
+		Design
+		Vue
+		Controleur / Route
+		Bouton "ajouter"
+	[DONE] /add
+	[DONE] /edit
+		Controller
+		Route
+	/delete
+	/view
+		[?] Form non éditable
+
+/missions
+	order by id DESC
+	design
+
+	/add
+		bouton "ajouter" à côté du champ Address
+		Auto-remplissage champ "infos" form Missions
+
+	/view
+		[DONE] [BUG] dates Prise en charge + Fin de mission = now() ??
+		[?] Form non éditable
+
+	/delete
+		Demande confirmation (event ?)
+		Message flash "FM supprimée"
+
+Doctrine
+	Accomodation
+		[DONE] Champ "Access"
+	
+	Missions
+		champ adress => accomodation_id
+			Number type
+			Relation table
+			Requête
+
+	Users
+		Structure table
+		Créer table

@@ -2,8 +2,10 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+// this use statement is needed for the annotations @ORM
+use Doctrine\ORM\Mapping as ORM;
+// this use statement is needed for the annotations @Assert
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -26,11 +28,10 @@ class Mission
     private $status;
 
     /**
-     * @ORM\Column(type="string")
-     *
-     * @Assert\NotBlank()
+     * @ORM\ManyToOne(targetEntity="App\Entity\Accomodation", inversedBy="missions")
+     * @ORM\JoinColumn(nullable=true)
      */
-    private $address;
+    private $accomodation;
 
      /**
      * @ORM\Column(type="string")
@@ -77,13 +78,6 @@ class Mission
     private $dateFinished;
 
 
-    public function __construct()
-    {
-        $this->status = "created";
-        $this->dateCreated = new \DateTime();
-    }
-
-
     public function getId()
     {
         return $this->id;
@@ -101,14 +95,14 @@ class Mission
     }
 
 
-    public function getAddress()
+    public function getAccomodation(): Accomodation
     {
-        return $this->address;
+        return $this->accomodation;
     }
 
-    public function setAddress($address)
+    public function setAccomodation(Accomodation $accomodation)
     {
-        $this->address = $address;
+        $this->accomodation = $accomodation;
     }
 
 
@@ -198,5 +192,11 @@ class Mission
     {
         $this->dateFinished = $dateFinished;
     }
-    // getters and setters ...
+    
+
+    public function __construct()
+    {
+        $this->status = "created";
+        $this->dateCreated = new \DateTime();
+    }
 }

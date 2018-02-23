@@ -12,7 +12,7 @@
 	
 	{% for mission in missions %}
 		<div class="row justify-content-between"><div class="col-md-8">
-			[{{ mission.id }}] Créée le <strong>{{ mission.dateCreated|date('d/m/Y') }}</strong>, par <strong>{{ mission.gla }}</strong> - {{ mission.address }}
+			[{{ mission.id }}] Créée le <strong>{{ mission.dateCreated|date('d/m/Y') }}</strong>, par <strong>{{ mission.gla }}</strong> - {{ mission.accomodation.address }}
 		</div>
 		<div class="col-md-4">
 			<a href="{{ path('app_missions_view', {'id': mission.id}) }}" class="btn btn-primary btn-sm">

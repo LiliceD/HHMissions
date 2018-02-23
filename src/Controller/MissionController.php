@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+// use App\Entity\Accomodation;
 use App\Entity\Mission;
 use App\Form\MissionType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -36,23 +37,16 @@ class MissionController extends Controller
 	{	
 		// $em = $this->getDoctrine()->getManager();
 
-  //       $mission = new Mission();
-  //       $mission->setAddress('324 rue de la Vieille 69001 LYON');
-  //       $mission->setGla('R.BENSAID');
-  //       $mission->setDescription('Visite d\'immeuble');
+  //       $accomodation = new Accomodation();
+  //       $accomodation->setAddress('7-9 avenue Saint Romain');
 
-  //       $em->persist($mission);
+  //       $em->persist($accomodation);
 
   //       $em->flush();
 
         $repository = $this->getDoctrine()->getRepository(Mission::class);
 
         $missions = $repository->findAll();
-  //       $missionsList = array(
-		// 	array('id' => 2, 'gla' => 'C.ROBAYE', 'dateCreated' => 1517828013),
-		// 	array('id' => 8, 'gla' => 'R.BENSAID', 'dateCreated' => 1517914413),
-		// 	array('id' => 9, 'gla' => 'R.BENSAID', 'dateCreated' => 1518346413)
-		// );
 
 		return $this->render('missions/list.html.twig', [
 			'missions' => $missions
@@ -70,8 +64,11 @@ class MissionController extends Controller
 	*/
 	public function view(Mission $mission)
 	{
+		$accomodation = $mission->getAccomodation();
+
 		return $this->render('missions/view.html.twig', [
-			'mission' => $mission
+			'mission' => $mission,
+			'accomodation' => $accomodation
 		]);
 	}
 

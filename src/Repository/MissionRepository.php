@@ -25,4 +25,15 @@ class MissionRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    // public function findOneByIdJoinedToAccomodation($missionId)
+    // {
+    //     return $this->createQueryBuilder('m')
+    //         ->innerJoin('m.accomodation', 'c')
+    //         ->addSelect('c')
+    //         ->andWhere('m.id = :id')
+    //         ->setParameter('id', $misionId)
+    //         ->getQuery()
+    //         ->getOneOrNullResult();
+    // }
 }
