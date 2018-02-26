@@ -198,6 +198,5 @@ class Mission
     {
         $this->status = "created";
         $this->dateCreated = new \DateTime();
-        // $this->accomodation = new Accomodation();
     }
 }

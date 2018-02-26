@@ -46,7 +46,7 @@ class MissionController extends Controller
 
         $repository = $this->getDoctrine()->getRepository(Mission::class);
 
-        $missions = $repository->findAll();
+        $missions = $repository->findBy(array(), array('dateCreated' => 'DESC'));
 
         return $this->render('missions/list.html.twig', [
             'missions' => $missions

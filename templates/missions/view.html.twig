@@ -1,133 +1,133 @@
 {% extends 'missions/layout.html.twig' %}
 
 {% block title %}
-	Suivi des {{ parent() }}
+  Suivi des {{ parent() }}
 {% endblock %}
 
 {% block layout_h3 %}
-	<div class="row justify-content-between">
-		<div class="col-md-8">
-			Fiche mission GLA-Bénévole
-		</div>
-		<div class="col-md-4">
-			<div class="row justify-content-between">
-				<a href="{{ path('app_missions_list') }}" class="btn btn-primary">
-			    <i class="fas fa-chevron-left"></i>
-			    Retour à la liste
-			  </a>
-				<a href="{{ path('app_missions_edit', {'id': mission.id}) }}" class="btn btn-outline-primary">
-			    <i class="fas fa-edit"></i>
-			    Modifier
-			  </a>
-			  <a href="{{ path('app_missions_delete', {'id': mission.id}) }}" class="btn btn-outline-danger">
-			    <i class="fas fa-trash-alt"></i>
-			    Supprimer
-			  </a>
-			</div>
-	</div>
-</div>
+  <div class="row justify-content-between">
+    <div class="col-md-8">
+      Fiche mission GLA-Bénévole
+    </div>
+    <div class="col-md-4">
+      <div class="row justify-content-between">
+        <a href="{{ path('app_missions_list') }}" class="btn btn-primary">
+          <i class="fas fa-chevron-left"></i>
+          Retour à la liste
+        </a>
+        <a href="{{ path('app_missions_edit', {'id': mission.id}) }}" class="btn btn-outline-primary">
+          <i class="fas fa-edit"></i>
+          Modifier
+        </a>
+        <a href="{{ path('app_missions_delete', {'id': mission.id}) }}" class="btn btn-outline-danger">
+          <i class="fas fa-trash-alt"></i>
+          Supprimer
+        </a>
+      </div>
+    </div>
+  </div>
 {% endblock %}
 
 {% block content %}
-	<div class="row justify-content-center">
-		<div class="col-md-10">
-			<div class="row justify-content-between">
+  <div class="row justify-content-center">
+    <div class="col-md-10">
+      <div class="row justify-content-between">
 
-				<div class="col-md-4">
-					<div class="row justify-content-center">
-						<div class="col-md-6 text-right">
-							N°
-						</div>
-						<div class="col-md-6 border">
-							{{ mission.id }}
-						</div>
-						<div class="col-md-6 text-right">
-							GLA :
-						</div>
-						<div class="col-md-6 border">
-							{{ mission.gla }}
-						</div>
-						<div class="col-md-6 text-right">
-							Bénévole :
-						</div>
-						<div class="col-md-6 border">
-							{{ mission.volunteer }}
-						</div>
-					</div>
-				</div>
+        <div class="col-md-4">
+          <div class="row justify-content-center">
+            <div class="col-md-6 text-right">
+              N°
+            </div>
+            <div class="col-md-6 border">
+              {{ mission.id }}
+            </div>
+            <div class="col-md-6 text-right">
+              GLA :
+            </div>
+            <div class="col-md-6 border">
+              {{ mission.gla }}
+            </div>
+            <div class="col-md-6 text-right">
+              Bénévole :
+            </div>
+            <div class="col-md-6 border">
+              {{ mission.volunteer }}
+            </div>
+          </div>
+        </div>
 
-				<div class="col-md-5">
-					<div class="row justify-content-center">
-						<div class="col-md-8 text-right">
-							Date création :
-						</div>
-						<div class="col-md-4 border">
-							{{ mission.dateCreated|date('d/m/Y') }}
-						</div>
-						<div class="col-md-8 text-right">
-							Date prise en charge :
-						</div>
-						<div class="col-md-4 border">
-							{{ mission.dateAssigned ? mission.dateAssigned|date('d/m/Y') }}
-						</div>
-						<div class="col-md-8 text-right">
-							Date fin mission :
-						</div>
-						<div class="col-md-4 border">
-							{{ mission.dateFinished ? mission.dateFinished|date('d/m/Y') }}
-						</div>
-					</div>
-				</div>
+        <div class="col-md-5">
+          <div class="row justify-content-center">
+            <div class="col-md-8 text-right">
+              Date création :
+            </div>
+            <div class="col-md-4 border">
+              {{ mission.dateCreated|date('d/m/Y') }}
+            </div>
+            <div class="col-md-8 text-right">
+              Date prise en charge :
+            </div>
+            <div class="col-md-4 border">
+              {{ mission.dateAssigned ? mission.dateAssigned|date('d/m/Y') }}
+            </div>
+            <div class="col-md-8 text-right">
+              Date fin mission :
+            </div>
+            <div class="col-md-4 border">
+              {{ mission.dateFinished ? mission.dateFinished|date('d/m/Y') }}
+            </div>
+          </div>
+        </div>
 
-			</div>
-		</div>
-	</div>
-	
-	<br>
+      </div>
+    </div>
+  </div>
+  
+  <br>
 
-	<div class="row justify-content-center">
-		<div class="col-md-2 text-right">
-			Adresse :
-		</div>
-		<div class="col-md-8 border">
-			{{ mission.accomodation.address }}
-		</div>
-	</div>
+  <div class="row justify-content-center">
+    <div class="col-md-2 text-right">
+      Adresse :
+    </div>
+    <div class="col-md-8 border">
+      {{ mission.accomodation.address }}
+    </div>
+  </div>
 
-	<br>
+  <br>
 
-	<div class="row justify-content-center">
-		<div class="col-lg-10">
-			<strong>Description mission :</strong>
-		</div>
-		<div class="col-lg-10 border mb-3">
-			{{ mission.description }}
-			<br>
-			<br>
-			<br>
-		</div>
-		<div class="col-lg-10">
-			<strong>Informations supplémentaires :</strong>
-		</div>
-		<div class="col-lg-10 border mb-3">
-			{{ mission.info }}
-			<br>
-			<br>
-		</div>
-		<div class="col-lg-10">
-			<strong>Retour mission et conclusions :</strong>
-		</div>
-		<div class="col-lg-10 border mb-3">
-			{{ mission.conclusions }}
-			<br>
-			<br>
-			<br>
-		</div>
-	</div>
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <strong>Description mission :</strong>
+    </div>
+    <div class="col-lg-10 border mb-3">
+      {{ mission.description }}
+      <br>
+      <br>
+      <br>
+    </div>
+    <div class="col-lg-10">
+      <strong>Informations supplémentaires :</strong>
+    </div>
+    <div class="col-lg-10 border mb-3">
+      {{ mission.info }}
+      <br>
+      <br>
+    </div>
+    <div class="col-lg-10">
+      <strong>Retour mission et conclusions :</strong>
+    </div>
+    <div class="col-lg-10 border mb-3">
+      {{ mission.conclusions }}
+      <br>
+      <br>
+      <br>
+    </div>
+  </div>
 
-	<hr>
+  <hr>
 
-	<div>
-		
+  <div>
+    
   </div>
 {% endblock %}

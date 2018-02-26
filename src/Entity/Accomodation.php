@@ -24,10 +24,24 @@ class Accomodation
      *
      * @Assert\NotBlank()
      */
-    private $address;
+    private $street;
+
+    /**
+     * @ORM\Column(type="integer")
+     * 
+     * @Assert\NotBlank()
+     */
+    private $postalCode;
 
     /**
      * @ORM\Column(type="string")
+     * 
+     * @Assert\NotBlank()
+     */
+    private $city;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
      */
     private $access;
 
@@ -43,15 +57,49 @@ class Accomodation
     }
 
 
-    public function getAddress()
+    public function getStreet()
     {
-        return $this->address;
+        return $this->street;
     }
 
-    public function setAddress($address)
+    public function setStreet($street)
     {
-        $this->address = $address;
+        $this->street = $street;
     }
+
+
+    public function getPostalCode()
+    {
+        return $this->postalCode;
+    }
+
+    public function setPostalCode($postalCode)
+    {
+        $this->postalCode = $postalCode;
+    }
+
+
+    public function getCity()
+    {
+        return $this->city;
+    }
+
+    public function setCity($city)
+    {
+        $this->city = $city;
+    }
+
+
+    // Full address
+    public function getAddress()
+    {
+        return $this->street . ' ' . $this->postalCode . ' ' . $this->city;
+    }
+
+    // public function setAddress($address)
+    // {
+    //     $this->address = $address;
+    // }
 
 
     public function getAccess()

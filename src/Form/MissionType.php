@@ -39,37 +39,37 @@ class MissionType extends AbstractType
             ])
         ;
 
-        $formModifier = function (FormInterface $form, Accomodation $accomodation = null) {
-            $access = null === $accomodation ? '' : $accomodation->getAccess();
+        // $formModifier = function (FormInterface $form, Accomodation $accomodation = null) {
+        //     $access = null === $accomodation ? '' : $accomodation->getAccess();
 
-            $form->add('info', TextareaType::class, [
-                'data' => $access
-            ]);
-        };
+        //     $form->add('info', TextareaType::class, [
+        //         'data' => $access
+        //     ]);
+        // };
 
-        $builder->addEventListener(
-            FormEvents::PRE_SET_DATA,
-            function (FormEvent $event) use ($formModifier) {
-                $form = $event->getForm();
+        // $builder->addEventListener(
+        //     FormEvents::PRE_SET_DATA,
+        //     function (FormEvent $event) use ($formModifier) {
+        //         $form = $event->getForm();
 
-                $mission = $event->getData();
-                $accomodation = $mission->getAccomodation();
+        //         $mission = $event->getData();
+        //         $accomodation = $mission->getAccomodation();
 
-                $formModifier($form, $accomodation);                
-            }
-        );
+        //         $formModifier($form, $accomodation);                
+        //     }
+        // );
 
-        $builder->get('accomodation')->addEventListener(
-            FormEvents::POST_SUBMIT,
-            function(FormEvent $event) use ($formModifier) {
-                $form = $event->getForm();
+        // $builder->get('accomodation')->addEventListener(
+        //     FormEvents::POST_SUBMIT,
+        //     function(FormEvent $event) use ($formModifier) {
+        //         $form = $event->getForm();
 
-                $accomodation = $form->getData();
-                // $accomodation = $mission->getAccomodation();
+        //         $accomodation = $form->getData();
+        //         // $accomodation = $mission->getAccomodation();
 
-                $formModifier($form->getParent(), $accomodation);
-            }
-        );
+        //         $formModifier($form->getParent(), $accomodation);
+        //     }
+        // );
     }
 
     public function configureOptions(OptionsResolver $resolver)

@@ -15,6 +15,26 @@ class AccomodationController extends Controller
 {
     /**
     * @Route(
+    *  "/logements/{page}",
+    *  name="app_accomodation_list",
+    *  requirements={
+    *      "page"="\d+"
+    *  }
+    * )
+    */
+    public function list($page = 1)
+    {    
+        $repository = $this->getDoctrine()->getRepository(Accomodation::class);
+
+        $accomodations = $repository->findBy(array(), array('street' => 'ASC'));
+
+        return $this->render('accomodation/list.html.twig', [
+            'accomodations' => $accomodations
+        ]);
+    }
+
+    /**
+    * @Route(
     *  "/logement/add",
     *  name="app_accomodation_add"
     * )
@@ -34,7 +54,7 @@ class AccomodationController extends Controller
             $em->persist($accomodation);
             $em->flush();
 
-            return $this->redirectToRoute('app_missions_list');
+            return $this->redirectToRoute('app_accomodation_list');
         }
 
         return $this->render('accomodation/add.html.twig', [
@@ -64,11 +84,29 @@ class AccomodationController extends Controller
             $em->persist($accomodation);
             $em->flush();
 
-            return $this->redirectToRoute('app_missions_list');
+            return $this->redirectToRoute('app_accomodation_list');
         }
 
         return $this->render('accomodation/edit.html.twig', [
             'form' => $form->createView()
         ]);
+    }
+
+    /**
+    * @Route(
+    *  "/logement/delete/{id}",
+    *  name="app_accomodation_delete",
+    *  requirements={
+    *      "id"="\d+"
+    *  }
+    * )
+    */
+    public function delete(Accomodation $accomodation)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($accomodation);
+        $em->flush();
+
+        return $this->redirectToRoute('app_accomodation_list');
     }
 }
