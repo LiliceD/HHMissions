@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-// use App\Entity\Accomodation;
+use App\Entity\Accomodation;
 use App\Entity\Mission;
 use App\Form\MissionType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -13,29 +13,29 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class MissionController extends Controller
 {
-	/**
-	* @Route(
-	* 	"/",
-	*	name="app_missions_index",
-	* )
-	*/
-	public function index()
-	{
-		return $this->redirectToRoute('app_missions_list');
-	}
+    /**
+    * @Route(
+    *  "/",
+    *  name="app_missions_index",
+    * )
+    */
+    public function index()
+    {
+        return $this->redirectToRoute('app_missions_list');
+    }
 
-	/**
-	* @Route(
-	* 	"/missions/{page}",
-	*	name="app_missions_list",
-	*	requirements={
-	*		"page"="\d+"
-	*	}
-	* )
-	*/
-	public function list($page = 1)
-	{	
-		// $em = $this->getDoctrine()->getManager();
+    /**
+    * @Route(
+    *  "/missions/{page}",
+    *  name="app_missions_list",
+    *  requirements={
+    *      "page"="\d+"
+    *  }
+    * )
+    */
+    public function list($page = 1)
+    {    
+        // $em = $this->getDoctrine()->getManager();
 
   //       $accomodation = new Accomodation();
   //       $accomodation->setAddress('7-9 avenue Saint Romain');
@@ -48,108 +48,114 @@ class MissionController extends Controller
 
         $missions = $repository->findAll();
 
-		return $this->render('missions/list.html.twig', [
-			'missions' => $missions
-		]);
-	}
+        return $this->render('missions/list.html.twig', [
+            'missions' => $missions
+        ]);
+    }
 
-	/**
-	* @Route(
-	* 	"/missions/view/{id}",
-	*	name="app_missions_view",
-	*	requirements={
-	*		"id"="\d+"
-	*	}
-	* )
-	*/
-	public function view(Mission $mission)
-	{
-		$accomodation = $mission->getAccomodation();
+    /**
+    * @Route(
+    *  "/missions/view/{id}",
+    *  name="app_missions_view",
+    *  requirements={
+    *      "id"="\d+"
+    *  }
+    * )
+    */
+    public function view(Mission $mission)
+    {
+        $accomodation = $mission->getAccomodation();
 
-		return $this->render('missions/view.html.twig', [
-			'mission' => $mission,
-			'accomodation' => $accomodation
-		]);
-	}
+        return $this->render('missions/view.html.twig', [
+            'mission' => $mission,
+            'accomodation' => $accomodation
+        ]);
+    }
 
-	/**
-	* @Route(
-	* 	"/missions/edit/{id}",
-	*	name="app_missions_edit",
-	*	requirements={
-	*		"id"="\d+"
-	*	}
-	* )
-	*/
-	public function edit(Mission $mission, Request $request)
-	{
-		$form = $this->createForm(MissionType::class, $mission);
-		$form->handleRequest($request);
+    /**
+    * @Route(
+    *  "/missions/edit/{id}",
+    *  name="app_missions_edit",
+    *  requirements={
+    *      "id"="\d+"
+    *  }
+    * )
+    */
+    public function edit(Mission $mission, Request $request)
+    {
+        $form = $this->createForm(MissionType::class, $mission);
+        $form->handleRequest($request);
 
-		if ($form->isSubmitted() && $form->isValid()) {
-			$em = $this->getDoctrine()->getManager();
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
 
-			$mission = $form->getData();
+            $mission = $form->getData();
 
-			$em->persist($mission);
-			$em->flush();
+            $em->persist($mission);
+            $em->flush();
 
-			return $this->redirectToRoute('app_missions_view', [
-				'id' => $mission->getId()
-			]);
-		}
+            return $this->redirectToRoute('app_missions_view', [
+                'id' => $mission->getId()
+            ]);
+        }
 
-		return $this->render('missions/edit.html.twig', [
-			'form' => $form->createView()
-		]);
-	}
+        return $this->render('missions/edit.html.twig', [
+            'form' => $form->createView()
+        ]);
+    }
 
-	/**
-	* @Route(
-	* 	"/missions/add",
-	*	name="app_missions_add"
-	* )
-	*/
-	public function add(Request $request)
-	{
-		$mission = new Mission();
+    /**
+    * @Route(
+    *  "/missions/add",
+    *  name="app_missions_add"
+    * )
+    */
+    public function add(Request $request)
+    {
+        $mission = new Mission();
 
-		$form = $this->createForm(MissionType::class, $mission);
-		$form->handleRequest($request);
+        // Set a default accomodation to $mission
+        $accomodation = $this->getDoctrine()
+            ->getRepository(Accomodation::class)
+            ->find(1);
+        $mission->setAccomodation($accomodation);
 
-		if ($form->isSubmitted() && $form->isValid()) {
-			$em = $this->getDoctrine()->getManager();
+        $form = $this->createForm(MissionType::class, $mission);
+        $form->handleRequest($request);
 
-			$mission = $form->getData();
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
 
-			$em->persist($mission);
-			$em->flush();
+            $mission = $form->getData();
 
-			return $this->redirectToRoute('app_missions_view', [
-				'id' => $mission->getId()
-			]);
-		}
+            $em->persist($mission);
+            $em->flush();
 
-		return $this->render('missions/add.html.twig', [
-			'form' => $form->createView()
-		]);
-	}
+            return $this->redirectToRoute('app_missions_view', [
+                'id' => $mission->getId()
+            ]);
+        }
 
-	/**
-	* @Route(
-	* 	"/missions/delete/{id}",
-	*	name="app_missions_delete",
-	*	requirements={
-	*		"id"="\d+"
-	*	}
-	* )
-	*/
-	public function delete(Mission $mission)
-	{
-		$em = $this->getDoctrine()->getManager();
-		$em->remove($mission);
-		$em->flush();
+        return $this->render('missions/add.html.twig', [
+            'form' => $form->createView()
+        ]);
+    }
 
-		return $this->redirectToRoute('app_missions_list');
-	}
+    /**
+    * @Route(
+    *  "/missions/delete/{id}",
+    *  name="app_missions_delete",
+    *  requirements={
+    *      "id"="\d+"
+    *  }
+    * )
+    */
+    public function delete(Mission $mission)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($mission);
+        $em->flush();
+
+        return $this->redirectToRoute('app_missions_list');
+    }
 }

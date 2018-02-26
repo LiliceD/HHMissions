@@ -37,7 +37,7 @@ class Accomodation
     private $missions;
 
 
-   	public function getId()
+    public function getId()
     {
         return $this->id;
     }
@@ -54,7 +54,7 @@ class Accomodation
     }
 
 
-	public function getAccess()
+    public function getAccess()
     {
         return $this->access;
     }
@@ -81,6 +81,6 @@ class Accomodation
 
     public function __toString()
     {
-	    return $this->address;
-	}
+        return $this->address;
+    }
 }
