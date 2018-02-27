@@ -1,61 +1,51 @@
 {% extends 'missions/layout.html.twig' %}
 
 {% block title %}
-	{{ parent() }}
+  {{ parent() }}
 {% endblock %}
 
 {% block layout_h3 %}
-	Créer une fiche mission
+  Créer une fiche mission
 {% endblock %}
 
 {% block content %}
 
-	{{ form_start(form) }}
+  {{ form_start(form, {'attr': {'onLoad': 'getAccess()'}}) }}
 
-		{{ form_widget(form) }}
-		
-		<input type="submit" class="btn btn-primary" value="Créer la Fiche Mission">
+    {{ form_widget(form.status, {'attr': {'hidden': 'true'}}) }}
 
-	{{ form_end(form) }}
+    {{ form_widget(form.dateCreated, {'attr': {'hidden': 'true'}}) }}
+    {{ form_widget(form.dateAssigned, {'attr': {'hidden': 'true'}}) }}
+    {{ form_widget(form.dateFinished, {'attr': {'hidden': 'true'}}) }}
 
+    {{ form_row(form.gla) }}
+    {{ form_widget(form.volunteer, {'attr': {'hidden': 'true'}}) }}
 
-// <script>
-// function ajax(url, method = 'GET', data = null, callback) {
-//     var req = new XMLHttpRequest();
-//     req.open(method, url);
-//     req.addEventListener('load', function () {
-//         if (req.status >= 200 && req.status < 400) {
-//             callback(req.responseText);
-//         } else {
-//             console.error(req.status + ' ' + req.statusText + ' ' + url);
-//         }
-//     });
-//     req.addEventListener('error', function () {
-//         console.error('Erreur réseau avec l\'URL ' + url);
-//     });
-//     req.send(data);
-// }
+    {{ form_row(form.accomodation, {'attr': {'onChange': 'getAccess()'}}) }}
+    
+    {{ form_row(form.description) }}
+    {{ form_row(form.info) }}
+    {{ form_widget(form.conclusions, {'attr': {'hidden': 'true'}}) }}
+    
+    <input type="submit" class="btn btn-primary" value="Créer la Fiche Mission">
 
-// var $accomodation = document.getElementById('#mission_accomodation');
-// // When sport gets selected ...
-// $accomodation.addEventListener("change", function() {
-//   // ... retrieve the corresponding form.
-//   var $form = document.getElementByTagName('form');
-//   // Simulate form data, but only include the selected accomodation value.
-//   var data = {};
-//   data[$accomodation.getAttribute('name')] = $accomodation.value;
-//   // Submit data via AJAX to the form's action path.
+  {{ form_end(form) }}
+{% endblock %}
 
-//   ajax($form.getAttribute('action'), $form.getAttribute('method'), data, function(html) {
-//       // Replace current position field ...
-//       $('#meetup_position').replaceWith(
-//         // ... with the returned one from the AJAX response.
-//         $(html).find('#meetup_position')
-//       );
-//       // Position field now displays the appropriate positions.
-//     }
-//   });
-// });
-// </script>
+{% block javascripts %}
+  {{ parent() }}
+
+  <script>
+  // Prepopulate field "info" with accomodation access
+  function getAccess() {
+    $.getJSON("{{ path('app_accomodation_access') }}",
+              {'id': $("#mission_accomodation").val()},
+              function(data){
+                $("#mission_info").val(data.access);
+              });
+  }
+
+  $("body").bind("load", getAccess());
+  </script>
 
 {% endblock %}

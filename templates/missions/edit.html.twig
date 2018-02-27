@@ -1,21 +1,34 @@
 {% extends 'missions/layout.html.twig' %}
 
 {% block title %}
-	{{ parent() }}
+  {{ parent() }}
 {% endblock %}
 
 {% block layout_h3 %}
-	Modifier la fiche mission
+  Modifier la fiche mission
 {% endblock %}
 
 {% block content %}
-	
-	{{ form_start(form) }}
+  
+  {{ form_start(form) }}
 
-		{{ form_widget(form) }}
+    {{ form_widget(form.status, {'attr': {'hidden': 'true'}}) }}
 
-		<input type="submit" class="btn btn-primary" value="Valider"/>
+    {{ form_widget(form.dateCreated, {'attr': {'hidden': 'true'}}) }}
+    {{ form_row(form.dateAssigned) }}
+    {{ form_row(form.dateFinished) }}
 
-	{{ form_end(form) }}
+    {{ form_row(form.gla) }}
+    {{ form_row(form.volunteer) }}
+    
+    {{ form_row(form.accomodation) }}
+    
+    {{ form_row(form.description) }}
+    {{ form_row(form.info) }}
+    {{ form_row(form.conclusions) }}
+    
+    <input type="submit" class="btn btn-primary" value="Valider"/>
+
+  {{ form_end(form) }}
 
 {% endblock %}

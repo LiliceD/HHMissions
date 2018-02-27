@@ -10,23 +10,14 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-
+/**
+ * @Route("/missions")
+ */
 class MissionController extends Controller
 {
     /**
     * @Route(
-    *  "/",
-    *  name="app_missions_index",
-    * )
-    */
-    public function index()
-    {
-        return $this->redirectToRoute('app_missions_list');
-    }
-
-    /**
-    * @Route(
-    *  "/missions/{page}",
+    *  "/{page}",
     *  name="app_missions_list",
     *  requirements={
     *      "page"="\d+"
@@ -55,7 +46,7 @@ class MissionController extends Controller
 
     /**
     * @Route(
-    *  "/missions/view/{id}",
+    *  "/view/{id}",
     *  name="app_missions_view",
     *  requirements={
     *      "id"="\d+"
@@ -74,7 +65,7 @@ class MissionController extends Controller
 
     /**
     * @Route(
-    *  "/missions/edit/{id}",
+    *  "/edit/{id}",
     *  name="app_missions_edit",
     *  requirements={
     *      "id"="\d+"
@@ -106,7 +97,7 @@ class MissionController extends Controller
 
     /**
     * @Route(
-    *  "/missions/add",
+    *  "/add",
     *  name="app_missions_add"
     * )
     */
@@ -143,7 +134,7 @@ class MissionController extends Controller
 
     /**
     * @Route(
-    *  "/missions/delete/{id}",
+    *  "/delete/{id}",
     *  name="app_missions_delete",
     *  requirements={
     *      "id"="\d+"

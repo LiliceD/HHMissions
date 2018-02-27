@@ -2,24 +2,23 @@ Logging
 
 base.html.twig
 	Responsiveness
-	Menu "Logement"
+	[DONE] Menu "Logement"
 
 /logement
-	/list
+	[DONE] /list
 		Design
 		Vue
-		Controleur / Route
 		Bouton "ajouter"
 	[DONE] /add
 	[DONE] /edit
 		Controller
 		Route
-	/delete
+	[DONE] /delete
 	/view
 		[?] Form non éditable
 
 /missions
-	order by id DESC
+	[DONE] order by id DESC
 	design
 
 	/add
@@ -47,3 +46,6 @@ Doctrine
 	Users
 		Structure table
 		Créer table
+
+Deleted address in existing missions ?
+Disabled fields in form read as null

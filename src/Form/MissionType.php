@@ -8,6 +8,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType; // for 'address' drop-down
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormEvent; // for addEventListener
 use Symfony\Component\Form\FormEvents; // for addEventListener
+use Symfony\Component\Form\Extension\Core\Type\DateType; // for 'date created' field
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -20,6 +21,20 @@ class MissionType extends AbstractType
     {
         $builder
             ->add('status', null, ['label' => 'Statut :'])
+            ->add('dateCreated', DateType::class, [
+                'label' => 'Date demande :',
+                'widget' => 'single_text',
+            ])
+            ->add('dateAssigned', DateType::class, [
+                'label' => 'Date prise en charge :',
+                'widget' => 'single_text',
+                'required' => false
+            ])
+            ->add('dateFinished', DateType::class, [
+                'label' => 'Date fin :',
+                'widget' => 'single_text',
+                'required' => false
+            ])
             ->add('gla', null, ['label' => 'GLA :'])
             ->add('volunteer', null, ['label' => 'Bénévole :'])
             ->add('accomodation', EntityType::class, [
@@ -29,10 +44,10 @@ class MissionType extends AbstractType
                 'placeholder' => false
             ])
             ->add('description', TextareaType::class, ['label' => 'Description mission :'])
-            // ->add('info', TextareaType::class, [
-            //     'label' => 'Informations complémentaires :',
-            //     'required' => false,
-            // ])
+            ->add('info', TextareaType::class, [
+                'label' => 'Informations complémentaires :',
+                'required' => false,
+            ])
             ->add('conclusions', TextareaType::class, [
                 'label' => 'Retour mission et conclusions :',
                 'required' => false
@@ -40,22 +55,23 @@ class MissionType extends AbstractType
         ;
 
         // $formModifier = function (FormInterface $form, Accomodation $accomodation = null) {
-        //     $access = null === $accomodation ? '' : $accomodation->getAccess();
 
-        //     $form->add('info', TextareaType::class, [
-        //         'data' => $access
-        //     ]);
         // };
 
         // $builder->addEventListener(
         //     FormEvents::PRE_SET_DATA,
-        //     function (FormEvent $event) use ($formModifier) {
+        //     function (FormEvent $event) {
         //         $form = $event->getForm();
 
         //         $mission = $event->getData();
         //         $accomodation = $mission->getAccomodation();
+        //         $access = null === $accomodation ? '' : $accomodation->getAccess();
 
-        //         $formModifier($form, $accomodation);                
+        //         $form->add('info', TextareaType::class, [
+        //             'label' => 'Informations complémentaires :',
+        //             'required' => false,
+        //             'data' => $access
+        //         ]);
         //     }
         // );
 

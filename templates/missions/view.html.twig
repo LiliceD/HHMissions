@@ -6,10 +6,10 @@
 
 {% block layout_h3 %}
   <div class="row justify-content-between">
-    <div class="col-md-8">
+    <div class="col-md-6">
       Fiche mission GLA-Bénévole
     </div>
-    <div class="col-md-4">
+    <div class="col-md-6">
       <div class="row justify-content-between">
         <a href="{{ path('app_missions_list') }}" class="btn btn-primary">
           <i class="fas fa-chevron-left"></i>
@@ -31,8 +31,10 @@
 {% block content %}
   <div class="row justify-content-center">
     <div class="col-md-10">
-      <div class="row justify-content-between">
 
+      {# row N°/GLA/Volunteer + Dates #}
+      <div class="row justify-content-between">
+        
         <div class="col-md-4">
           <div class="row justify-content-center">
             <div class="col-md-6 text-right">
@@ -80,54 +82,58 @@
         </div>
 
       </div>
+
+      <br>
+
+      {# row Address #}
+      <div class="row justify-content-start">
+        <div class="col-md-2 text-right">
+          Adresse :
+        </div>
+        <div class="col-md-8 border">
+          {{ mission.accomodation.address }}
+        </div>
+      </div>
+
+      <br>
+
+      {# rows description/info/conclusions #}
+      <div class="row justify-content-center">
+        
+        <div class="col-lg-12">
+          <strong>Description mission :</strong>
+        </div>
+        <div class="col-lg-12 border mb-3">
+          {{ mission.description }}
+          <br>
+          <br>
+          <br>
+        </div>
+        
+        <div class="col-lg-12">
+          <strong>Informations complémentaires :</strong>
+        </div>
+        <div class="col-lg-12 border mb-3">
+          {{ mission.info }}
+          <br>
+          <br>
+        </div>
+        
+        <div class="col-lg-12">
+          <strong>Retour mission et conclusions :</strong>
+        </div>
+        <div class="col-lg-12 border mb-3">
+          {{ mission.conclusions }}
+          <br>
+          <br>
+          <br>
+        </div>
+
+      </div>
+
     </div>
   </div>
   
-  <br>
-
-  <div class="row justify-content-center">
-    <div class="col-md-2 text-right">
-      Adresse :
-    </div>
-    <div class="col-md-8 border">
-      {{ mission.accomodation.address }}
-    </div>
-  </div>
-
-  <br>
-
-  <div class="row justify-content-center">
-    <div class="col-lg-10">
-      <strong>Description mission :</strong>
-    </div>
-    <div class="col-lg-10 border mb-3">
-      {{ mission.description }}
-      <br>
-      <br>
-      <br>
-    </div>
-    <div class="col-lg-10">
-      <strong>Informations supplémentaires :</strong>
-    </div>
-    <div class="col-lg-10 border mb-3">
-      {{ mission.info }}
-      <br>
-      <br>
-    </div>
-    <div class="col-lg-10">
-      <strong>Retour mission et conclusions :</strong>
-    </div>
-    <div class="col-lg-10 border mb-3">
-      {{ mission.conclusions }}
-      <br>
-      <br>
-      <br>
-    </div>
-  </div>
-
   <hr>
 
-  <div>
-    
-  </div>
 {% endblock %}

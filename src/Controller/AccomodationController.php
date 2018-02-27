@@ -6,6 +6,7 @@ namespace App\Controller;
 use App\Entity\Accomodation;
 use App\Form\AccomodationType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse; // function access
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -108,5 +109,26 @@ class AccomodationController extends Controller
         $em->flush();
 
         return $this->redirectToRoute('app_accomodation_list');
+    }
+
+    /**
+    * @Route(
+    *  "/logement/access",
+    *  name="app_accomodation_access",
+    * )
+    */
+    public function access(Request $request)
+    {
+        $id = $request->query->get('id');
+
+        $accomodation = $this->getDoctrine()
+            ->getRepository(Accomodation::class)
+            ->find($id);
+
+        $access = $accomodation->getAccess();
+
+        $json = array('access' => $access);
+
+        return new JsonResponse($json);
     }
 }
