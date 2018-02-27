@@ -135,5 +135,10 @@
   </div>
   
   <hr>
-
+  {% if mission.pdfScan %}
+    <a href="{{ asset('uploads/pdf/' ~ mission.pdfScan) }}">Voir le scan PDF</a>
+    <a href="{{ path('app_missions_pdf-scan-delete', {'id': mission.id}) }}">Supprimer le scan PDF</a>
+  {% else %}
+    <span>Pas de scan PDF !</span>
+  {% endif %}
 {% endblock %}

@@ -6,9 +6,8 @@ use App\Entity\Accomodation;
 use App\Entity\Mission;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType; // for 'address' drop-down
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\FormEvent; // for addEventListener
-use Symfony\Component\Form\FormEvents; // for addEventListener
-use Symfony\Component\Form\Extension\Core\Type\DateType; // for 'date created' field
+use Symfony\Component\Form\Extension\Core\Type\DateType; // for 'date created/assigned/finished' fields
+use Symfony\Component\Form\Extension\Core\Type\FileType; // for 'Scan PDF'
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -20,72 +19,43 @@ class MissionType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('status', null, ['label' => 'Statut :'])
-            ->add('dateCreated', DateType::class, [
+            ->add('status', null, array('label' => 'Statut :'))
+            ->add('dateCreated', DateType::class, array(
                 'label' => 'Date demande :',
                 'widget' => 'single_text',
-            ])
-            ->add('dateAssigned', DateType::class, [
+            ))
+            ->add('dateAssigned', DateType::class, array(
                 'label' => 'Date prise en charge :',
                 'widget' => 'single_text',
                 'required' => false
-            ])
-            ->add('dateFinished', DateType::class, [
+            ))
+            ->add('dateFinished', DateType::class, array(
                 'label' => 'Date fin :',
                 'widget' => 'single_text',
                 'required' => false
-            ])
-            ->add('gla', null, ['label' => 'GLA :'])
-            ->add('volunteer', null, ['label' => 'Bénévole :'])
-            ->add('accomodation', EntityType::class, [
+            ))
+            ->add('gla', null, array('label' => 'GLA :'))
+            ->add('volunteer', null, array('label' => 'Bénévole :'))
+            ->add('accomodation', EntityType::class, array(
                 'class' => Accomodation::class,
                 'choice_label' => 'address',
                 'label' => 'Adresse :',
                 'placeholder' => false
-            ])
-            ->add('description', TextareaType::class, ['label' => 'Description mission :'])
-            ->add('info', TextareaType::class, [
+            ))
+            ->add('description', TextareaType::class, array('label' => 'Description mission :'))
+            ->add('info', TextareaType::class, array(
                 'label' => 'Informations complémentaires :',
                 'required' => false,
-            ])
-            ->add('conclusions', TextareaType::class, [
+            ))
+            ->add('conclusions', TextareaType::class, array(
                 'label' => 'Retour mission et conclusions :',
                 'required' => false
-            ])
+            ))
+            ->add('pdfScan', FileType::class, array(
+                'label' => 'Scan PDF :',
+                'required' => false
+            ))
         ;
-
-        // $formModifier = function (FormInterface $form, Accomodation $accomodation = null) {
-
-        // };
-
-        // $builder->addEventListener(
-        //     FormEvents::PRE_SET_DATA,
-        //     function (FormEvent $event) {
-        //         $form = $event->getForm();
-
-        //         $mission = $event->getData();
-        //         $accomodation = $mission->getAccomodation();
-        //         $access = null === $accomodation ? '' : $accomodation->getAccess();
-
-        //         $form->add('info', TextareaType::class, [
-        //             'label' => 'Informations complémentaires :',
-        //             'required' => false,
-        //             'data' => $access
-        //         ]);
-        //     }
-        // );
-
-        // $builder->get('accomodation')->addEventListener(
-        //     FormEvents::POST_SUBMIT,
-        //     function(FormEvent $event) use ($formModifier) {
-        //         $form = $event->getForm();
-
-        //         $accomodation = $form->getData();
-        //         // $accomodation = $mission->getAccomodation();
-
-        //         $formModifier($form->getParent(), $accomodation);
-        //     }
-        // );
     }
 
     public function configureOptions(OptionsResolver $resolver)

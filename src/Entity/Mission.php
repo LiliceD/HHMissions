@@ -2,11 +2,9 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-// this use statement is needed for the annotations @ORM
-use Doctrine\ORM\Mapping as ORM;
-// this use statement is needed for the annotations @Assert
-use Symfony\Component\Validator\Constraints as Assert;
+// use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM; // this use statement is needed for the annotations @ORM
+use Symfony\Component\Validator\Constraints as Assert; // this use statement is needed for the annotations @Assert
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\MissionRepository")
@@ -76,6 +74,20 @@ class Mission
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $dateFinished;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     *
+     * @Assert\File(mimeTypes={ "application/pdf" })
+     */
+    private $pdfScan;
+
+    
+    public function __construct()
+    {
+        $this->status = "created";
+        $this->dateCreated = new \DateTime();
+    }
 
 
     public function getId()
@@ -194,9 +206,15 @@ class Mission
     }
     
 
-    public function __construct()
+    public function getPdfScan()
     {
-        $this->status = "created";
-        $this->dateCreated = new \DateTime();
+        return $this->pdfScan;
+    }
+
+    public function setPdfScan($pdfScan)
+    {
+        $this->pdfScan = $pdfScan;
+
+        return $this;
     }
 }
