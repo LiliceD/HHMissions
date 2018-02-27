@@ -27,10 +27,24 @@
     {{ form_row(form.info) }}
     {{ form_row(form.conclusions) }}
 
-    {{ form_row(form.pdfScan) }}
-    
-    <input type="submit" class="btn btn-primary" value="Valider"/>
+    {{ form_label(form.pdfScan) }}
+    {% if mission.pdfScan %}
+      <div class="alert alert-warning">
+        Attention, cette mission a déjà un PDF associé ! Si vous ajoutez un fichier, il remplacera le fichier existant.<br>
+        Pour voir le PDF actuellement enregistré, <a href="{{ asset('uploads/pdf/' ~ pdfScanUrl) }}" target="_blank" class="alert-link">cliquez ici</a>.
+      </div>
+    {% endif %}
+    {{ form_widget(form.pdfScan) }}
 
+    <hr>
+
+    <div class="row justify-content-end align-items-center">
+      <input type="submit" class="btn btn-primary mr-2" value="Valider"/>
+      <a href="{{ path('app_missions_view', {'id': mission.id}) }}" class="btn btn-outline-secondary mr-4">
+        Annuler
+      </a>
+    </div>
   {{ form_end(form) }}
 
+  <br>
 {% endblock %}

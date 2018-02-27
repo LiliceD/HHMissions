@@ -140,7 +140,7 @@
       <a href="{{ asset('uploads/pdf/' ~ mission.pdfScan) }}" class="btn btn-primary mr-2">Voir le scan PDF</a>
       <a href="{{ path('app_missions_pdf-scan-delete', {'id': mission.id}) }}" class="btn btn-outline-danger btn-sm mr-4">Supprimer le scan PDF</a>
     {% else %}
-      <span>Pas de scan PDF !</span>
+      <div class="alert alert-secondary mr-4"><strong>Pas de scan PDF !</strong> Pour en ajouter un, cliquez sur "Modifier" en haut à droite.</span>
     {% endif %}
   </div>
 

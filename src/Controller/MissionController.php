@@ -41,9 +41,9 @@ class MissionController extends Controller
 
         $missions = $repository->findBy(array(), array('dateCreated' => 'DESC'));
 
-        return $this->render('missions/list.html.twig', [
+        return $this->render('missions/list.html.twig', array(
             'missions' => $missions
-        ]);
+        ));
     }
 
     /**
@@ -59,10 +59,10 @@ class MissionController extends Controller
     {
         $accomodation = $mission->getAccomodation();
 
-        return $this->render('missions/view.html.twig', [
+        return $this->render('missions/view.html.twig', array(
             'mission' => $mission,
             'accomodation' => $accomodation
-        ]);
+        ));
     }
 
     /**
@@ -108,14 +108,16 @@ class MissionController extends Controller
             $em->persist($mission);
             $em->flush();
 
-            return $this->redirectToRoute('app_missions_view', [
+            return $this->redirectToRoute('app_missions_view', array(
                 'id' => $mission->getId()
-            ]);
+            ));
         }
 
-        return $this->render('missions/edit.html.twig', [
-            'form' => $form->createView()
-        ]);
+        return $this->render('missions/edit.html.twig', array(
+            'form' => $form->createView(),
+            'mission' => $mission,
+            'pdfScanUrl' => $previousFileName
+        ));
     }
 
     /**
@@ -145,14 +147,14 @@ class MissionController extends Controller
             $em->persist($mission);
             $em->flush();
 
-            return $this->redirectToRoute('app_missions_view', [
+            return $this->redirectToRoute('app_missions_view', array(
                 'id' => $mission->getId()
-            ]);
+            ));
         }
 
-        return $this->render('missions/add.html.twig', [
+        return $this->render('missions/add.html.twig', array(
             'form' => $form->createView()
-        ]);
+        ));
     }
 
     /**
@@ -190,7 +192,7 @@ class MissionController extends Controller
     { 
         // Delete file from server
         $fileName = $mission->getPdfScan();
-        
+
         $fileUploader->delete($fileName);
 
         // Empty field in database
@@ -200,8 +202,8 @@ class MissionController extends Controller
         $em->persist($mission);
         $em->flush();
 
-        return $this->redirectToRoute('app_missions_view', [
+        return $this->redirectToRoute('app_missions_view', array(
                 'id' => $mission->getId()
-        ]);
+        ));
     }
 }
