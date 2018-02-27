@@ -10,16 +10,16 @@
       Fiche mission GLA-Bénévole
     </div>
     <div class="col-md-6">
-      <div class="row justify-content-between">
-        <a href="{{ path('app_missions_list') }}" class="btn btn-primary">
+      <div class="row justify-content-end align-items-center">
+        <a href="{{ path('app_missions_list') }}" class="btn btn-outline-secondary mr-2">
           <i class="fas fa-chevron-left"></i>
           Retour à la liste
         </a>
-        <a href="{{ path('app_missions_edit', {'id': mission.id}) }}" class="btn btn-outline-primary">
+        <a href="{{ path('app_missions_edit', {'id': mission.id}) }}" class="btn btn-outline-primary mr-2">
           <i class="fas fa-edit"></i>
           Modifier
         </a>
-        <a href="{{ path('app_missions_delete', {'id': mission.id}) }}" class="btn btn-outline-danger">
+        <a href="{{ path('app_missions_delete', {'id': mission.id}) }}" class="btn btn-outline-danger btn-sm mr-4">
           <i class="fas fa-trash-alt"></i>
           Supprimer
         </a>
@@ -135,10 +135,14 @@
   </div>
   
   <hr>
-  {% if mission.pdfScan %}
-    <a href="{{ asset('uploads/pdf/' ~ mission.pdfScan) }}">Voir le scan PDF</a>
-    <a href="{{ path('app_missions_pdf-scan-delete', {'id': mission.id}) }}">Supprimer le scan PDF</a>
-  {% else %}
-    <span>Pas de scan PDF !</span>
-  {% endif %}
+  <div class="row justify-content-end align-items-center">
+    {% if mission.pdfScan %}
+      <a href="{{ asset('uploads/pdf/' ~ mission.pdfScan) }}" class="btn btn-primary mr-2">Voir le scan PDF</a>
+      <a href="{{ path('app_missions_pdf-scan-delete', {'id': mission.id}) }}" class="btn btn-outline-danger btn-sm mr-4">Supprimer le scan PDF</a>
+    {% else %}
+      <span>Pas de scan PDF !</span>
+    {% endif %}
+  </div>
+
+  <br>
 {% endblock %}
