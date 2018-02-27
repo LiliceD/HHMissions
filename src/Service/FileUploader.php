@@ -2,6 +2,8 @@
 
 namespace App\Service;
 
+use Symfony\Component\Filesystem\Filesystem; // to delete scan pdf
+use Symfony\Component\Filesystem\Exception\IOExceptionInterface; // to delete scan pdf (errors)
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class FileUploader
@@ -20,6 +22,18 @@ class FileUploader
         $file->move($this->getTargetDir(), $fileName);
 
         return $fileName;
+    }
+
+    public function delete($fileName) {
+        $file = $this->getTargetDir()."/".$fileName;
+
+        $fs = new Filesystem();
+
+        try {
+            $fs->remove($file);
+        } catch (IOExceptionInterface $e) {
+            echo "An error occurred while deleting file at ".$e->getPath();
+        }
     }
 
     public function getTargetDir()

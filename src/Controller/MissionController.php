@@ -7,8 +7,6 @@ use App\Entity\Mission;
 use App\Form\MissionType;
 use App\Service\FileUploader; // to use FileUploader service in edit
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Filesystem\Filesystem; // to delete scan pdf
-use Symfony\Component\Filesystem\Exception\IOExceptionInterface; // to delete scan pdf (errors)
 use Symfony\Component\HttpFoundation\File\File; // for new File() in edit
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -184,18 +182,14 @@ class MissionController extends Controller
     *  }
     * )
     */
-    public function deletePdfScan(Mission $mission)
+    public function deletePdfScan(Mission $mission, FileUploader $fileUploader)
     { 
         // Delete file from server
-        $file = $this->getParameter('pdf_scans_directory')."/".$mission->getPdfScan();
+        $fileName = $mission->getPdfScan();
 
-        $fs = new Filesystem();
+        $fileUploader->delete($fileName);
 
-        try {
-            $fs->remove($file);
-        } catch (IOExceptionInterface $e) {
-            echo "An error occurred while deleting file at ".$e->getPath();
-        }
+        
 
         // Empty field in database
         $mission->setPdfScan(null);
