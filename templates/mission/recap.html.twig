@@ -1,0 +1,92 @@
+{% extends 'mission/layout.html.twig' %}
+
+{% block title %}
+  Suivi des {{ parent() }}
+{% endblock %}
+
+{% block body %}
+  <div class="container-fluid">
+    <div class="row justify-content-between">
+      <h3 class="col-md-6">Récapitulatif des missions en cours</h3>
+      <div class="col-md-3">
+        <div class="row justify-content-end">
+          <a href="{{ path('app_missions_recap_pdf-export') }}" class="btn btn-primary mr-4  right">
+            <i class="fas fa-download"></i>
+            Exporter en PDF
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="table-responsive">
+      <table class="table table-sm table-hover table-recap">
+
+        <thead class="thead-light">
+          <tr>
+            <th scope="col" class="table-recap-id">#</th>
+            <th scope="col" class="table-recap-date">Date demande</th>
+            <th scope="col" class="table-recap-date">GLA</th>
+            <th scope="col" class="table-recap-date">Bénévole</th>
+            <th scope="col" class="table-recap-address">Adresse</th>
+            <th scope="col" class="table-recap-description">Description mission</th>
+            <th scope="col" class="table-recap-info">Informations complémentaires</th>
+            <th scope="col" class="table-recap-description">Retour mission et conclusions</th>
+            <th scope="col" class="table-recap-pdf">PDF joint</th>
+            <th scope="col" class="table-recap-date">Date prise en charge</th>
+            <th scope="col" class="table-recap-date">Date fin mission</th>
+            <th scope="col" class="table-recap-statut">Statut</th>
+            {# <th scope="col" colspan="2"></th> #}
+          </tr>
+        </thead>
+
+        <tbody>
+
+          {% for mission in missions %}
+            <tr>
+              <td>
+                <a href="{{ path('app_missions_view', {'id': mission.id}) }}" title="Voir la FM">
+                  {{ mission.id }}
+                </a>
+              </td>
+              <th scope="row">
+                {{ mission.dateCreated|date('d/m/y') }}
+              </th>
+              <td>{{ mission.gla }}</td>
+              <td>{{ mission.volunteer }}</td>
+              <td>{{ mission.accomodation.address }}</td>
+              <td>{{ mission.description }}</td>
+              <td>{{ mission.info }}</td>
+              <td>{{ mission.conclusions }}</td>
+              <td>
+                {% if mission.pdfScan %}
+                  <a href="{{ asset('uploads/pdf/' ~ mission.pdfScan) }}" target="_blank">Oui</a>
+                {% else %}
+                  Non
+                {% endif %}
+              </td>
+              <td>{{ mission.dateAssigned|date('d/m/y') }}</td>
+              <td>{{ mission.dateFinished|date('d/m/y') }}</td>
+              <td>{{ mission.status }}</td>
+              {# <td>
+                <a href="{{ path('app_missions_view', {'id': mission.id}) }}" title="Voir la FM {{ mission.id }}" class="btn btn-primary btn-sm">
+                  <i class="fas fa-eye"></i>
+                  Voir
+                </a>
+              </td>
+              <td>
+                <a href="{{ path('app_missions_edit', {'id': mission.id}) }}" title="Modifier la FM {{ mission.id }}" class="btn btn-outline-primary btn-sm">
+                  <i class="fas fa-edit"></i>
+                  Modifier
+                </a>
+              </td> #}
+            </tr>
+          {% endfor %}
+
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+{% endblock %}

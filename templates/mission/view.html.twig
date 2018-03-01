@@ -144,7 +144,7 @@
     </div>
     <div class="col-md-auto">
       {% if mission.pdfScan %}
-        <a href="{{ asset('uploads/pdf/' ~ mission.pdfScan) }}" class="btn btn-primary mr-2">
+        <a href="{{ asset('uploads/pdf/' ~ mission.pdfScan) }}" target="_blank" class="btn btn-primary mr-2">
           Voir le scan PDF
         </a>
         <a href="{{ path('app_missions_pdf-scan-delete', {'id': mission.id}) }}" class="btn btn-outline-danger btn-sm mr-4">

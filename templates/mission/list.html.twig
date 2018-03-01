@@ -28,26 +28,12 @@
 
       {% for mission in missions %}
         <tr>
-          <td>
-            {{ mission.id }}
-          </td>
-          <th scope="row">
-            {{ mission.dateCreated|date('d/m/Y') }}
-          </th>
-          <td>
-            {{ mission.gla }}
-          </td>
-          <td>
-            {{ mission.accomodation.address }}
-          </td>
-          <td>
-            <div class="text-ellipsis">
-              {{ mission.description }}
-            </div>
-          </td>
-          <td>
-            {{ mission.status }}
-          </td>
+          <td>{{ mission.id }}</td>
+          <th scope="row">{{ mission.dateCreated|date('d/m/y') }}</th>
+          <td>{{ mission.gla }}</td>
+          <td>{{ mission.accomodation.address }}</td>
+          <td><div class="text-ellipsis">{{ mission.description }}</div></td>
+          <td>{{ mission.status }}</td>
           <td>
             <a href="{{ path('app_missions_view', {'id': mission.id}) }}" title="Voir la FM {{ mission.id }}" class="btn btn-primary btn-sm">
               <i class="fas fa-eye"></i>

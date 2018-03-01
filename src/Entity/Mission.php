@@ -103,11 +103,11 @@ class Mission
             'Fermée'    // When Admin reviewed conclusions and officialy closed mission (cf isClosed())
         );
     }
-    // Returns true if and only if status = "Fermée"
-    public function isClosed()
-    {
-        return $this->status === 'Fermée';
-    }
+    // // Returns true if and only if status = "Fermée"
+    // public function isClosed()
+    // {
+    //     return $this->status === 'Fermée';
+    // }
     
     public function __construct()
     {

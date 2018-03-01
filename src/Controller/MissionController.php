@@ -18,6 +18,8 @@ use Symfony\Component\Routing\Annotation\Route;
 class MissionController extends Controller
 {
     /**
+    * Index
+    *
     * @Route(
     *  "/{page}",
     *  name="app_missions_list",
@@ -39,7 +41,7 @@ class MissionController extends Controller
 
         $repository = $this->getDoctrine()->getRepository(Mission::class);
 
-        $missions = $repository->findBy(array(), array('dateCreated' => 'DESC'));
+        $missions = $repository->findBy(array(), array('id' => 'DESC'));
 
         return $this->render('mission/list.html.twig', array(
             'missions' => $missions
@@ -47,6 +49,47 @@ class MissionController extends Controller
     }
 
     /**
+    * CREATE
+    *
+    * @Route(
+    *  "/add",
+    *  name="app_missions_add"
+    * )
+    */
+    public function add(Request $request)
+    {
+        $mission = new Mission();
+
+        // Set a default accomodation to $mission
+        $accomodation = $this->getDoctrine()
+            ->getRepository(Accomodation::class)
+            ->find(1);
+        $mission->setAccomodation($accomodation);
+
+        $form = $this->createForm(MissionType::class, $mission);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+
+            $mission = $form->getData();
+
+            $em->persist($mission);
+            $em->flush();
+
+            return $this->redirectToRoute('app_missions_view', array(
+                'id' => $mission->getId()
+            ));
+        }
+
+        return $this->render('mission/add.html.twig', array(
+            'form' => $form->createView()
+        ));
+    }
+
+    /**
+    * READ
+    *
     * @Route(
     *  "/view/{id}",
     *  name="app_missions_view",
@@ -63,6 +106,8 @@ class MissionController extends Controller
     }
 
     /**
+    * UPDATE
+    *
     * @Route(
     *  "/edit/{id}",
     *  name="app_missions_edit",
@@ -90,7 +135,7 @@ class MissionController extends Controller
             /****************** Update status ******************/
             
             $status = $mission->getStatus(); // Current mission status
-            $statuses = $mission->getStatuses(); // List of possible statuses
+            $statuses = Mission::getStatuses(); // List of possible statuses
 
             if ($mission->getDateFinished() !== null && $status !== $statuses[4]) {
                 $mission->setStatus($statuses[4]);  // Set to "Fermée"
@@ -136,43 +181,8 @@ class MissionController extends Controller
     }
 
     /**
-    * @Route(
-    *  "/add",
-    *  name="app_missions_add"
-    * )
-    */
-    public function add(Request $request)
-    {
-        $mission = new Mission();
-
-        // Set a default accomodation to $mission
-        $accomodation = $this->getDoctrine()
-            ->getRepository(Accomodation::class)
-            ->find(1);
-        $mission->setAccomodation($accomodation);
-
-        $form = $this->createForm(MissionType::class, $mission);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-
-            $mission = $form->getData();
-
-            $em->persist($mission);
-            $em->flush();
-
-            return $this->redirectToRoute('app_missions_view', array(
-                'id' => $mission->getId()
-            ));
-        }
-
-        return $this->render('mission/add.html.twig', array(
-            'form' => $form->createView()
-        ));
-    }
-
-    /**
+    * DELETE
+    *
     * @Route(
     *  "/delete/{id}",
     *  name="app_missions_delete",
@@ -192,6 +202,26 @@ class MissionController extends Controller
         $em->flush();
 
         return $this->redirectToRoute('app_missions_list');
+    }
+
+    /**
+    * Recap of opened missions
+    *
+    * @Route(
+    *  "/recap/{page}",
+    *  name="app_missions_recap",
+    *  requirements={
+    *      "page"="\d+"
+    *  }
+    * )
+    */
+    public function recap($page = 1)
+    {    
+        $missions = $this->getNonClosedMissions();
+
+        return $this->render('mission/recap.html.twig', array(
+            'missions' => $missions
+        ));
     }
 
     /**
@@ -235,13 +265,13 @@ class MissionController extends Controller
      *  }
      * )
      */
-    public function mission2pdf(Mission $mission)
+    public function pdfExport(Mission $mission)
     {
-        $html = $this->renderView('pdf/pdf.html.twig', array(
+        $html = $this->renderView('pdf/mission.html.twig', array(
             'mission' => $mission
         ));
 
-        $filename = sprintf('fm-%s_%s.pdf', $mission->getId(), date('Y-m-d'));
+        $filename = sprintf('fm-%s_%s.pdf', $mission->getId(), date('Y-m-d_His'));
 
         return new Response(
             $this->get('knp_snappy.pdf')->getOutputFromHtml($html),
@@ -251,5 +281,48 @@ class MissionController extends Controller
                 'Content-Disposition' => sprintf('attachment; filename="%s"', $filename),
             ]
         );
+    }
+
+    /**
+     * Export recap to PDF
+     * 
+     * @Route(
+     *  "/recap/pdf",
+     *  name="app_missions_recap_pdf-export"
+     * )
+     */
+    public function recapPdfExport()
+    {
+        $missions = $this->getNonClosedMissions();
+
+        $html = $this->renderView('pdf/missions-recap.html.twig', array(
+            'missions' => $missions
+        ));
+
+        $filename = sprintf('fm-recap_%s.pdf', date('Y-m-d_His'));
+
+        return new Response(
+            $this->get('knp_snappy.pdf')->getOutputFromHtml($html, array(
+                'page-size' => 'A3',
+                'orientation' => 'Landscape'
+            )),
+            200,
+            [
+                'Content-Type'        => 'application/pdf',
+                'Content-Disposition' => sprintf('attachment; filename="%s"', $filename),
+            ]
+        );
+    }
+
+    private function getNonClosedMissions() {
+        $statuses = Mission::getStatuses(); // List of possible statuses
+        array_pop($statuses); // Remove status "Fermée"
+
+        $repository = $this->getDoctrine()->getRepository(Mission::class);
+
+        // Get all missions with status not "Fermée"
+        $missions = $repository->findByStatus($statuses);
+
+        return $missions;
     }
 }

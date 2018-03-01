@@ -13,18 +13,17 @@ class MissionRepository extends ServiceEntityRepository
         parent::__construct($registry, Mission::class);
     }
 
-    /*
-    public function findBySomething($value)
+    public function findByStatus($value)
     {
-        return $this->createQueryBuilder('p')
-            ->where('p.something = :value')->setParameter('value', $value)
-            ->orderBy('p.id', 'ASC')
-            ->setMaxResults(10)
+        $qb = $this->createQueryBuilder('m');
+        return $qb->add('where', $qb->expr()->in('m.status', ':value'))
+            ->setParameter('value', $value)
+            ->orderBy('m.id', 'DESC')
+            // ->setMaxResults(10)
             ->getQuery()
             ->getResult()
         ;
     }
-    */
 
     // public function findOneByIdJoinedToAccomodation($missionId)
     // {

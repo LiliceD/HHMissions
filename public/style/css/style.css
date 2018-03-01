@@ -1,3 +1,5 @@
+/* mission/list.html.twig */
+
 .text-ellipsis {
   width: 250px;
   white-space: nowrap;
@@ -7,4 +9,34 @@
 
 textarea {
   height: 100px;
+}
+
+
+/* mission/recap.html.twig */
+
+.table-recap {
+  /*table-layout: fixed;*/
+  font-size: 12px;
+}
+
+.table-recap-id {
+  width: 20px;
+}
+.table-recap-date {
+  width: 75px;
+}
+.table-recap-address {
+  width: 250px;
+}
+.table-recap-description {
+  width: 300px;
+}
+.table-recap-info {
+  width: 150px;
+}
+.table-recap-pdf {
+  width: 40px;
+}
+.table-recap-statut {
+  width: 60px;
 }
