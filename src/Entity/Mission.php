@@ -22,6 +22,8 @@ class Mission
 
     /**
      * @ORM\Column(type="string")
+     * 
+     * @Assert\Choice(callback="getStatuses")
      */
     private $status;
 
@@ -46,7 +48,7 @@ class Mission
     /**
      * @ORM\Column(type="text")
      *
-     * @Assert\NotBlank(message="Merci de remplir la mission")
+     * @Assert\NotBlank(message="Merci de remplir la description de la mission")
      */
     private $description;
 
@@ -82,135 +84,139 @@ class Mission
      */
     private $pdfScan;
 
+
+    /************** Functions *****************/
+
+    // List of possible statuses for a mission
+    public static function getStatuses()
+    {
+        return array(
+            // getStatuses()[0] :
+            'Créée',    // Default status when mission is created (cf __construct())
+            // getStatuses()[1] :
+            'Publiée',  // When mission information has been completed by Admin
+            // getStatuses()[2] :
+            'Prise en charge',  // When a volunteer got assigned to the mission (cf dateAssigned)
+            // getStatuses()[3] :
+            'Terminée', // When the mission has been done (cf dateFinished, conclusions)
+            // getStatuses()[4 / length-1] :
+            'Fermée'    // When Admin reviewed conclusions and officialy closed mission (cf isClosed())
+        );
+    }
+    // Returns true if and only if status = "Fermée"
+    public function isClosed()
+    {
+        return $this->status === 'Fermée';
+    }
     
     public function __construct()
     {
-        $this->status = "created";
+        $this->status = $this->getStatuses()[0];
         $this->dateCreated = new \DateTime();
     }
 
+
+    /********** Getters and setters *************/
 
     public function getId()
     {
         return $this->id;
     }
 
-
     public function getStatus()
     {
         return $this->status;
     }
-
     public function setStatus($status)
     {
         $this->status = $status;
     }
 
-
     public function getAccomodation(): Accomodation
     {
         return $this->accomodation;
     }
-
     public function setAccomodation(Accomodation $accomodation)
     {
         $this->accomodation = $accomodation;
     }
 
-
     public function getGla()
     {
         return $this->gla;
     }
-
     public function setGla($gla)
     {
         $this->gla = $gla;
     }
 
-
     public function getVolunteer()
     {
         return $this->volunteer;
     }
-
     public function setVolunteer($volunteer)
     {
         $this->volunteer = $volunteer;
     }
 
-
     public function getDescription()
     {
         return $this->description;
     }
-
     public function setDescription($description)
     {
         $this->description = $description;
     }
 
-
     public function getInfo()
     {
         return $this->info;
     }
-
     public function setInfo($info)
     {
         $this->info = $info;
     }
 
-
     public function getConclusions()
     {
         return $this->conclusions;
     }
-
     public function setConclusions($conclusions)
     {
         $this->conclusions = $conclusions;
     }
 
-
     public function getDateCreated()
     {
         return $this->dateCreated;
     }
-
     public function setDateCreated($dateCreated)
     {
         $this->dateCreated = $dateCreated;
     }
 
-
     public function getDateAssigned()
     {
         return $this->dateAssigned;
     }
-
     public function setDateAssigned($dateAssigned)
     {
         $this->dateAssigned = $dateAssigned;
     }
 
-
     public function getDateFinished()
     {
         return $this->dateFinished;
     }
-
     public function setDateFinished($dateFinished)
     {
         $this->dateFinished = $dateFinished;
     }
     
-
     public function getPdfScan()
     {
         return $this->pdfScan;
     }
-
     public function setPdfScan($pdfScan)
     {
         $this->pdfScan = $pdfScan;

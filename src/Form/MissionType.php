@@ -39,7 +39,7 @@ class MissionType extends AbstractType
             ->add('accomodation', EntityType::class, array(
                 'class' => Accomodation::class,
                 'choice_label' => 'address',
-                'label' => 'Adresse :',
+                'label' => 'Adresse d\'intervention :',
                 'placeholder' => false
             ))
             ->add('description', TextareaType::class, array('label' => 'Description mission :'))

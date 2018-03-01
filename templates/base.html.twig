@@ -5,7 +5,7 @@
 
     <title>{% block title %}Fiches Mission{% endblock %}</title>
 
-    <link rel="icon" type="image/ico" href="{{ asset('style/images/favicon.ico') }}" />
+    <link rel="icon" type="image/ico" href="{{ absolute_url(asset('style/images/favicon.ico')) }}" />
 
     {% block stylesheets %}
       <link href="{{ asset('style/css/style.css') }}" rel="stylesheet">
@@ -18,22 +18,23 @@
   </head>
 
   <body>
-    
-    <nav class="navbar navbar-expand-sm navbar-dark bg-primary">
-      <div class="container">
-        <span class="navbar-brand mb-0 h1" href="#">Fiches Mission</span>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-          <div class="navbar-nav">
-            <a class="nav-item nav-link active" href="{{ path('app_missions_list') }}">Liste</a>
-            <a class="nav-item nav-link" href="{{ path('app_missions_add') }}">Créer une FM</a>
-            <a class="nav-item nav-link" href="{{ path('app_accomodation_list') }}">Logements</a>
+    {% block nav %}
+      <nav class="navbar navbar-expand-sm navbar-dark bg-primary">
+        <div class="container">
+          <span class="navbar-brand mb-0 h1" href="#">Fiches Mission</span>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+              <a class="nav-item nav-link active" href="{{ path('app_missions_list') }}">Liste</a>
+              <a class="nav-item nav-link" href="{{ path('app_missions_add') }}">Créer une FM</a>
+              <a class="nav-item nav-link" href="{{ path('app_accomodation_list') }}">Logements</a>
+            </div>
           </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+    {% endblock %}
 
     <br>
     

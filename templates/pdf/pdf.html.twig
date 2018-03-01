@@ -1,0 +1,178 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+  <style>
+    .pdf-content {
+      font-family: Arial;
+      font-size: 18px;
+    }
+
+    *, *:before, *:after {
+      -webkit-box-sizing: border-box; 
+      -moz-box-sizing: border-box; 
+      box-sizing: border-box;
+    }
+
+    .cell {
+      height: 40px;
+      line-height: 40px;
+      padding: 0px 6px;
+      font-weight: bold;
+    }
+
+    .inline-block {
+      display: inline-block;
+      vertical-align: top;
+    }
+
+    .right {
+      position: absolute;
+      right: 8px;
+    }
+
+    .width-sm {
+      width: 125px;
+    }
+
+    .width-md {
+      width: 200px;
+    }
+
+    .label {
+      text-align: right;
+      font-weight: normal;
+    }
+
+    .address {
+      width: 600px;
+    }
+
+    .center {
+      text-align: center;
+    }
+
+    .mission-block {
+      margin-top: 50px;
+    }
+
+    .textarea {
+      height: 250px;
+      margin-bottom: 16px;
+      padding: 8px 12px; 
+      border: 1px solid #333;
+      border-radius: 4px;
+    }
+
+    .info {
+      height: 125px;
+    }
+  </style>
+{% endblock %}
+
+{% block nav %}
+{% endblock %}
+
+{% block body %}
+
+  <div class="pdf-content">
+
+    <h1>Fiche mission : GLA - Bénévole</h1>
+
+    <hr>
+    
+    <div>
+
+      {# id + GLA + volunteer #}
+      <div class="inline-block width-sm">
+        <div class="cell label">
+          N° FM :
+        </div>
+        <div class="cell label">
+          GLA :
+        </div>
+        <div class="cell label">
+          Bénévole :
+        </div>
+      </div>
+      <div class="inline-block width-md">
+        <div class="cell">
+          {{ mission.id }}
+        </div>
+        <div class="cell">
+          {{ mission.gla }}
+        </div>
+        <div class="cell">
+          {{ mission.volunteer }}
+        </div>
+      </div>
+
+      {# Dates created + assigned + finished #}
+      <div class="inline-block right">
+        <div class="inline-block width-md">
+          <div class="cell label">
+            Date création :
+          </div>
+          <div class="cell label">
+            Date prise en charge :
+          </div>
+          <div class="cell label">
+            Date fin de mission :
+          </div>
+        </div>
+        <div class="inline-block width-sm center">
+          <div class="cell">
+            {{ mission.dateCreated|date('d/m/Y') }}
+          </div>
+          <div class="cell">
+            {{ mission.dateAssigned ? mission.dateAssigned|date('d/m/Y') }}
+          </div>
+          <div class="cell">
+            {{ mission.dateFinished ? mission.dateFinished|date('d/m/Y') }}
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <hr>
+
+    {# Address #}
+    <div>
+      <div class="inline-block width-md cell label">
+        Adresse d'intervention :
+      </div>
+      <div class="inline-block cell address">
+        {{ mission.accomodation.address }}
+      </div>
+    </div>
+
+    <br>
+
+    {# Mission description + info + conclusions #}
+    <div class="mission-block">
+      <div class="cell">
+        <h3>Description mission :</h3>
+      </div>
+      <div class="textarea">
+        {{ mission.description }}
+      </div>
+      <div class="cell">
+        <h3>Informations complémentaires :</h3>
+      </div>
+      <div class="textarea info">
+        {{ mission.info }}
+      </div>
+      <div class="cell">
+        <h3>Retour mission et conclusions :</h3>
+      </div>
+      <div class="textarea">
+        {{ mission.conclusions }}
+      </div>
+    </div>
+
+  </div>
+
+{% endblock %}
+
+{% block javascripts %}
+{% endblock %}

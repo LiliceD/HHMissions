@@ -1,4 +1,4 @@
-{% extends 'missions/layout.html.twig' %}
+{% extends 'mission/layout.html.twig' %}
 
 {% block title %}
   Suivi des {{ parent() }}
@@ -7,7 +7,7 @@
 {% block layout_h3 %}
   <div class="row justify-content-between">
     <div class="col-md-6">
-      Fiche mission GLA-Bénévole
+      Fiche mission GLA-Bénévole n° {{ mission.id }}
     </div>
     <div class="col-md-6">
       <div class="row justify-content-end align-items-center">
@@ -38,21 +38,21 @@
         <div class="col-md-4">
           <div class="row justify-content-center">
             <div class="col-md-6 text-right">
-              N°
+              Statut :
             </div>
-            <div class="col-md-6 border">
-              {{ mission.id }}
+            <div class="col-md-6">
+              {{ mission.status }}
             </div>
             <div class="col-md-6 text-right">
               GLA :
             </div>
-            <div class="col-md-6 border">
+            <div class="col-md-6 font-weight-bold">
               {{ mission.gla }}
             </div>
             <div class="col-md-6 text-right">
               Bénévole :
             </div>
-            <div class="col-md-6 border">
+            <div class="col-md-6 font-weight-bold">
               {{ mission.volunteer }}
             </div>
           </div>
@@ -63,19 +63,19 @@
             <div class="col-md-8 text-right">
               Date création :
             </div>
-            <div class="col-md-4 border">
+            <div class="col-md-4 font-weight-bold">
               {{ mission.dateCreated|date('d/m/Y') }}
             </div>
             <div class="col-md-8 text-right">
               Date prise en charge :
             </div>
-            <div class="col-md-4 border">
+            <div class="col-md-4 font-weight-bold">
               {{ mission.dateAssigned ? mission.dateAssigned|date('d/m/Y') }}
             </div>
             <div class="col-md-8 text-right">
-              Date fin mission :
+              Date fin de mission :
             </div>
-            <div class="col-md-4 border">
+            <div class="col-md-4 font-weight-bold">
               {{ mission.dateFinished ? mission.dateFinished|date('d/m/Y') }}
             </div>
           </div>
@@ -88,9 +88,9 @@
       {# row Address #}
       <div class="row justify-content-start">
         <div class="col-md-2 text-right">
-          Adresse :
+          Adresse d'intervention :
         </div>
-        <div class="col-md-8 border">
+        <div class="col-md-8 font-weight-bold">
           {{ mission.accomodation.address }}
         </div>
       </div>
@@ -135,13 +135,25 @@
   </div>
   
   <hr>
-  <div class="row justify-content-end align-items-center">
-    {% if mission.pdfScan %}
-      <a href="{{ asset('uploads/pdf/' ~ mission.pdfScan) }}" class="btn btn-primary mr-2">Voir le scan PDF</a>
-      <a href="{{ path('app_missions_pdf-scan-delete', {'id': mission.id}) }}" class="btn btn-outline-danger btn-sm mr-4">Supprimer le scan PDF</a>
-    {% else %}
-      <div class="alert alert-secondary mr-4"><strong>Pas de scan PDF !</strong> Pour en ajouter un, cliquez sur "Modifier" en haut à droite.</span>
-    {% endif %}
+  <div class="row justify-content-between align-items-center">
+    <div class="col">
+      <a href="{{ path('app_missions_pdf-export', {'id': mission.id}) }}" class="btn btn-primary">
+        <i class="fas fa-download"></i>
+        Exporter en PDF
+      </a>
+    </div>
+    <div class="col-md-auto">
+      {% if mission.pdfScan %}
+        <a href="{{ asset('uploads/pdf/' ~ mission.pdfScan) }}" class="btn btn-primary mr-2">
+          Voir le scan PDF
+        </a>
+        <a href="{{ path('app_missions_pdf-scan-delete', {'id': mission.id}) }}" class="btn btn-outline-danger btn-sm mr-4">
+          Supprimer le scan PDF
+        </a>
+      {% else %}
+        <div class="alert alert-secondary mr-4"><strong>Pas de scan PDF !</strong> Pour en ajouter un, cliquez sur "Modifier" en haut à droite.</span>
+      {% endif %}
+    </div>
   </div>
 
   <br>

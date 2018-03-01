@@ -1,4 +1,4 @@
-{% extends 'missions/layout.html.twig' %}
+{% extends 'mission/layout.html.twig' %}
 
 {% block title %}
   {{ parent() }}
@@ -12,13 +12,13 @@
   
   {{ form_start(form) }}
 
-    {{ form_widget(form.status, {'attr': {'hidden': 'true'}}) }}
+    {{ form_row(form.status, {'attr': {'readonly': 'true'}}) }}
 
-    {{ form_widget(form.dateCreated, {'attr': {'hidden': 'true'}}) }}
+    {{ form_row(form.dateCreated, {'attr': {'readonly': 'true'}}) }}
     {{ form_row(form.dateAssigned) }}
     {{ form_row(form.dateFinished) }}
 
-    {{ form_row(form.gla) }}
+    {{ form_row(form.gla, {'attr': {'readonly': 'true'}}) }}
     {{ form_row(form.volunteer) }}
     
     {{ form_row(form.accomodation) }}

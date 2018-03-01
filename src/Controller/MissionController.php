@@ -41,7 +41,7 @@ class MissionController extends Controller
 
         $missions = $repository->findBy(array(), array('dateCreated' => 'DESC'));
 
-        return $this->render('missions/list.html.twig', array(
+        return $this->render('mission/list.html.twig', array(
             'missions' => $missions
         ));
     }
@@ -57,11 +57,8 @@ class MissionController extends Controller
     */
     public function view(Mission $mission)
     {
-        $accomodation = $mission->getAccomodation();
-
-        return $this->render('missions/view.html.twig', array(
-            'mission' => $mission,
-            'accomodation' => $accomodation
+        return $this->render('mission/view.html.twig', array(
+            'mission' => $mission
         ));
     }
 
@@ -89,6 +86,24 @@ class MissionController extends Controller
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            
+            /****************** Update status ******************/
+            
+            $status = $mission->getStatus(); // Current mission status
+            $statuses = $mission->getStatuses(); // List of possible statuses
+
+            if ($mission->getDateFinished() !== null && $status !== $statuses[4]) {
+                $mission->setStatus($statuses[4]);  // Set to "Fermée"
+            }
+            else if ($mission->getDateAssigned() !== null && $status !== $statuses[2]) {
+                $mission->setStatus($statuses[2]);  // Set to "Prise en charge"
+            }
+            else if ($status !== $statuses[0]) {
+                $mission->setStatus($statuses[0]);  // [shouldn't happen] Set to "Créée"
+            }
+
+            /*********** Manage attachment (pdfScan) ***********/
+
             /** @var Symfony\Component\HttpFoundation\File\UploadedFile $file */
             $file = $mission->getPdfScan();
 
@@ -113,7 +128,7 @@ class MissionController extends Controller
             ));
         }
 
-        return $this->render('missions/edit.html.twig', array(
+        return $this->render('mission/edit.html.twig', array(
             'form' => $form->createView(),
             'mission' => $mission,
             'pdfScanUrl' => $previousFileName
@@ -152,7 +167,7 @@ class MissionController extends Controller
             ));
         }
 
-        return $this->render('missions/add.html.twig', array(
+        return $this->render('mission/add.html.twig', array(
             'form' => $form->createView()
         ));
     }
@@ -180,6 +195,8 @@ class MissionController extends Controller
     }
 
     /**
+    * Empty pdfScan and delete file
+    * 
     * @Route(
     *  "/delete-pdf-scan/{id}",
     *  name="app_missions_pdf-scan-delete",
@@ -205,5 +222,34 @@ class MissionController extends Controller
         return $this->redirectToRoute('app_missions_view', array(
                 'id' => $mission->getId()
         ));
+    }
+
+    /**
+     * Export to PDF
+     * 
+     * @Route(
+     *  "/pdf/{id}",
+     *  name="app_missions_pdf-export",
+     *  requirements={
+     *      "id"="\d+"
+     *  }
+     * )
+     */
+    public function mission2pdf(Mission $mission)
+    {
+        $html = $this->renderView('pdf/pdf.html.twig', array(
+            'mission' => $mission
+        ));
+
+        $filename = sprintf('fm-%s_%s.pdf', $mission->getId(), date('Y-m-d'));
+
+        return new Response(
+            $this->get('knp_snappy.pdf')->getOutputFromHtml($html),
+            200,
+            [
+                'Content-Type'        => 'application/pdf',
+                'Content-Disposition' => sprintf('attachment; filename="%s"', $filename),
+            ]
+        );
     }
 }

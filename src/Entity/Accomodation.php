@@ -51,6 +51,24 @@ class Accomodation
     private $missions;
 
 
+    // Full address
+    public function getAddress()
+    {
+        return $this->street . ' ' . $this->postalCode . ' ' . $this->city;
+    }
+
+
+    public function __construct()
+    {
+        $this->missions = new ArrayCollection();
+    }
+
+    public function __toString()
+    {
+        return $this->address;
+    }
+
+
     public function getId()
     {
         return $this->id;
@@ -90,18 +108,6 @@ class Accomodation
     }
 
 
-    // Full address
-    public function getAddress()
-    {
-        return $this->street . ' ' . $this->postalCode . ' ' . $this->city;
-    }
-
-    // public function setAddress($address)
-    // {
-    //     $this->address = $address;
-    // }
-
-
     public function getAccess()
     {
         return $this->access;
@@ -119,16 +125,5 @@ class Accomodation
     public function getMissions()
     {
         return $this->missions;
-    }
-
-
-    public function __construct()
-    {
-        $this->missions = new ArrayCollection();
-    }
-
-    public function __toString()
-    {
-        return $this->address;
     }
 }
