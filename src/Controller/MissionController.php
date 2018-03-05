@@ -26,8 +26,6 @@ class MissionController extends Controller
     }
 
     /**
-    * Index
-    *
     * @Route(
     *  "/{page}",
     *  name="app_missions_list",
@@ -64,7 +62,7 @@ class MissionController extends Controller
     *  name="app_missions_add"
     * )
     */
-    public function add(Request $request)
+    public function add(Request $request, FileUploader $fileUploader)
     {
         $mission = new Mission();
 
@@ -78,6 +76,18 @@ class MissionController extends Controller
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            
+            /**************** Manage attachment ****************/
+            /** @var Symfony\Component\HttpFoundation\File\UploadedFile $file */
+            $file = $mission->getAttachment();
+
+            if ($file) {
+                $fileName = $fileUploader->upload($file);
+
+                $mission->setAttachment($fileName);
+            }
+
+            /****************** Persist to DB ******************/
             $em = $this->getDoctrine()->getManager();
 
             $mission = $form->getData();
@@ -127,11 +137,11 @@ class MissionController extends Controller
     public function edit(Mission $mission, Request $request, FileUploader $fileUploader)
     {
         // Saving previous scan to avoid delete by edit
-        $previousFileName = $mission->getPdfScan();
+        $previousFileName = $mission->getAttachment();
 
         if ($previousFileName) {
-            $mission->setPdfScan(
-                new File($this->getParameter('pdf_scans_directory').'/'.$previousFileName)
+            $mission->setAttachment(
+                new File($this->getParameter('attachment_directory').'/'.$previousFileName)
             );
         }
 
@@ -141,7 +151,6 @@ class MissionController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
             
             /****************** Update status ******************/
-            
             $status = $mission->getStatus(); // Current mission status
             $statuses = Mission::getStatuses(); // List of possible statuses
 
@@ -155,20 +164,20 @@ class MissionController extends Controller
                 $mission->setStatus($statuses[0]);  // [shouldn't happen] Set to "Créée"
             }
 
-            /*********** Manage attachment (pdfScan) ***********/
-
+            /**************** Manage attachment ****************/
             /** @var Symfony\Component\HttpFoundation\File\UploadedFile $file */
-            $file = $mission->getPdfScan();
+            $file = $mission->getAttachment();
 
             if ($file) {
                 $fileName = $fileUploader->upload($file);
 
-                $mission->setPdfScan($fileName);
+                $mission->setAttachment($fileName);
             }
             else if ($previousFileName) {
-                $mission->setPdfScan($previousFileName);
+                $mission->setAttachment($previousFileName);
             }
 
+            /****************** Persist to DB ******************/
             $em = $this->getDoctrine()->getManager();
 
             $mission = $form->getData();
@@ -184,13 +193,13 @@ class MissionController extends Controller
         return $this->render('mission/edit.html.twig', array(
             'form' => $form->createView(),
             'mission' => $mission,
-            'pdfScanUrl' => $previousFileName
+            'attachmentUrl' => $previousFileName
         ));
     }
 
     /**
     * DELETE
-    *
+    * 
     * @Route(
     *  "/delete/{id}",
     *  name="app_missions_delete",
@@ -201,8 +210,8 @@ class MissionController extends Controller
     */
     public function delete(Mission $mission, FileUploader $fileUploader)
     {
-        // Delete pdf scan from server
-        $fileName = $mission->getPdfScan();
+        // Delete attached file from server
+        $fileName = $mission->getAttachment();
         $fileUploader->delete($fileName);
 
         $em = $this->getDoctrine()->getManager();
@@ -233,25 +242,25 @@ class MissionController extends Controller
     }
 
     /**
-    * Empty pdfScan and delete file
+    * Empty field attachment and delete file
     * 
     * @Route(
-    *  "/delete-pdf-scan/{id}",
-    *  name="app_missions_pdf-scan-delete",
+    *  "/delete-attachment/{id}",
+    *  name="app_missions_attachment-delete",
     *  requirements={
     *      "id"="\d+"
     *  }
     * )
     */
-    public function deletePdfScan(Mission $mission, FileUploader $fileUploader)
+    public function deleteAttachment(Mission $mission, FileUploader $fileUploader)
     { 
         // Delete file from server
-        $fileName = $mission->getPdfScan();
+        $fileName = $mission->getAttachment();
 
         $fileUploader->delete($fileName);
 
         // Empty field in database
-        $mission->setPdfScan(null);
+        $mission->setAttachment(null);
 
         $em = $this->getDoctrine()->getManager();
         $em->persist($mission);
@@ -263,7 +272,7 @@ class MissionController extends Controller
     }
 
     /**
-     * Export to PDF
+     * Export a given mission to PDF
      * 
      * @Route(
      *  "/pdf/{id}",
@@ -292,7 +301,7 @@ class MissionController extends Controller
     }
 
     /**
-     * Export recap to PDF
+     * Export recap of opened missions to PDF
      * 
      * @Route(
      *  "/recap/pdf",
@@ -322,7 +331,8 @@ class MissionController extends Controller
         );
     }
 
-    private function getNonClosedMissions() {
+    private function getNonClosedMissions()
+    {
         $statuses = Mission::getStatuses(); // List of possible statuses
         array_pop($statuses); // Remove status "Fermée"
 

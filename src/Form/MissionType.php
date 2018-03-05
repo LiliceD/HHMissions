@@ -51,8 +51,8 @@ class MissionType extends AbstractType
                 'label' => 'Retour mission et conclusions :',
                 'required' => false
             ))
-            ->add('pdfScan', FileType::class, array(
-                'label' => 'Scan PDF :',
+            ->add('attachment', FileType::class, array(
+                'label' => 'Pièce jointe :',
                 'required' => false
             ))
         ;

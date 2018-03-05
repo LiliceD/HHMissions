@@ -82,7 +82,7 @@ class Mission
      *
      * @Assert\File(mimeTypes={ "application/pdf" })
      */
-    private $pdfScan;
+    private $attachment;
 
 
     /************** Functions *****************/
@@ -213,13 +213,13 @@ class Mission
         $this->dateFinished = $dateFinished;
     }
     
-    public function getPdfScan()
+    public function getAttachment()
     {
-        return $this->pdfScan;
+        return $this->attachment;
     }
-    public function setPdfScan($pdfScan)
+    public function setAttachment($attachment)
     {
-        $this->pdfScan = $pdfScan;
+        $this->attachment = $attachment;
 
         return $this;
     }

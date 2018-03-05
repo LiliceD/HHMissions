@@ -2,7 +2,7 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: 'en'
-    pdf_scans_directory: '%kernel.project_dir%/public/uploads/pdf' # Folder for pdf scan upload
+    attachment_directory: '%kernel.project_dir%/public/uploads/pdf' # Folder for pdf scan upload
 
 services:
     # default configuration for services in *this* file
@@ -28,6 +28,6 @@ services:
     # File Upload service
     App\Service\FileUploader:
         arguments:
-            $targetDir: '%pdf_scans_directory%'
+            $targetDir: '%attachment_directory%'
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

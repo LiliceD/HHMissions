@@ -143,15 +143,13 @@
       </a>
     </div>
     <div class="col-md-auto">
-      {% if mission.pdfScan %}
-        <a href="{{ asset('uploads/pdf/' ~ mission.pdfScan) }}" target="_blank" class="btn btn-primary mr-2">
-          Voir le scan PDF
+      {% if mission.attachment %}
+        <a href="{{ asset('uploads/pdf/' ~ mission.attachment) }}" target="_blank" class="btn btn-primary mr-2">
+          Voir la pièce jointe
         </a>
-        <a href="{{ path('app_missions_pdf-scan-delete', {'id': mission.id}) }}" class="btn btn-outline-danger btn-sm mr-4">
-          Supprimer le scan PDF
+        <a href="{{ path('app_missions_attachment-delete', {'id': mission.id}) }}" class="btn btn-outline-danger btn-sm mr-4">
+          Supprimer la pièce jointe
         </a>
-      {% else %}
-        <div class="alert alert-secondary mr-4"><strong>Pas de scan PDF !</strong> Pour en ajouter un, cliquez sur "Modifier" en haut à droite.</span>
       {% endif %}
     </div>
   </div>

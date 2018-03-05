@@ -27,14 +27,14 @@
     {{ form_row(form.info) }}
     {{ form_row(form.conclusions) }}
 
-    {{ form_label(form.pdfScan) }}
-    {% if mission.pdfScan %}
+    {{ form_label(form.attachment) }}
+    {% if mission.attachment %}
       <div class="alert alert-warning">
-        Attention, cette mission a déjà un PDF associé ! Si vous ajoutez un fichier, il remplacera le fichier existant.<br>
-        Pour voir le PDF actuellement enregistré, <a href="{{ asset('uploads/pdf/' ~ pdfScanUrl) }}" target="_blank" class="alert-link">cliquez ici</a>.
+        Attention, cette mission a déjà une pièce jointe ! Si vous ajoutez un fichier, il remplacera le fichier existant.<br>
+        Pour voir le PDF actuellement enregistré, <a href="{{ asset('uploads/pdf/' ~ attachmentUrl) }}" target="_blank" class="alert-link">cliquez ici</a>.
       </div>
     {% endif %}
-    {{ form_widget(form.pdfScan) }}
+    {{ form_widget(form.attachment) }}
 
     <hr>
 
