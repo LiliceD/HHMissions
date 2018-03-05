@@ -30,7 +30,7 @@ class MissionType extends AbstractType
                 'required' => false
             ))
             ->add('dateFinished', DateType::class, array(
-                'label' => 'Date fin :',
+                'label' => 'Date fin de mission :',
                 'widget' => 'single_text',
                 'required' => false
             ))

@@ -48,7 +48,7 @@
   }
 
   $("body").bind("load", getAccess());
-  $("#mission_accomodation").bind("change", getAccess());
+  $("#mission_accomodation").change(getAccess);
   </script>
 
 {% endblock %}

@@ -18,6 +18,14 @@ use Symfony\Component\Routing\Annotation\Route;
 class MissionController extends Controller
 {
     /**
+     * @Route("/admin")
+     */
+    public function admin()
+    {
+        return new Response('<html><body>Admin page!</body></html>');
+    }
+
+    /**
     * Index
     *
     * @Route(

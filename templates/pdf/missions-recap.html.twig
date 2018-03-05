@@ -18,6 +18,7 @@
       vertical-align: bottom;
       border-bottom: 2px solid #777;
       border-top: 0;
+      background-color: #f2f2f2
     }
 
     tr:nth-child(even) {
@@ -53,12 +54,6 @@
     .table-recap-description {
       width: 300px;
     }
-    .table-recap-info {
-      width: 150px;
-    }
-    .table-recap-pdf {
-      width: 40px;
-    }
     .table-recap-statut {
       width: 50px;
     }
@@ -85,13 +80,10 @@
           <th scope="col" class="table-recap-name">Bénévole</th>
           <th scope="col" class="table-recap-address">Adresse</th>
           <th scope="col" class="table-recap-description">Description mission</th>
-          <th scope="col" class="table-recap-info">Informations complémentaires</th>
           <th scope="col" class="table-recap-description">Retour mission et conclusions</th>
-          <th scope="col" class="table-recap-pdf center">PDF joint</th>
           <th scope="col" class="table-recap-date center">Date prise en charge</th>
-          <th scope="col" class="table-recap-date center">Date fin mission</th>
+          <th scope="col" class="table-recap-date center">Date fin de mission</th>
           <th scope="col" class="table-recap-statut center">Statut</th>
-          {# <th scope="col" colspan="2"></th> #}
         </tr>
       </thead>
 
@@ -105,15 +97,7 @@
             <td>{{ mission.volunteer }}</td>
             <td>{{ mission.accomodation.address }}</td>
             <td>{{ mission.description }}</td>
-            <td>{{ mission.info }}</td>
             <td>{{ mission.conclusions }}</td>
-            <td class="center">
-              {% if mission.pdfScan %}
-                Oui
-              {% else %}
-                Non
-              {% endif %}
-            </td>
             <td class="center">{{ mission.dateAssigned|date('d/m/y') }}</td>
             <td class="center">{{ mission.dateFinished|date('d/m/y') }}</td>
             <td class="center">{{ mission.status }}</td>
