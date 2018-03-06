@@ -154,14 +154,14 @@ class MissionController extends Controller
             $status = $mission->getStatus(); // Current mission status
             $statuses = Mission::getStatuses(); // List of possible statuses
 
-            if ($mission->getDateFinished() !== null && $status !== $statuses[4]) {
-                $mission->setStatus($statuses[4]);  // Set to "Fermée"
+            if ($mission->getDateFinished() !== null && $status !== $statuses['finished']) {
+                $mission->setStatus($statuses['finished']);  // Set to STATUS_FINISHED
             }
-            else if ($mission->getDateAssigned() !== null && $status !== $statuses[2]) {
-                $mission->setStatus($statuses[2]);  // Set to "Prise en charge"
+            else if ($mission->getDateAssigned() !== null && $status !== $statuses['assigned']) {
+                $mission->setStatus($statuses['assigned']);  // Set to STATUS_ASSIGNED
             }
-            else if ($status !== $statuses[0]) {
-                $mission->setStatus($statuses[0]);  // [shouldn't happen] Set to "Créée"
+            else if ($status !== $statuses['default']) {
+                $mission->setStatus($statuses['default']);  // [shouldn't happen] Set to STATUS_DEFAULT
             }
 
             /**************** Manage attachment ****************/
@@ -333,8 +333,8 @@ class MissionController extends Controller
 
     private function getNonClosedMissions()
     {
-        $statuses = Mission::getStatuses(); // List of possible statuses
-        array_pop($statuses); // Remove status "Fermée"
+        $statuses = array_values(Mission::getStatuses()); // List of possible statuses
+        array_pop($statuses); // Remove STATUS_CLOSED
 
         $repository = $this->getDoctrine()->getRepository(Mission::class);
 

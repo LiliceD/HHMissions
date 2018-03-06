@@ -11,7 +11,12 @@ use Symfony\Component\Validator\Constraints as Assert; // this use statement is 
  */
 class Mission
 {
-    const NUM_ITEMS = 10;
+    // const NUM_ITEMS = 10;
+
+    const STATUS_DEFAULT = "Créée";
+    const STATUS_ASSIGNED = "Prise en charge";
+    const STATUS_FINISHED = "Terminée";
+    const STATUS_CLOSED = "Fermée";
 
     /**
      * @ORM\Id
@@ -91,27 +96,16 @@ class Mission
     public static function getStatuses()
     {
         return array(
-            // getStatuses()[0] :
-            'Créée',    // Default status when mission is created (cf __construct())
-            // getStatuses()[1] :
-            'Publiée',  // When mission information has been completed by Admin
-            // getStatuses()[2] :
-            'Prise en charge',  // When a volunteer got assigned to the mission (cf dateAssigned)
-            // getStatuses()[3] :
-            'Terminée', // When the mission has been done (cf dateFinished, conclusions)
-            // getStatuses()[4 / length-1] :
-            'Fermée'    // When Admin reviewed conclusions and officialy closed mission (cf isClosed())
+            'default' => Mission::STATUS_DEFAULT,    // Default status when mission is created (cf __construct())
+            'assigned' => Mission::STATUS_ASSIGNED,  // When a volunteer got assigned to the mission (cf dateAssigned)
+            'finished' => Mission::STATUS_FINISHED, // When the mission has been done (cf dateFinished, conclusions)
+            'closed' => Mission::STATUS_CLOSED    // When Admin reviewed conclusions and officialy closed mission
         );
     }
-    // // Returns true if and only if status = "Fermée"
-    // public function isClosed()
-    // {
-    //     return $this->status === 'Fermée';
-    // }
     
     public function __construct()
     {
-        $this->status = $this->getStatuses()[0];
+        $this->status = $this->getStatuses()['default'];
         $this->dateCreated = new \DateTime();
     }
 
