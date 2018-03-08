@@ -141,7 +141,7 @@ class MissionController extends Controller
 
         if ($previousFileName) {
             $mission->setAttachment(
-                new File($this->getParameter('attachment_directory').'/'.$previousFileName)
+                new File($this->getParameter('app_attachment_directory').'/'.$previousFileName)
             );
         }
 
@@ -152,16 +152,15 @@ class MissionController extends Controller
             
             /****************** Update status ******************/
             $status = $mission->getStatus(); // Current mission status
-            $statuses = Mission::getStatuses(); // List of possible statuses
 
-            if ($mission->getDateFinished() !== null && $status !== $statuses['finished']) {
-                $mission->setStatus($statuses['finished']);  // Set to STATUS_FINISHED
+            if ($mission->getDateFinished() !== null && $status !== Mission::STATUS_FINISHED) {
+                $mission->setStatus(Mission::STATUS_FINISHED);
             }
-            else if ($mission->getDateAssigned() !== null && $status !== $statuses['assigned']) {
-                $mission->setStatus($statuses['assigned']);  // Set to STATUS_ASSIGNED
+            else if ($mission->getDateAssigned() !== null && $status !== Mission::STATUS_ASSIGNED) {
+                $mission->setStatus(Mission::STATUS_ASSIGNED);
             }
-            else if ($status !== $statuses['default']) {
-                $mission->setStatus($statuses['default']);  // [shouldn't happen] Set to STATUS_DEFAULT
+            else if ($status !== Mission::STATUS_DEFAULT) {
+                $mission->setStatus(Mission::STATUS_DEFAULT);  // [shouldn't happen] Set to STATUS_DEFAULT
             }
 
             /**************** Manage attachment ****************/
@@ -217,6 +216,11 @@ class MissionController extends Controller
         $em = $this->getDoctrine()->getManager();
         $em->remove($mission);
         $em->flush();
+
+        $this->addFlash(
+            'notice',
+            'La fiche mission a bien été supprimée.'
+        );
 
         return $this->redirectToRoute('app_missions_list');
     }
@@ -342,5 +346,53 @@ class MissionController extends Controller
         $missions = $repository->findByStatus($statuses);
 
         return $missions;
+    }
+
+
+    /**
+     * Close / re-open a mission if its current status is finished / closed respectively
+     * 
+     * @Route(
+     *  "/close/{id}",
+     *  name="app_missions_close",
+     *  requirements={
+     *      "id"="\d+"
+     *  }
+     * )
+     */
+    public function close(Mission $mission)
+    {
+            
+        /****************** Update status ******************/
+        $status = $mission->getStatus();
+
+        if ($status === Mission::STATUS_FINISHED) {
+            $mission->setStatus(Mission::STATUS_CLOSED);
+
+            $this->addFlash(
+                'notice',
+                'La fiche mission a bien été fermée.'
+            );
+        }
+        else if ($status === Mission::STATUS_CLOSED) {
+            $mission->setStatus(Mission::STATUS_FINISHED);
+
+            $this->addFlash(
+                'notice',
+                'La fiche mission a bien été ré-ouverte.'
+            );
+        }
+        else {
+            throw new \Error('Une mission doit être terminée pour être fermée.');
+        }
+
+        /****************** Persist to DB ******************/
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($mission);
+        $em->flush();
+
+        return $this->redirectToRoute('app_missions_view', array(
+            'id' => $mission->getId()
+        ));
     }
 }

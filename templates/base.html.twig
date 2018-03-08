@@ -44,6 +44,15 @@
         <h3>{% block layout_h3 %}Fiches Mission{% endblock %}</h3>
 
         <hr>
+
+        {% block flash_messages %}
+          {% for message in app.flashes('notice') %}
+              <div class="alert alert-info">
+                  <a href="#" class="close" data-dismiss="alert" aria-label="Fermer">&times;</a>
+                  {{ message }}
+              </div>
+          {% endfor %}
+        {% endblock %}
         
         {% block content %}
         {% endblock %}

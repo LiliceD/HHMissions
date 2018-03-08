@@ -11,7 +11,7 @@
     </div>
     <div class="col-md-6">
       <div class="row justify-content-end align-items-center">
-        <a href="{{ path('app_missions_list') }}" class="btn btn-outline-secondary mr-2">
+        <a href="{{ path('app_missions_list') }}" class="btn btn-outline-secondary mr-4">
           <i class="fas fa-chevron-left"></i>
           Retour à la liste
         </a>
@@ -20,7 +20,7 @@
           Modifier
         </a>
         {# button opening a modal : #}
-        <button class="btn btn-outline-danger btn-sm mr-4" data-toggle="modal" data-target="#deleteModal">
+        <button class="btn btn-sm btn-outline-danger mr-4" data-toggle="modal" data-target="#deleteModal">
           <i class="fas fa-trash-alt"></i>
           Supprimer
         </button>
@@ -55,46 +55,68 @@
   <div class="row justify-content-center">
     <div class="col-md-10">
 
-      {# row N°/GLA/Volunteer + Dates #}
-      <div class="row justify-content-between">
+      {# row Status/GLA/Volunteer + Dates #}
+      <div class="row justify-content-between align-items-center">
         
-        <div class="col-md-4">
-          <div class="row justify-content-center">
-            <div class="col-md-6 text-right">
+        {# block Status/GLA/Volunteer #}
+        <div class="col-md-6">
+          <div class="row align-items-center">
+            <div class="col-md-4 text-right">
               Statut :
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
               {{ mission.status }}
             </div>
-            <div class="col-md-6 text-right">
+            {# Button to close / reopen a mission when finished #}
+            <div class="col-md-4">
+              {% if mission.status == constant('STATUS_FINISHED', mission) %}
+                <a href="{{ path('app_missions_close', {'id': mission.id}) }}" class="btn btn-sm btn-primary">
+                  Fermer
+                </a>
+              {% elseif mission.status == constant('STATUS_CLOSED', mission) %}
+                <a href="{{ path('app_missions_close', {'id': mission.id}) }}" class="btn btn-sm btn-primary">
+                  Rouvrir
+                </a>
+              {% endif %}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4 text-right">
               GLA :
             </div>
-            <div class="col-md-6 font-weight-bold">
+            <div class="col-md-8 font-weight-bold">
               {{ mission.gla }}
             </div>
-            <div class="col-md-6 text-right">
+          </div>
+          <div class="row">
+            <div class="col-md-4 text-right">
               Bénévole :
             </div>
-            <div class="col-md-6 font-weight-bold">
+            <div class="col-md-8 font-weight-bold">
               {{ mission.volunteer }}
             </div>
           </div>
         </div>
 
-        <div class="col-md-5">
-          <div class="row justify-content-center">
+        {# block Dates #}
+        <div class="col-md-6">
+          <div class="row">
             <div class="col-md-8 text-right">
               Date création :
             </div>
             <div class="col-md-4 font-weight-bold">
               {{ mission.dateCreated|date('d/m/Y') }}
             </div>
+          </div>
+          <div class="row">
             <div class="col-md-8 text-right">
               Date prise en charge :
             </div>
             <div class="col-md-4 font-weight-bold">
               {{ mission.dateAssigned ? mission.dateAssigned|date('d/m/Y') }}
             </div>
+          </div>
+          <div class="row">
             <div class="col-md-8 text-right">
               Date fin de mission :
             </div>
@@ -110,7 +132,7 @@
 
       {# row Address #}
       <div class="row justify-content-start">
-        <div class="col-md-2 text-right">
+        <div class="col-md-3 text-right">
           Adresse d'intervention :
         </div>
         <div class="col-md-8 font-weight-bold">
