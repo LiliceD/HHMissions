@@ -19,16 +19,39 @@
           <i class="fas fa-edit"></i>
           Modifier
         </a>
-        <a href="{{ path('app_missions_delete', {'id': mission.id}) }}" class="btn btn-outline-danger btn-sm mr-4">
+        {# button opening a modal : #}
+        <button class="btn btn-outline-danger btn-sm mr-4" data-toggle="modal" data-target="#deleteModal">
           <i class="fas fa-trash-alt"></i>
           Supprimer
-        </a>
+        </button>
       </div>
     </div>
   </div>
 {% endblock %}
 
 {% block content %}
+  {# Modal to confirm mission delete #}
+  <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteModalLabel">Supprimer la fiche mission</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          Confirmez-vous la suppression de cette fiche mission ?
+        </div>
+        <div class="modal-footer">
+          <a href="{{ path('app_missions_delete', {'id': mission.id}) }}" class="btn btn-danger">Supprimer</a>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# Mission view #}
   <div class="row justify-content-center">
     <div class="col-md-10">
 
@@ -135,6 +158,7 @@
   </div>
   
   <hr>
+
   <div class="row justify-content-between align-items-center">
     <div class="col">
       <a href="{{ path('app_missions_pdf-export', {'id': mission.id}) }}" class="btn btn-primary">
@@ -155,4 +179,5 @@
   </div>
 
   <br>
+
 {% endblock %}
