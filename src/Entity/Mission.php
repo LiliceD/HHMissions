@@ -92,15 +92,28 @@ class Mission
 
     /************** Functions *****************/
 
-    // List of possible statuses for a mission
+    // Array of possible statuses for a mission
     public static function getStatuses()
     {
         return array(
-            'default' => Mission::STATUS_DEFAULT,    // Default status when mission is created (cf __construct())
-            'assigned' => Mission::STATUS_ASSIGNED,  // When a volunteer got assigned to the mission (cf dateAssigned)
-            'finished' => Mission::STATUS_FINISHED, // When the mission has been done (cf dateFinished, conclusions)
-            'closed' => Mission::STATUS_CLOSED    // When Admin reviewed conclusions and officialy closed mission
+            'default' => Self::STATUS_DEFAULT,    // Default status when mission is created (cf __construct())
+            'assigned' => Self::STATUS_ASSIGNED,  // When a volunteer got assigned to the mission (cf dateAssigned)
+            'finished' => Self::STATUS_FINISHED, // When the mission has been done (cf dateFinished, conclusions)
+            'closed' => Self::STATUS_CLOSED    // When Admin reviewed conclusions and officialy closed mission
         );
+    }
+
+    public function updateStatus()
+    {
+        if ($this->dateFinished && $this->status !== Self::STATUS_FINISHED) {
+            $this->status = Self::STATUS_FINISHED;
+        }
+        else if ($this->dateAssigned && $this->status !== Self::STATUS_ASSIGNED) {
+            $this->status = Self::STATUS_ASSIGNED;
+        }
+        else if ($this->status !== Self::STATUS_DEFAULT) {
+            $this->status = Self::STATUS_DEFAULT;  // Shouldn't happen
+        }
     }
     
     public function __construct()
