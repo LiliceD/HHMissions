@@ -47,7 +47,7 @@ class MissionController extends Controller
 
         $repository = $this->getDoctrine()->getRepository(Mission::class);
 
-        $missions = $repository->findBy(array(), array('id' => 'DESC'));
+        $missions = $repository->findBy(array(), array('dateCreated' => 'DESC'));
 
         if (!$missions) {
             throw $this->createNotFoundException('Aucune fiche mission trouvée.');

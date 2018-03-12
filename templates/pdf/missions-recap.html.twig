@@ -5,6 +5,7 @@
     .pdf-content {
       font-family: Arial;
       font-size: 18px;
+      margin-left: 40px;
     }
 
     table {
@@ -46,16 +47,16 @@
       width: 60px;
     }
     .table-recap-name {
-      width: 75px;
+      width: 100px;
     }
     .table-recap-address {
       width: 250px;
     }
     .table-recap-description {
-      width: 300px;
+      width: 400px;
     }
     .table-recap-statut {
-      width: 50px;
+      width: 100px;
     }
   </style>
 {% endblock %}
@@ -66,8 +67,9 @@
 {% block body %}
 
   <div class="pdf-content">
-    <h2>Récapitulatif des missions en cours au {{ "now"|date('d/m/Y') }}</h2>
+    <strong>Récapitulatif des fiches mission en cours au {{ "now"|date('d/m/Y') }}</strong>
 
+    <br>
     <br>
 
     <table>
@@ -76,13 +78,13 @@
         <tr>
           <th scope="col" class="table-recap-id center">#</th>
           <th scope="col" class="table-recap-date center">Date demande</th>
-          <th scope="col" class="table-recap-name">GLA</th>
-          <th scope="col" class="table-recap-name">Bénévole</th>
-          <th scope="col" class="table-recap-address">Adresse</th>
-          <th scope="col" class="table-recap-description">Description mission</th>
-          <th scope="col" class="table-recap-description">Retour mission et conclusions</th>
+          <th scope="col" class="table-recap-name">Provenance GLA</th>
           <th scope="col" class="table-recap-date center">Date prise en charge</th>
           <th scope="col" class="table-recap-date center">Date fin de mission</th>
+          <th scope="col" class="table-recap-address">Adresse</th>
+          <th scope="col" class="table-recap-description">Description mission</th>
+          <th scope="col" class="table-recap-name">Bénévole</th>
+          <th scope="col" class="table-recap-description">Retour mission et conclusions</th>
           <th scope="col" class="table-recap-statut center">Statut</th>
         </tr>
       </thead>
@@ -94,12 +96,19 @@
             <td class="center">{{ mission.id }}</td>
             <td class="center">{{ mission.dateCreated|date('d/m/y') }}</td>
             <td>{{ mission.gla }}</td>
-            <td>{{ mission.volunteer }}</td>
-            <td>{{ mission.accomodation.address }}</td>
-            <td>{{ mission.description }}</td>
-            <td>{{ mission.conclusions }}</td>
             <td class="center">{{ mission.dateAssigned|date('d/m/y') }}</td>
             <td class="center">{{ mission.dateFinished|date('d/m/y') }}</td>
+            <td>
+              {% if mission.accomodation.name %}
+                {{ mission.accomodation.name }} - 
+              {% endif %}
+              {{ mission.accomodation.street }}
+              <br>
+              {{ mission.accomodation.postalCode }} {{ mission.accomodation.city }}
+            </td>
+            <td>{{ mission.description }}</td>
+            <td>{{ mission.volunteer }}</td>
+            <td>{{ mission.conclusions }}</td>
             <td class="center">{{ mission.status }}</td>
           </tr>
         {% endfor %}

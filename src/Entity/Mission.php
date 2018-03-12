@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-// use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM; // this use statement is needed for the annotations @ORM
 use Symfony\Component\Validator\Constraints as Assert; // this use statement is needed for the annotations @Assert
 
@@ -11,8 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert; // this use statement is 
  */
 class Mission
 {
-    // const NUM_ITEMS = 10;
-
+    // Possible statuses for a mission
     const STATUS_DEFAULT = "Créée";
     const STATUS_ASSIGNED = "Prise en charge";
     const STATUS_FINISHED = "Terminée";
@@ -89,10 +87,10 @@ class Mission
      */
     private $attachment;
 
-
+    
     /************** Functions *****************/
-
-    // Array of possible statuses for a mission
+    
+    // Callback for $status Choice
     public static function getStatuses()
     {
         return array(
@@ -101,7 +99,7 @@ class Mission
             'finished' => Self::STATUS_FINISHED, // When the mission has been done (cf dateFinished, conclusions)
             'closed' => Self::STATUS_CLOSED    // When Admin reviewed conclusions and officialy closed mission
         );
-    }
+    } 
 
     public function updateStatus()
     {

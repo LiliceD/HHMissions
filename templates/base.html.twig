@@ -2,6 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>{% block title %}Fiches Mission{% endblock %}</title>
 
@@ -21,16 +22,16 @@
     {% block nav %}
       <nav class="navbar navbar-expand-sm navbar-dark bg-primary">
         <div class="container">
-          <span class="navbar-brand mb-0 h1" href="#">Fiches Mission</span>
+          <span class="navbar-brand mb-0 h1" href="{{ path('app_missions_list') }}"">Fiches Mission</span>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav">
-              <a class="nav-item nav-link active" href="{{ path('app_missions_list') }}">Liste</a>
-              <a class="nav-item nav-link" href="{{ path('app_missions_add') }}">Créer une FM</a>
-              <a class="nav-item nav-link" href="{{ path('app_missions_recap') }}">Récap FM en cours</a>
-              <a class="nav-item nav-link" href="{{ path('app_accomodation_list') }}">Logements</a>
+              <a class="nav-item nav-link {% if app.request.pathinfo == "/missions" %}active{% endif %}" href="{{ path('app_missions_list') }}">Liste</a>
+              <a class="nav-item nav-link {% if app.request.pathinfo == "/missions/add" %}active{% endif %}" href="{{ path('app_missions_add') }}">Créer une FM</a>
+              <a class="nav-item nav-link {% if app.request.pathinfo == "/missions/recap" %}active{% endif %}" href="{{ path('app_missions_recap') }}">Récap FM en cours</a>
+              <a class="nav-item nav-link {% if app.request.pathinfo == "/logements" %}active{% endif %}" href="{{ path('app_accomodation_list') }}">Logements</a>
             </div>
           </div>
         </div>

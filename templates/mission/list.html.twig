@@ -16,7 +16,7 @@
       <tr>
         <th scope="col">#</th>
         <th scope="col">Date demande</th>
-        <th scope="col">GLA</th>
+        <th scope="col">Provenance GLA</th>
         <th scope="col">Adresse</th>
         <th scope="col">Description mission</th>
         <th scope="col">Statut</th>
@@ -31,7 +31,14 @@
           <td>{{ mission.id }}</td>
           <th scope="row">{{ mission.dateCreated|date('d/m/y') }}</th>
           <td>{{ mission.gla }}</td>
-          <td>{{ mission.accomodation.address }}</td>
+          <td>
+            {% if mission.accomodation.name %}
+              {{ mission.accomodation.name }} - 
+            {% endif %}
+            {{ mission.accomodation.street }}
+            <br>
+            {{ mission.accomodation.postalCode }} {{ mission.accomodation.city }}
+          </td>
           <td><div class="text-ellipsis">{{ mission.description }}</div></td>
           <td>{{ mission.status }}</td>
           <td>

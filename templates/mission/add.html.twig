@@ -8,30 +8,52 @@
   Créer une fiche mission
 {% endblock %}
 
-{% block content %}
+{% block form_content %}
 
-  {{ form_start(form, {'attr': {'onLoad': 'getAccess()'}}) }}
+  {{ form_start(form) }}
 
-    {{ form_row(form.status, {'attr': {'readonly': 'true'}}) }}
-
-    {{ form_row(form.dateCreated, {'attr': {'readonly': 'true'}}) }}
+    {{ form_widget(form.status, {'attr': {'hidden': 'true'}}) }}
     {{ form_widget(form.dateAssigned, {'attr': {'hidden': 'true'}}) }}
     {{ form_widget(form.dateFinished, {'attr': {'hidden': 'true'}}) }}
-
-    {{ form_row(form.gla) }}
     {{ form_widget(form.volunteer, {'attr': {'hidden': 'true'}}) }}
 
+    <div class="row">
+      <div class="col-5">
+        {{ form_row(form.gla) }}
+      </div>
+      <div class="col-5 offset-2">
+        {{ form_row(form.dateCreated, {'attr': {'readonly': 'true'}}) }}
+      </div>
+    </div>
+
     {{ form_row(form.accomodation) }}
-    
+
+    <div class="row justify-content-end">
+      <a href="{{ path('app_accomodation_add') }}" class="btn btn-sm btn-outline-secondary mr-4">
+        <i class="fas fa-plus"></i>
+        Ajouter une adresse
+      </a>
+    </div>
+
+    <br>
+    <br>
+
     {{ form_row(form.description) }}
     {{ form_row(form.info) }}
     {{ form_widget(form.conclusions, {'attr': {'hidden': 'true'}}) }}
 
     {{ form_row(form.attachment) }}
     
-    <input type="submit" class="btn btn-primary" value="Créer la Fiche Mission">
+    <div class="row justify-content-end align-items-center">
+      <input type="submit" class="btn btn-primary mr-2" value="Créer la Fiche Mission"/>
+      <a href="{{ path('app_missions_list') }}" class="btn btn-outline-secondary mr-4">
+        Annuler
+      </a>
+    </div>
 
   {{ form_end(form) }}
+
+  <br>
 {% endblock %}
 
 {% block javascripts %}

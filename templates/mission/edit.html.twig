@@ -8,21 +8,42 @@
   Modifier la fiche mission
 {% endblock %}
 
-{% block content %}
+{% block form_content %}
   
   {{ form_start(form) }}
 
-    {{ form_row(form.status, {'attr': {'readonly': 'true'}}) }}
+    <div class="row justify-content-between">
+      <div class="col-4">
+        {{ form_row(form.status, {'attr': {'readonly': 'true'}}) }}
+      </div>
+      <div class="col-4">
+        {{ form_row(form.dateCreated, {'attr': {'readonly': 'true'}}) }}
+      </div>
+    </div>
 
-    {{ form_row(form.dateCreated, {'attr': {'readonly': 'true'}}) }}
-    {{ form_row(form.dateAssigned) }}
-    {{ form_row(form.dateFinished) }}
+    <div class="row justify-content-between">
+      <div class="col-4">
+        {{ form_row(form.gla, {'attr': {'readonly': 'true'}}) }}
+      </div>
+      <div class="col-4">
+        {{ form_row(form.dateAssigned) }}
+      </div>
+    </div>
 
-    {{ form_row(form.gla, {'attr': {'readonly': 'true'}}) }}
-    {{ form_row(form.volunteer) }}
+    <div class="row justify-content-between">
+      <div class="col-4">
+        {{ form_row(form.volunteer) }}
+      </div>
+      <div class="col-4">
+        {{ form_row(form.dateFinished) }}
+      </div>
+    </div>
+
+    {{ form_row(form.accomodation, {'attr': {'readonly': 'true'}}) }}
     
-    {{ form_row(form.accomodation) }}
-    
+    <br>
+    <br>
+
     {{ form_row(form.description) }}
     {{ form_row(form.info) }}
     {{ form_row(form.conclusions) }}

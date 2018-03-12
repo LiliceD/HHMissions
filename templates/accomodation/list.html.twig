@@ -21,11 +21,12 @@
     <thead class="thead-light">
       <tr>
         <th scope="col">Adresse</th>
+        <th scope="col">Nom</th>
         <th scope="col">Code postal</th>
         <th scope="col">Ville</th>
-        <th scope="col"></th>
-        <th scope="col"></th>
-        <th scope="col"></th>
+        <th scope="col">Propriétaire</th>
+        <th></th>
+        <th></th>
       </tr>
     </thead>
 
@@ -34,14 +35,10 @@
       {% for accomodation in accomodations %}
         <tr>
           <td>{{ accomodation.street }}</td>
+          <td>{{ accomodation.name }}</td>
           <td>{{ accomodation.postalCode }}</td>
           <td>{{ accomodation.city }}</td>
-          <td>
-            <a href="#" class="btn btn-primary btn-sm">
-              <i class="fas fa-eye"></i>
-              Voir
-            </a>
-          </td>
+          <td>{{ accomodation.ownerType }}</td>
           <td>
             <a href="{{ path('app_accomodation_edit', {'id': accomodation.id}) }}" class="btn btn-outline-primary btn-sm">
               <i class="fas fa-edit"></i>
@@ -51,6 +48,7 @@
           <td>
             <a href="{{ path('app_accomodation_delete', {'id': accomodation.id}) }}" class="btn btn-outline-danger btn-sm">
               <i class="fas fa-trash-alt"></i>
+              Supprimer
             </a>
           </td>
         </tr>

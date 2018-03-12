@@ -18,7 +18,7 @@ class MissionRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('m');
         return $qb->add('where', $qb->expr()->in('m.status', ':value'))
             ->setParameter('value', $value)
-            ->orderBy('m.id', 'DESC')
+            ->orderBy('m.dateCreated', 'ASC')
             // ->setMaxResults(10)
             ->getQuery()
             ->getResult()

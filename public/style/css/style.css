@@ -7,7 +7,11 @@
   text-overflow: ellipsis;
 }
 
-textarea {
+#mission_description, #mission_conclusions {
+  height: 200px;
+}
+
+#mission_info {
   height: 100px;
 }
 
