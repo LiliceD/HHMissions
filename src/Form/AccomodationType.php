@@ -25,10 +25,9 @@ class AccomodationType extends AbstractType
             ->add('postalCode', null, array('label' => 'Code postal :'))
             ->add('city', null, array('label' => 'Ville :'))
             ->add('ownerType', ChoiceType::class, array(
-                // Dropdown from Accomodation table
                 'choices' => Accomodation::getOwnerTypes(),
-                'label' => 'Propriétaire :'
-                // 'placeholder' => false
+                'label' => 'Propriétaire :',
+                'placeholder' => '-'
             ))
             ->add('access', null, array('label' => 'Accès :', 'required' => false))
         ;

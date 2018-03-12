@@ -9,11 +9,12 @@
     <link rel="icon" type="image/ico" href="{{ absolute_url(asset('style/images/favicon.ico')) }}" />
 
     {% block stylesheets %}
-      <link href="{{ asset('style/css/style.css') }}" rel="stylesheet">
       <!-- Bootstrap -->
       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
       <!-- Font Awesome -->
       <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
+
+      <link href="{{ asset('style/css/style.css') }}" rel="stylesheet">
     {% endblock %}
 
   </head>
@@ -22,7 +23,7 @@
     {% block nav %}
       <nav class="navbar navbar-expand-sm navbar-dark bg-primary">
         <div class="container">
-          <span class="navbar-brand mb-0 h1" href="{{ path('app_missions_list') }}"">Fiches Mission</span>
+          <span class="navbar-brand mb-0 h1" href="{{ path('app_missions_list') }}">Fiches Mission</span>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>

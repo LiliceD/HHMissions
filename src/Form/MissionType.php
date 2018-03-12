@@ -42,16 +42,18 @@ class MissionType extends AbstractType
                     'Rudy BENSAID' => 'Rudy BENSAID',
                     'Annabelle MELIS' => 'Annabelle MELIS',
                     'Romain PIKETTY' => 'Romain PIKETTY',
-                    'Christian ROBAYE' => 'Christian ROBAYE'
+                    'Christian ROBAYE' => 'Christian ROBAYE',
+                    'Camille UBEDA' => 'Camille UBEDA'
                 ),
-                'label' => 'Provenance GLA :'
+                'label' => 'Provenance GLA :',
+                'placeholder' => '-'
             ))
             ->add('volunteer', ChoiceType::class, array(
                 'choices' => array(
                     'Bernard BODIN' => 'Bernard BODIN',
-                    'M. LUBIATO' => 'M. LUBIATO',
+                    'Max LUBIATO' => 'Max LUBIATO',
                     'Hervé RIFFAUD' => 'Hervé RIFFAUD',
-                    'JB PAYRE' => 'JB PAYRE'
+                    'Jean-Benoit PAYRE' => 'Jean-Benoit PAYRE'
                 ),
                 'label' => 'Bénévole :'
             ))

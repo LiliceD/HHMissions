@@ -130,7 +130,7 @@
 
       <br>
 
-      {# row Address #}
+      {# rows Address + type of owner #}
       <div class="row justify-content-start">
         <div class="col-md-3 text-right">
           Adresse d'intervention :
@@ -139,6 +139,16 @@
           {{ mission.accomodation.address }}
         </div>
       </div>
+      {% if mission.accomodation.ownerType %}
+        <div class="row justify-content-start">
+          <div class="col-md-3 text-right">
+            Propriétaire :
+          </div>
+          <div class="col-md-8">
+            {{ mission.accomodation.ownerType }}
+          </div>
+        </div>
+      {% endif %}
 
       <br>
 

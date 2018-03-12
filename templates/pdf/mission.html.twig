@@ -4,18 +4,18 @@
   <style>
     .pdf-content {
       font-family: Arial;
-      font-size: 18px;
+      font-size: 14px;
     }
 
-    *, *:before, *:after {
+    * {
       -webkit-box-sizing: border-box; 
       -moz-box-sizing: border-box; 
       box-sizing: border-box;
     }
 
     .cell {
-      height: 40px;
-      line-height: 40px;
+      height: 30px;
+      line-height: 30px;
       padding: 0px 6px;
       font-weight: bold;
     }
@@ -51,20 +51,28 @@
       text-align: center;
     }
 
+    .owner {
+      font-weight: normal;
+    }
+
     .mission-block {
-      margin-top: 50px;
     }
 
     .textarea {
       height: 250px;
       margin-bottom: 16px;
-      padding: 8px 12px; 
+      padding: 8px 12px;
+      font-size: 14px;
       border: 1px solid #333;
       border-radius: 4px;
     }
 
     .info {
-      height: 125px;
+      height: 75px;
+    }
+
+    .conclusions {
+      height: 400px;
     }
   </style>
 {% endblock %}
@@ -76,7 +84,7 @@
 
   <div class="pdf-content">
 
-    <h1>Fiche mission : GLA - Bénévole</h1>
+    <h2>Fiche mission : GLA - Bénévole</h2>
 
     <hr>
     
@@ -144,6 +152,12 @@
       <div class="inline-block cell address">
         {{ mission.accomodation.address }}
       </div>
+      <div class="inline-block width-md cell label">
+        Propriétaire :
+      </div>
+      <div class="inline-block cell owner">
+        {{ mission.accomodation.ownerType }}
+      </div>
     </div>
 
     <br>
@@ -151,22 +165,22 @@
     {# Mission description + info + conclusions #}
     <div class="mission-block">
       <div class="cell">
-        <h3>Description mission :</h3>
+        <h4>Description mission :</h4>
       </div>
       <div class="textarea">
-        {{ mission.description }}
+        {{ mission.description|nl2br }}
       </div>
       <div class="cell">
-        <h3>Informations complémentaires :</h3>
+        <h4>Informations complémentaires :</h4>
       </div>
       <div class="textarea info">
-        {{ mission.info }}
+        {{ mission.info|nl2br }}
       </div>
       <div class="cell">
-        <h3>Retour mission et conclusions :</h3>
+        <h4>Retour mission et conclusions :</h4>
       </div>
-      <div class="textarea">
-        {{ mission.conclusions }}
+      <div class="textarea conclusions">
+        {{ mission.conclusions|nl2br }}
       </div>
     </div>
 
