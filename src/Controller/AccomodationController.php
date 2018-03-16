@@ -36,7 +36,7 @@ class AccomodationController extends Controller
 
     /**
     * @Route(
-    *  "/logement/add",
+    *  "/logements/add",
     *  name="app_accomodation_add"
     * )
     */
@@ -65,7 +65,7 @@ class AccomodationController extends Controller
 
     /**
     * @Route(
-    *  "/logement/edit/{id}",
+    *  "/logements/edit/{id}",
     *  name="app_accomodation_edit",
     *  requirements={
     *      "id"="\d+"
@@ -95,7 +95,7 @@ class AccomodationController extends Controller
 
     /**
     * @Route(
-    *  "/logement/delete/{id}",
+    *  "/logements/delete/{id}",
     *  name="app_accomodation_delete",
     *  requirements={
     *      "id"="\d+"
@@ -113,7 +113,7 @@ class AccomodationController extends Controller
 
     /**
     * @Route(
-    *  "/logement/details",
+    *  "/logements/details",
     *  name="app_accomodation_details",
     * )
     */
