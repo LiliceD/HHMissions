@@ -113,11 +113,11 @@ class AccomodationController extends Controller
 
     /**
     * @Route(
-    *  "/logement/access",
-    *  name="app_accomodation_access",
+    *  "/logement/details",
+    *  name="app_accomodation_details",
     * )
     */
-    public function access(Request $request)
+    public function details(Request $request)
     {
         $id = $request->query->get('id');
 
@@ -126,8 +126,12 @@ class AccomodationController extends Controller
             ->find($id);
 
         $access = $accomodation->getAccess();
+        $ownerType = $accomodation->getOwnerType();
 
-        $json = array('access' => $access);
+        $json = array(
+            'access' => $access,
+            'ownerType' => $ownerType
+        );
 
         return new JsonResponse($json);
     }

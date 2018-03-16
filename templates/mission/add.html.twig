@@ -28,6 +28,11 @@
 
     {{ form_row(form.accomodation) }}
 
+    <div class="form-group">
+      <label for="accomodation_ownerType" class="form-control-label">Propriétaire :</label>
+      <input type="text" id="accomodation_ownerType" name="accomodation[ownerType]" readonly="true" class="form-control"/>
+    </div>
+
     <div class="row justify-content-end">
       <a href="{{ path('app_accomodation_add') }}" class="btn btn-sm btn-outline-secondary mr-4">
         <i class="fas fa-plus"></i>
@@ -61,16 +66,17 @@
 
   <script>
   // Prepopulate field "info" with accomodation access
-  function getAccess() {
-    $.getJSON("{{ path('app_accomodation_access') }}",
+  function getAccomodationDetails() {
+    $.getJSON("{{ path('app_accomodation_details') }}",
               {'id': $("#mission_accomodation").val()},
               function(data){
                 $("#mission_info").val(data.access);
+                $("#accomodation_ownerType").val(data.ownerType);
               });
   }
 
-  $("body").bind("load", getAccess());
-  $("#mission_accomodation").change(getAccess);
+  $("body").bind("load", getAccomodationDetails());
+  $("#mission_accomodation").change(getAccomodationDetails);
   </script>
 
 {% endblock %}

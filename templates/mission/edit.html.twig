@@ -41,6 +41,11 @@
 
     {{ form_row(form.accomodation, {'attr': {'readonly': 'true'}}) }}
     
+    <div class="form-group">
+      <label for="accomodation_ownerType" class="form-control-label">Propriétaire :</label>
+      <input type="text" id="accomodation_ownerType" name="accomodation[ownerType]" readonly="true" class="form-control" value="{{ mission.accomodation.ownerType }}" />
+    </div>
+
     <br>
     <br>
 

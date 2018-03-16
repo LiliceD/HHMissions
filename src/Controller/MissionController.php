@@ -74,7 +74,7 @@ class MissionController extends Controller
         // Set a default accomodation to $mission
         $accomodation = $this->getDoctrine()
             ->getRepository(Accomodation::class)
-            ->find(1);
+            ->findFirst();
         $mission->setAccomodation($accomodation);
 
         $form = $this->createForm(MissionType::class, $mission);
