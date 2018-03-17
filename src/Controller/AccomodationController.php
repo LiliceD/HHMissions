@@ -113,13 +113,13 @@ class AccomodationController extends Controller
 
     /**
     * @Route(
-    *  "/logements/details",
-    *  name="app_accomodation_details",
+    *  "/logements/info",
+    *  name="app_accomodation_info",
     * )
     */
-    public function details(Request $request)
+    public function info(Request $request)
     {
-        $id = $request->query->get('id');
+        $id = $request->request->get('id');
 
         $accomodation = $this->getDoctrine()
             ->getRepository(Accomodation::class)

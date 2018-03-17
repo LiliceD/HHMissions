@@ -65,18 +65,36 @@
   {{ parent() }}
 
   <script>
-  // Prepopulate field "info" with accomodation access
-  function getAccomodationDetails() {
-    $.getJSON("{{ path('app_accomodation_details') }}",
-              {'id': $("#mission_accomodation").val()},
-              function(data){
-                $("#mission_info").val(data.access);
-                $("#accomodation_ownerType").val(data.ownerType);
-              });
+  // Prepopulate fields "owner type" and "info" with selected accomodation info
+  function getAccomodationInfo() {
+
+    var id = encodeURIComponent(document.getElementById('mission_accomodation').value),
+        xhr = new XMLHttpRequest();
+
+    xhr.open('POST', "{{ path('app_accomodation_info') }}");
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhr.send('id=' + id);
+
+    xhr.addEventListener('readystatechange', function() {
+
+      if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+        
+        var data = JSON.parse(xhr.responseText);
+
+        document.getElementById('accomodation_ownerType').value = data.ownerType;
+        document.getElementById('mission_info').value = data.access;
+
+      } else if (xhr.readyState === XMLHttpRequest.DONE && xhr.status !== 200) {
+        
+        console.error('Erreur lors de la requête Ajax');
+
+      }
+
+    });
   }
 
-  $("body").bind("load", getAccomodationDetails());
-  $("#mission_accomodation").change(getAccomodationDetails);
+  window.addEventListener('load', getAccomodationInfo);
+  document.getElementById('mission_accomodation').addEventListener('change', getAccomodationInfo);
   </script>
 
 {% endblock %}
