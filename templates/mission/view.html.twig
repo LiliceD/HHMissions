@@ -7,7 +7,7 @@
 {% block layout_h3 %}
   <div class="row justify-content-between">
     <div class="col-md-6">
-      Fiche mission GLA-Bénévole n° {{ mission.id }}
+      Fiche mission GLA-Bénévole n°{{ mission.id }}
     </div>
     <div class="col-md-6">
       <div class="row justify-content-end align-items-center">
@@ -19,7 +19,7 @@
           <i class="fas fa-edit"></i>
           Modifier
         </a>
-        {# button opening a modal : #}
+        {# button opening a modal #}
         <button class="btn btn-sm btn-outline-danger mr-4" data-toggle="modal" data-target="#deleteModal">
           <i class="fas fa-trash-alt"></i>
           Supprimer
@@ -64,7 +64,7 @@
             <div class="col-md-4 text-right">
               Statut :
             </div>
-            <div class="col-md-4">
+            <div id="status" class="col-md-4">
               {{ mission.status }}
             </div>
             {# Button to close / reopen a mission when finished #}
@@ -84,7 +84,7 @@
             <div class="col-md-4 text-right">
               Provenance GLA :
             </div>
-            <div class="col-md-8 font-weight-bold">
+            <div id="gla" class="col-md-8 font-weight-bold">
               {{ mission.gla }}
             </div>
           </div>
@@ -92,7 +92,7 @@
             <div class="col-md-4 text-right">
               Bénévole :
             </div>
-            <div class="col-md-8 font-weight-bold">
+            <div id="volunteer" class="col-md-8 font-weight-bold">
               {{ mission.volunteer }}
             </div>
           </div>
@@ -104,7 +104,7 @@
             <div class="col-md-8 text-right">
               Date création :
             </div>
-            <div class="col-md-4 font-weight-bold">
+            <div id="dateCreated" class="col-md-4 font-weight-bold">
               {{ mission.dateCreated|date('d/m/Y') }}
             </div>
           </div>
@@ -112,7 +112,7 @@
             <div class="col-md-8 text-right">
               Date prise en charge :
             </div>
-            <div class="col-md-4 font-weight-bold">
+            <div id="dateAssigned" class="col-md-4 font-weight-bold">
               {{ mission.dateAssigned ? mission.dateAssigned|date('d/m/Y') }}
             </div>
           </div>
@@ -120,7 +120,7 @@
             <div class="col-md-8 text-right">
               Date fin de mission :
             </div>
-            <div class="col-md-4 font-weight-bold">
+            <div id="dateFinished" class="col-md-4 font-weight-bold">
               {{ mission.dateFinished ? mission.dateFinished|date('d/m/Y') }}
             </div>
           </div>
@@ -135,7 +135,7 @@
         <div class="col-md-3 text-right">
           Adresse d'intervention :
         </div>
-        <div class="col-md-8 font-weight-bold">
+        <div id="address" class="col-md-8 font-weight-bold">
           {{ mission.accomodation.address }}
         </div>
       </div>
@@ -160,7 +160,7 @@
         <div class="col-lg-12">
           <strong>Description mission :</strong>
         </div>
-        <div class="col-lg-12 border mb-3">
+        <div id="description" class="col-lg-12 border mb-3">
           {{ mission.description|nl2br }}
           <br>
           <br>
@@ -170,7 +170,7 @@
         <div class="col-lg-12">
           <strong>Informations complémentaires :</strong>
         </div>
-        <div class="col-lg-12 border mb-3">
+        <div id="info" class="col-lg-12 border mb-3">
           {{ mission.info|nl2br }}
           <br>
           <br>
@@ -179,7 +179,7 @@
         <div class="col-lg-12">
           <strong>Retour mission et conclusions :</strong>
         </div>
-        <div class="col-lg-12 border mb-3">
+        <div id="conclusions" class="col-lg-12 border mb-3">
           {{ mission.conclusions|nl2br }}
           <br>
           <br>

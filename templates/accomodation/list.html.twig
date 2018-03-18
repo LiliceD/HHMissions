@@ -3,7 +3,7 @@
 {% block layout_h3 %}
   <div class="row justify-content-between">
     <div class="col-md-9">
-      Logements
+      Liste des logements
     </div>
     <div class="col-md-3">
       <a href="{{ path('app_accomodation_add') }}" class="btn btn-primary">
@@ -16,15 +16,16 @@
 
 {% block content %}
   
-  <table class="table table-sm table-hover">
+  <table class="table table-sm table-hover accomodations-table">
 
     <thead class="thead-light">
       <tr>
         <th scope="col">Adresse</th>
         <th scope="col">Nom</th>
-        <th scope="col">Code postal</th>
+        <th scope="col">C.P.</th>
         <th scope="col">Ville</th>
         <th scope="col">Propriétaire</th>
+        <th scope="col">Accès</th>
         <th></th>
         <th></th>
       </tr>
@@ -33,20 +34,21 @@
     <tbody>
 
       {% for accomodation in accomodations %}
-        <tr>
+        <tr id="accomodation-{{ accomodation.id }}">
           <td>{{ accomodation.street }}</td>
           <td>{{ accomodation.name }}</td>
           <td>{{ accomodation.postalCode }}</td>
           <td>{{ accomodation.city }}</td>
           <td>{{ accomodation.ownerType }}</td>
+          <td>{{ accomodation.access }}</td>
           <td>
-            <a href="{{ path('app_accomodation_edit', {'id': accomodation.id}) }}" class="btn btn-outline-primary btn-sm">
+            <a href="{{ path('app_accomodation_edit', {'id': accomodation.id}) }}" class="btn btn-sm btn-xs btn-outline-primary">
               <i class="fas fa-edit"></i>
               Modifier
             </a>
           </td>
           <td>
-            <a href="{{ path('app_accomodation_delete', {'id': accomodation.id}) }}" class="btn btn-outline-danger btn-sm">
+            <a href="{{ path('app_accomodation_delete', {'id': accomodation.id}) }}" class="btn btn-sm btn-xs btn-outline-secondary">
               <i class="fas fa-trash-alt"></i>
               Supprimer
             </a>

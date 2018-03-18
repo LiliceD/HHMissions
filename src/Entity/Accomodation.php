@@ -84,10 +84,6 @@ class Accomodation
             Self::OWNER_FFH_DIFFUSE => Self::OWNER_FFH_DIFFUSE,
             Self::OWNER_PRIVATE_BUILDING => Self::OWNER_PRIVATE_BUILDING,
             Self::OWNER_PRIVATE_DIFFUSE => Self::OWNER_PRIVATE_DIFFUSE
-            // 'Self::OWNER_FFH_BUILDING' => Self::OWNER_FFH_BUILDING,
-            // 'Self::OWNER_FFH_DIFFUSE' => Self::OWNER_FFH_DIFFUSE,
-            // 'Self::OWNER_PRIVATE_BUILDING' => Self::OWNER_PRIVATE_BUILDING,
-            // 'Self::OWNER_PRIVATE_DIFFUSE' => Self::OWNER_PRIVATE_DIFFUSE
         );
     }
 

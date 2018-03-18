@@ -46,7 +46,7 @@ class MissionType extends AbstractType
                     'Camille UBEDA' => 'Camille UBEDA'
                 ),
                 'label' => 'Provenance GLA :',
-                'placeholder' => '-'
+                'placeholder' => ''
             ))
             ->add('volunteer', ChoiceType::class, array(
                 'choices' => array(
@@ -55,7 +55,8 @@ class MissionType extends AbstractType
                     'Hervé RIFFAUD' => 'Hervé RIFFAUD',
                     'Jean-Benoit PAYRE' => 'Jean-Benoit PAYRE'
                 ),
-                'label' => 'Bénévole :'
+                'label' => 'Bénévole :',
+                'placeholder' => ''
             ))
             ->add('accomodation', EntityType::class, array(
                 // Dropdown from Accomodation table

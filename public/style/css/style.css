@@ -43,3 +43,16 @@
 .table-recap-statut {
   width: 60px;
 }
+
+
+/* accomodation/list.html.twig */
+
+.accomodations-table {
+  font-size: 14px;
+}
+
+.btn-xs {
+  padding: .18rem .38rem;
+  line-height: 1.1;
+  font-size: 12px;
+}
