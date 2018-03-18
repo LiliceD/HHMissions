@@ -99,7 +99,8 @@ class AccomodationController extends Controller
         }
 
         return $this->render('accomodation/edit.html.twig', [
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'accomodation' => $accomodation
         ]);
     }
 

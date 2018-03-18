@@ -1,11 +1,52 @@
 {% extends 'accomodation/layout.html.twig' %}
 
 {% block layout_h3 %}
-	Modifier un logement
+	<div class="row justify-content-between">
+    <div class="col-md-6">
+      Modifier un logement
+    </div>
+    <div class="col-md-6">
+      <div class="row justify-content-end align-items-center">
+        {# button opening a modal #}
+        <button class="btn btn-sm btn-outline-danger mr-4" data-toggle="modal" data-target="#deleteModal">
+          <i class="fas fa-trash-alt"></i>
+          Supprimer
+        </button>
+      </div>
+    </div>
+  </div>
 {% endblock %}
 
 {% block form_content %}
+  {# Modal to confirm mission delete #}
+  <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteModalLabel">Supprimer le logement</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Confirmez-vous la suppression de ce logement ?</p>
+          <p>
+            {% if accomodation.name %}
+              {{ accomodation.name }}<br>
+            {% endif %}
+            {{ accomodation.street }}<br>
+            {{ accomodation.postalCode }} {{ accomodation.city }}
+          </p>
+        </div>
+        <div class="modal-footer">
+          <a href="{{ path('app_accomodation_delete', {'id': accomodation.id}) }}" class="btn btn-danger">Supprimer</a>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
+  {# Edit form #}
   {{ form_start(form) }}
 
     <div class="row justify-content-between">

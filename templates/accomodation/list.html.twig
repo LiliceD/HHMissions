@@ -1,6 +1,8 @@
 {% extends 'accomodation/layout.html.twig' %}
 
+
 {% block layout_h3 %}
+
   <div class="row justify-content-between">
     <div class="col-md-9">
       Liste des logements
@@ -12,7 +14,9 @@
       </a>
     </div>
   </div>
+
 {% endblock %}
+
 
 {% block content %}
   
@@ -26,7 +30,6 @@
         <th scope="col">Ville</th>
         <th scope="col">Propriétaire</th>
         <th scope="col">Accès</th>
-        <th></th>
         <th></th>
       </tr>
     </thead>
@@ -45,12 +48,6 @@
             <a href="{{ path('app_accomodation_edit', {'id': accomodation.id}) }}" class="btn btn-sm btn-xs btn-outline-primary">
               <i class="fas fa-edit"></i>
               Modifier
-            </a>
-          </td>
-          <td>
-            <a href="{{ path('app_accomodation_delete', {'id': accomodation.id}) }}" class="btn btn-sm btn-xs btn-outline-secondary">
-              <i class="fas fa-trash-alt"></i>
-              Supprimer
             </a>
           </td>
         </tr>

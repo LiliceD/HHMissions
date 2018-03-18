@@ -149,9 +149,9 @@ class AccomodationControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $crawler = $client->request('GET', '/logements');
+        $crawler = $client->request('GET', '/logements/edit/12');
 
-        $link = $crawler->filter('#accomodation-12')->selectLink('Supprimer')->link();
+        $link = $crawler->selectLink('Supprimer')->link();
         
         $crawler = $client->click($link);
         $crawler = $client->followRedirect();
