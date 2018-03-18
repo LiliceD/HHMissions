@@ -17,3 +17,12 @@
 ###> fileUploader ###
 /public/uploads/
 ###< fileUploader ###
+
+###> phpUnit ###
+phpunit.xml
+###< phpUnit ###
+
+###> testing ###
+habhum-tests-drop.sql
+habhum-tests-import.sql
+###< testing ###

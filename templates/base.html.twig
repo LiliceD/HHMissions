@@ -8,19 +8,24 @@
 
     <link rel="icon" type="image/ico" href="{{ absolute_url(asset('style/images/favicon.ico')) }}" />
 
+
     {% block stylesheets %}
+
       <!-- Bootstrap -->
       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
       <!-- Font Awesome -->
       <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
 
       <link href="{{ asset('style/css/style.css') }}" rel="stylesheet">
+
     {% endblock %}
 
   </head>
 
   <body>
+
     {% block nav %}
+
       <nav class="navbar navbar-expand-sm navbar-dark bg-primary">
         <div class="container">
           <span class="navbar-brand mb-0 h1" href="{{ path('app_missions_list') }}">Fiches Mission DEV</span>
@@ -37,31 +42,44 @@
           </div>
         </div>
       </nav>
+
     {% endblock %}
+
 
     <br>
     
+
     {% block body %}
+
       <div class="container">
         <h3>{% block layout_h3 %}Fiches Mission{% endblock %}</h3>
 
         <hr>
 
+
         {% block flash_messages %}
+
           {% for message in app.flashes('notice') %}
-              <div class="alert alert-info">
+              <div class="alert alert-success">
                   <a href="#" class="close" data-dismiss="alert" aria-label="Fermer">&times;</a>
                   {{ message }}
               </div>
           {% endfor %}
+
         {% endblock %}
         
+
         {% block content %}
+
         {% endblock %}
+
       </div>
+
     {% endblock %}
 
+
     {% block javascripts %}
+
       <!-- Bootstrap JavaScript -->
       <script
         src="https://code.jquery.com/jquery-3.3.1.min.js"
@@ -71,6 +89,7 @@
         src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" 
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" 
         crossorigin="anonymous"></script>
+
     {% endblock %}
 
   </body>

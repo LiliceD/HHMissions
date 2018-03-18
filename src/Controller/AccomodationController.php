@@ -55,6 +55,11 @@ class AccomodationController extends Controller
             $em->persist($accomodation);
             $em->flush();
 
+            $this->addFlash(
+                'notice',
+                'Le logement a bien été ajouté à la liste.'
+            );
+
             return $this->redirectToRoute('app_accomodation_list');
         }
 
@@ -85,6 +90,11 @@ class AccomodationController extends Controller
             $em->persist($accomodation);
             $em->flush();
 
+            $this->addFlash(
+                'notice',
+                'Les modifications ont bien été enregistrées.'
+            );
+
             return $this->redirectToRoute('app_accomodation_list');
         }
 
@@ -107,6 +117,11 @@ class AccomodationController extends Controller
         $em = $this->getDoctrine()->getManager();
         $em->remove($accomodation);
         $em->flush();
+
+        $this->addFlash(
+            'notice',
+            'Le logement a bien été supprimé.'
+        );
 
         return $this->redirectToRoute('app_accomodation_list');
     }
