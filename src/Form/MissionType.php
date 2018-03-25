@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Accomodation;
 use App\Entity\Mission;
+use App\Entity\User;
 use Doctrine\ORM\EntityRepository; // for 'address' query builder
 use Symfony\Bridge\Doctrine\Form\Type\EntityType; // for 'address' drop-down
 use Symfony\Component\Form\AbstractType;
@@ -21,44 +22,48 @@ class MissionType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('status', null, array('label' => 'Statut :'))
-            ->add('dateCreated', DateType::class, array(
+            ->add('status', null, ['label' => 'Statut :'])
+            ->add('dateCreated', DateType::class, [
                 'label' => 'Date demande :',
                 'widget' => 'single_text',
 
-            ))
-            ->add('dateAssigned', DateType::class, array(
+            ])
+            ->add('dateAssigned', DateType::class, [
                 'label' => 'Date prise en charge :',
                 'widget' => 'single_text',
                 'required' => false
-            ))
-            ->add('dateFinished', DateType::class, array(
+            ])
+            ->add('dateFinished', DateType::class, [
                 'label' => 'Date fin de mission :',
                 'widget' => 'single_text',
                 'required' => false
-            ))
-            ->add('gla', ChoiceType::class, array(
-                'choices' => array(
-                    'Rudy BENSAID' => 'Rudy BENSAID',
-                    'Annabelle MELIS' => 'Annabelle MELIS',
-                    'Romain PIKETTY' => 'Romain PIKETTY',
-                    'Christian ROBAYE' => 'Christian ROBAYE',
-                    'Camille UBEDA' => 'Camille UBEDA'
-                ),
+            ])
+            ->add('gla', EntityType::class, [
+                // Dropdown from User table with GLA only
+                'class' => User::class,
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('u')
+                        ->where('u.isGla = 1')
+                        ->orderBy('u.name', 'ASC');
+                },
+                'choice_label' => 'name',
                 'label' => 'Provenance GLA :',
-                'placeholder' => ''
-            ))
-            ->add('volunteer', ChoiceType::class, array(
-                'choices' => array(
-                    'Bernard BODIN' => 'Bernard BODIN',
-                    'Max LUBIATO' => 'Max LUBIATO',
-                    'Hervé RIFFAUD' => 'Hervé RIFFAUD',
-                    'Jean-Benoit PAYRE' => 'Jean-Benoit PAYRE'
-                ),
+                'placeholder' => false
+            ])
+            ->add('volunteer', EntityType::class, [
+                // Dropdown from User table with Volunteers only
+                'class' => User::class,
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('u')
+                        ->where('u.isVolunteer = 1')
+                        ->orderBy('u.name', 'ASC');
+                },
+                'choice_label' => 'name',
                 'label' => 'Bénévole :',
-                'placeholder' => ''
-            ))
-            ->add('accomodation', EntityType::class, array(
+                'placeholder' => false,
+                'required' => false
+            ])
+            ->add('accomodation', EntityType::class, [
                 // Dropdown from Accomodation table
                 'class' => Accomodation::class,
                 'query_builder' => function (EntityRepository $er) {
@@ -68,20 +73,20 @@ class MissionType extends AbstractType
                 'choice_label' => 'address',
                 'label' => 'Adresse d\'intervention :',
                 'placeholder' => false
-            ))
-            ->add('description', TextareaType::class, array('label' => 'Description mission :'))
-            ->add('info', TextareaType::class, array(
+            ])
+            ->add('description', TextareaType::class, ['label' => 'Description mission :'])
+            ->add('info', TextareaType::class, [
                 'label' => 'Informations complémentaires :',
                 'required' => false,
-            ))
-            ->add('conclusions', TextareaType::class, array(
+            ])
+            ->add('conclusions', TextareaType::class, [
                 'label' => 'Retour mission et conclusions :',
                 'required' => false
-            ))
-            ->add('attachment', FileType::class, array(
+            ])
+            ->add('attachment', FileType::class, [
                 'label' => 'Pièce jointe :',
                 'required' => false
-            ))
+            ])
         ;
     }
 

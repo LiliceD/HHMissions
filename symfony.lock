@@ -320,6 +320,9 @@
             "ref": "03f21d01e3f41a095a43e0e7b2f7fbd9dbd33cf8"
         }
     },
+    "symfony/security-csrf": {
+        "version": "v4.0.6"
+    },
     "symfony/serializer": {
         "version": "v4.0.4"
     },

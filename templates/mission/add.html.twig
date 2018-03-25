@@ -1,12 +1,15 @@
 {% extends 'mission/layout.html.twig' %}
 
+
 {% block title %}
   {{ parent() }}
 {% endblock %}
 
+
 {% block layout_h3 %}
   Créer une fiche mission
 {% endblock %}
+
 
 {% block form_content %}
 
@@ -59,17 +62,20 @@
   {{ form_end(form) }}
 
   <br>
+
 {% endblock %}
 
+
 {% block javascripts %}
+
   {{ parent() }}
 
   <script>
   // Prepopulate fields "owner type" and "info" with selected accomodation info
   function getAccomodationInfo() {
 
-    var id = encodeURIComponent(document.getElementById('mission_accomodation').value),
-        xhr = new XMLHttpRequest();
+    const id = encodeURIComponent(document.getElementById('mission_accomodation').value);
+    let xhr = new XMLHttpRequest();
 
     xhr.open('POST', "{{ path('app_accomodation_info') }}");
     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");

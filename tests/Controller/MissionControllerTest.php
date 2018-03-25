@@ -31,9 +31,9 @@ class MissionControllerTest extends WebTestCase
     {
         return [
             ['/missions'],
-            ['/missions/add'],
-            ['/missions/view/1'],
-            ['/missions/edit/1'],
+            ['/missions/ajouter'],
+            ['/missions/voir/1'],
+            ['/missions/modifier/1'],
             ['/missions/recap']
         ];
     }
@@ -59,7 +59,7 @@ class MissionControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $crawler = $client->request('GET', '/missions/add');
+        $crawler = $client->request('GET', '/missions/ajouter');
 
         $form = $crawler->selectButton('Créer la Fiche Mission')->form();
 
@@ -127,7 +127,7 @@ class MissionControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $crawler = $client->request('GET', '/missions/edit/5');
+        $crawler = $client->request('GET', '/missions/modifier/5');
 
         $form = $crawler->selectButton('Valider')->form();
 
@@ -154,7 +154,7 @@ class MissionControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $crawler = $client->request('GET', '/missions/view/5');
+        $crawler = $client->request('GET', '/missions/voir/5');
 
         $link = $crawler->selectLink('Supprimer')->link();
 
@@ -174,7 +174,7 @@ class MissionControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $crawler = $client->request('GET', '/missions/view/1');
+        $crawler = $client->request('GET', '/missions/voir/1');
 
         $link = $crawler->selectLink('Rouvrir')->link();
 
@@ -193,7 +193,7 @@ class MissionControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $crawler = $client->request('GET', '/missions/view/1');
+        $crawler = $client->request('GET', '/missions/voir/1');
 
         $link = $crawler->selectLink('Fermer')->link();
 

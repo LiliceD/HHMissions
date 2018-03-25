@@ -15,41 +15,50 @@
           <i class="fas fa-chevron-left"></i>
           Retour à la liste
         </a>
-        <a href="{{ path('app_missions_edit', {'id': mission.id}) }}" class="btn btn-outline-primary mr-2">
-          <i class="fas fa-edit"></i>
-          Modifier
-        </a>
+        {# edit button only visible for admin, mission's gla or mission's volunteer #}
+        {% if is_granted('ROLE_ADMIN') or (is_granted('ROLE_GLA') and mission.gla == app.user.name) or (is_granted('ROLE_VOLUNTEER') and mission.volunteer == app.user.name) %}
+          <a href="{{ path('app_missions_edit', {'id': mission.id}) }}" class="btn btn-outline-primary mr-2">
+            <i class="fas fa-edit"></i>
+            Modifier
+          </a>
+        {% endif %}
+        {# delete button only visible for admin #}
         {# button opening a modal #}
-        <button class="btn btn-sm btn-outline-danger mr-4" data-toggle="modal" data-target="#deleteModal">
-          <i class="fas fa-trash-alt"></i>
-          Supprimer
-        </button>
+        {% if is_granted('ROLE_ADMIN') %}
+          <button class="btn btn-sm btn-outline-danger mr-4" data-toggle="modal" data-target="#deleteModal">
+            <i class="fas fa-trash-alt"></i>
+            Supprimer
+          </button>
+        {% endif %}
       </div>
     </div>
   </div>
 {% endblock %}
 
 {% block content %}
+  {# delete modal only visible for admin #}
   {# Modal to confirm mission delete #}
-  <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="deleteModalLabel">Supprimer la fiche mission</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          Confirmez-vous la suppression de cette fiche mission ?
-        </div>
-        <div class="modal-footer">
-          <a href="{{ path('app_missions_delete', {'id': mission.id}) }}" class="btn btn-danger">Supprimer</a>
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+  {% if is_granted('ROLE_ADMIN') %}
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="deleteModalLabel">Supprimer la fiche mission</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            Confirmez-vous la suppression de cette fiche mission ?
+          </div>
+          <div class="modal-footer">
+            <a href="{{ path('app_missions_delete', {'id': mission.id}) }}" class="btn btn-danger">Supprimer</a>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  {% endif %}
 
   {# Mission view #}
   <div class="row justify-content-center">
@@ -68,17 +77,20 @@
               {{ mission.status }}
             </div>
             {# Button to close / reopen a mission when finished #}
-            <div class="col-md-4">
-              {% if mission.status == constant('STATUS_FINISHED', mission) %}
-                <a href="{{ path('app_missions_close', {'id': mission.id}) }}" class="btn btn-sm btn-primary">
-                  Fermer
-                </a>
-              {% elseif mission.status == constant('STATUS_CLOSED', mission) %}
-                <a href="{{ path('app_missions_close', {'id': mission.id}) }}" class="btn btn-sm btn-primary">
-                  Rouvrir
-                </a>
-              {% endif %}
-            </div>
+            {# only visible for admin #}
+            {% if is_granted('ROLE_ADMIN') %}
+              <div class="col-md-4">
+                {% if mission.status == constant('STATUS_FINISHED', mission) %}
+                  <a href="{{ path('app_missions_close', {'id': mission.id}) }}" class="btn btn-sm btn-primary">
+                    Fermer
+                  </a>
+                {% elseif mission.status == constant('STATUS_CLOSED', mission) %}
+                  <a href="{{ path('app_missions_close', {'id': mission.id}) }}" class="btn btn-sm btn-primary">
+                    Rouvrir
+                  </a>
+                {% endif %}
+              </div>
+            {% endif %}
           </div>
           <div class="row">
             <div class="col-md-4 text-right">
@@ -205,9 +217,12 @@
         <a href="{{ asset('uploads/pdf/' ~ mission.attachment) }}" target="_blank" class="btn btn-primary mr-2">
           Voir la pièce jointe
         </a>
-        <a href="{{ path('app_missions_attachment-delete', {'id': mission.id}) }}" class="btn btn-outline-danger btn-sm mr-4">
-          Supprimer la pièce jointe
-        </a>
+        {# delete attachment button only visible for admin or mission's gla #}
+        {% if is_granted('ROLE_ADMIN') or (is_granted('ROLE_GLA') and mission.gla == app.user.name) %}
+          <a href="{{ path('app_missions_attachment-delete', {'id': mission.id}) }}" class="btn btn-outline-danger btn-sm mr-4">
+            Supprimer la pièce jointe
+          </a>
+        {% endif %}
       {% endif %}
     </div>
   </div>

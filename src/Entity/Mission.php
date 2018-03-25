@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM; // this use statement is needed for the annotat
 use Symfony\Component\Validator\Constraints as Assert; // this use statement is needed for the annotations @Assert
 
 /**
+ * @ORM\Table(name="missions")
  * @ORM\Entity(repositoryClass="App\Repository\MissionRepository")
  */
 class Mission
@@ -25,7 +26,6 @@ class Mission
 
     /**
      * @ORM\Column(type="string")
-     * 
      * @Assert\Choice(callback="getStatuses")
      */
     private $status;
@@ -38,7 +38,6 @@ class Mission
 
      /**
      * @ORM\Column(type="string")
-     *
      * @Assert\NotBlank()
      */
     private $gla;
@@ -50,7 +49,6 @@ class Mission
 
     /**
      * @ORM\Column(type="text")
-     *
      * @Assert\NotBlank(message="Merci de remplir la description de la mission")
      */
     private $description;
@@ -66,29 +64,28 @@ class Mission
     private $conclusions;
 
     /**
-     * @ORM\Column(type="date")
+     * @ORM\Column(name="date_created", type="date")
      */
     private $dateCreated;
 
     /**
-     * @ORM\Column(type="date", nullable=true)
+     * @ORM\Column(name="date_assigned", type="date", nullable=true)
      */
     private $dateAssigned;
 
     /**
-     * @ORM\Column(type="date", nullable=true)
+     * @ORM\Column(name="date_finished", type="date", nullable=true)
      */
     private $dateFinished;
 
     /**
      * @ORM\Column(type="string", nullable=true)
-     *
      * @Assert\File(mimeTypes={ "application/pdf" })
      */
     private $attachment;
 
     
-    /************** Functions *****************/
+    /************** Methods *****************/
     
     // Callback for $status Choice
     public static function getStatuses()

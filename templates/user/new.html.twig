@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+
+{% block title %}Admin - {{ parent() }}{% endblock %}
+
+{% block layout_h3 %}Ajouter un utilisateur{% endblock %}
+
+
+{% block content %}
+
+    {{ form_start(form) }}
+
+        {{ form_row(form.category) }}
+        {{ form_row(form.name) }}
+        {{ form_row(form.username) }}
+        {{ form_row(form.email) }}
+        {{ form_row(form.plainPassword.first) }}
+        {{ form_row(form.plainPassword.second) }}
+
+        <input type="submit" class="btn btn-primary mr-2" valye="Valider" />
+
+    {{ form_end(form) }}
+
+{% endblock %}
+
+
+
+{% block javascripts %}
+
+  {{ parent() }}
+
+  <script>
+
+      document.getElementById("user_name").addEventListener("change", function (e) {
+      
+          const name = e.target.value;
+          const splitName = name.trim().split(' ');
+
+          if (splitName.length > 1) {
+              const firstName = splitName[0],
+                    lastName = splitName[1];
+              
+              const username = (firstName.substr(0, 1) + '.' + lastName).toLowerCase();
+              document.getElementById("user_username").value = username;
+              document.getElementById("user_email").value = username + '@habitat-humanisme.org';
+          }
+
+    });
+
+  </script>
+
+{% endblock %}

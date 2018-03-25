@@ -20,7 +20,8 @@
         <th scope="col">Adresse</th>
         <th scope="col">Description mission</th>
         <th scope="col">Statut</th>
-        <th scope="col" colspan="2"></th>
+        <th></th>
+        <th></th>
       </tr>
     </thead>
 
@@ -47,12 +48,15 @@
               Voir
             </a>
           </td>
-          <td>
-            <a href="{{ path('app_missions_edit', {'id': mission.id}) }}" title="Modifier la FM {{ mission.id }}" class="btn btn-sm btn-outline-primary">
-              <i class="fas fa-edit"></i>
-              Modifier
-            </a>
-          </td>
+          {# edit button only visible for admin, mission's gla or mission's volunteer #}
+          {% if is_granted('ROLE_ADMIN') or (is_granted('ROLE_GLA') and mission.gla == app.user.name) or (is_granted('ROLE_VOLUNTEER') and mission.volunteer == app.user.name) %}
+            <td>
+              <a href="{{ path('app_missions_edit', {'id': mission.id}) }}" title="Modifier la FM {{ mission.id }}" class="btn btn-sm btn-outline-primary">
+                <i class="fas fa-edit"></i>
+                Modifier
+              </a>
+            </td>
+          {% endif %}
         </tr>
       {% endfor %}
 

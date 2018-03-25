@@ -11,12 +11,14 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-
+/**
+ * @Route("/logements")
+ */
 class AccomodationController extends Controller
 {
     /**
     * @Route(
-    *  "/logements/{page}",
+    *  "/{page}",
     *  name="app_accomodation_list",
     *  requirements={
     *      "page"="\d+"
@@ -36,7 +38,7 @@ class AccomodationController extends Controller
 
     /**
     * @Route(
-    *  "/logements/add",
+    *  "/ajouter",
     *  name="app_accomodation_add"
     * )
     */
@@ -70,7 +72,7 @@ class AccomodationController extends Controller
 
     /**
     * @Route(
-    *  "/logements/edit/{id}",
+    *  "/modifier/{id}",
     *  name="app_accomodation_edit",
     *  requirements={
     *      "id"="\d+"
@@ -106,7 +108,7 @@ class AccomodationController extends Controller
 
     /**
     * @Route(
-    *  "/logements/delete/{id}",
+    *  "/supprimer/{id}",
     *  name="app_accomodation_delete",
     *  requirements={
     *      "id"="\d+"
@@ -129,7 +131,7 @@ class AccomodationController extends Controller
 
     /**
     * @Route(
-    *  "/logements/info",
+    *  "/info",
     *  name="app_accomodation_info",
     * )
     */

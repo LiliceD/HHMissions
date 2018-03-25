@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
+ * @ORM\Table(name="accomodations")
  * @ORM\Entity(repositoryClass="App\Repository\AccomodationRepository")
  */
 class Accomodation
@@ -32,14 +33,12 @@ class Accomodation
 
     /**
      * @ORM\Column(type="string")
-     *
      * @Assert\NotBlank()
      */
     private $street;
 
     /**
      * @ORM\Column(type="integer")
-     *
      * @Assert\Length(
      *  min = 5,
      *  max = 5,
@@ -51,14 +50,12 @@ class Accomodation
 
     /**
      * @ORM\Column(type="string")
-     * 
      * @Assert\NotBlank()
      */
     private $city;
 
     /**
      * @ORM\Column(type="string", nullable=true)
-     * 
      * @Assert\Choice(callback="getOwnerTypes")
      */
     private $ownerType;
@@ -74,7 +71,7 @@ class Accomodation
     private $missions;
 
 
-    /************** Functions *****************/
+    /************** Methods *****************/
 
     // Callback for $ownerType Choice
     public static function getOwnerTypes()

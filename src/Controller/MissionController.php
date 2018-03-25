@@ -6,45 +6,221 @@ use App\Entity\Accomodation;
 use App\Entity\Mission;
 use App\Form\MissionType;
 use App\Service\FileUploader; // to use FileUploader service in edit
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security; // for @Security annotations
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\File\File; // for new File() in edit
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException; // to throw new AccessDeniedException()
 
 /**
  * @Route("/missions")
  */
 class MissionController extends Controller
 {
+    
+    //  ██████╗██████╗ ██╗   ██╗██████╗ 
+    // ██╔════╝██╔══██╗██║   ██║██╔══██╗
+    // ██║     ██████╔╝██║   ██║██║  ██║
+    // ██║     ██╔══██╗██║   ██║██║  ██║
+    // ╚██████╗██║  ██║╚██████╔╝██████╔╝
+    //  ╚═════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ 
+
     /**
-     * @Route("/admin")
+     * @Route(
+     *  "/ajouter",
+     *  name="app_missions_add"
+     * )
      */
-    public function admin()
+    public function add(Request $request, FileUploader $fileUploader)
     {
-        return new Response('<html><body>Admin page!</body></html>');
+        $mission = new Mission();
+
+        // Set a default accomodation to $mission (error otherwise)
+        $accomodation = $this->getDoctrine()
+            ->getRepository(Accomodation::class)
+            ->findFirst();
+        $mission->setAccomodation($accomodation);
+
+        // Create form
+        $form = $this->createForm(MissionType::class, $mission);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            
+            // Manage attachment
+            /** @var Symfony\Component\HttpFoundation\File\UploadedFile $file */
+            $file = $mission->getAttachment();
+
+            if ($file) {
+                $fileName = $fileUploader->upload($file);
+
+                $mission->setAttachment($fileName);
+            }
+
+            // Persist to DB
+            $em = $this->getDoctrine()->getManager();
+
+            $mission = $form->getData();
+
+            $em->persist($mission);
+            $em->flush();
+
+            // Redirect to mission view
+            return $this->redirectToRoute('app_missions_view', array(
+                'id' => $mission->getId()
+            ));
+        }
+
+        return $this->render('mission/add.html.twig', array(
+            'form' => $form->createView()
+        ));
     }
 
     /**
-    * @Route(
-    *  "/{page}",
-    *  name="app_missions_list",
-    *  requirements={
-    *      "page"="\d+"
-    *  }
-    * )
-    */
+     * @Route(
+     *  "/voir/{id}",
+     *  name="app_missions_view",
+     *  requirements={
+     *      "id"="\d+"
+     *  }
+     * )
+     */
+    public function view(Mission $mission)
+    {
+        if (!$mission) {
+            throw $this->createNotFoundException('La fiche mission demandée n\'existe pas.');
+
+        }
+
+        return $this->render('mission/view.html.twig', array(
+            'mission' => $mission
+        ));
+    }
+
+    /**
+     * @Route(
+     *  "/modifier/{id}",
+     *  name="app_missions_edit",
+     *  requirements={
+     *      "id"="\d+"
+     *  }
+     * )
+     */
+    public function edit(Mission $mission, Request $request, FileUploader $fileUploader)
+    {
+        // Throw error if mission is not found
+        if (!$mission) {
+            throw $this->createNotFoundException('La fiche mission demandée n\'existe pas.');
+
+        }
+
+        // Retrieve user and allow action only if user is admin, mission's gla or mission's volunteer
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $user = $this->getUser();
+
+        if($user->hasRole('ROLE_ADMIN') || $mission->getGla() === $user->getName() || $mission->getVolunteer() === $user->getName()) {
+            // Saving previous scan to avoid delete by edit with no changes
+            $previousFileName = $mission->getAttachment();
+
+            if ($previousFileName) {
+                $mission->setAttachment(
+                    new File($this->getParameter('app_attachment_directory').'/'.$previousFileName)
+                );
+            }
+
+            $form = $this->createForm(MissionType::class, $mission);
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+                
+                // Update status
+                $mission->updateStatus();
+
+                // Manage attachment
+                /** @var Symfony\Component\HttpFoundation\File\UploadedFile $file */
+                $file = $mission->getAttachment();
+
+                if ($file) {
+                    $fileName = $fileUploader->upload($file);
+
+                    $mission->setAttachment($fileName);
+                }
+                else if ($previousFileName) {
+                    $mission->setAttachment($previousFileName);
+                }
+
+                // Persist to DB
+                $em = $this->getDoctrine()->getManager();
+
+                $mission = $form->getData();
+
+                $em->persist($mission);
+                $em->flush();
+
+                // Redirect to mission view
+                return $this->redirectToRoute('app_missions_view', array(
+                    'id' => $mission->getId()
+                ));
+            }
+
+            return $this->render('mission/edit.html.twig', array(
+                'form' => $form->createView(),
+                'mission' => $mission,
+                'attachmentUrl' => $previousFileName
+            ));
+        }
+        else {
+            throw new AccessDeniedException();
+        }
+    }
+
+    /**
+     * @Route(
+     *  "/supprimer/{id}",
+     *  name="app_missions_delete",
+     *  requirements={
+     *      "id"="\d+"
+     *  }
+     * )
+     */
+    public function delete(Mission $mission, FileUploader $fileUploader)
+    {
+        if (!$mission) {
+            throw $this->createNotFoundException('La fiche mission demandée n\'existe pas.');
+
+        }
+
+        // Delete attached file from server
+        $fileName = $mission->getAttachment();
+        $fileUploader->delete($fileName);
+
+        // Persist changes to DB
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($mission);
+        $em->flush();
+
+        // Set a "flash" success message
+        $this->addFlash(
+            'notice',
+            'La fiche mission a bien été supprimée.'
+        );
+
+        return $this->redirectToRoute('app_missions_list');
+    }
+
+    /**
+     * @Route(
+     *  "/{page}",
+     *  name="app_missions_list",
+     *  requirements={
+     *      "page"="\d+"
+     *  }
+     * )
+     */
     public function list($page = 1)
     {    
-        // $em = $this->getDoctrine()->getManager();
-
-  //       $accomodation = new Accomodation();
-  //       $accomodation->setAddress('7-9 avenue Saint Romain');
-
-  //       $em->persist($accomodation);
-
-  //       $em->flush();
-
         $repository = $this->getDoctrine()->getRepository(Mission::class);
 
         $missions = $repository->findBy(array(), array('dateCreated' => 'DESC'));
@@ -60,197 +236,10 @@ class MissionController extends Controller
     }
 
     /**
-    * CREATE
-    *
-    * @Route(
-    *  "/add",
-    *  name="app_missions_add"
-    * )
-    */
-    public function add(Request $request, FileUploader $fileUploader)
-    {
-        $mission = new Mission();
-
-        // Set a default accomodation to $mission
-        $accomodation = $this->getDoctrine()
-            ->getRepository(Accomodation::class)
-            ->findFirst();
-        $mission->setAccomodation($accomodation);
-
-        $form = $this->createForm(MissionType::class, $mission);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            
-            /**************** Manage attachment ****************/
-            /** @var Symfony\Component\HttpFoundation\File\UploadedFile $file */
-            $file = $mission->getAttachment();
-
-            if ($file) {
-                $fileName = $fileUploader->upload($file);
-
-                $mission->setAttachment($fileName);
-            }
-
-            /****************** Persist to DB ******************/
-            $em = $this->getDoctrine()->getManager();
-
-            $mission = $form->getData();
-
-            $em->persist($mission);
-            $em->flush();
-
-            return $this->redirectToRoute('app_missions_view', array(
-                'id' => $mission->getId()
-            ));
-        }
-
-        return $this->render('mission/add.html.twig', array(
-            'form' => $form->createView()
-        ));
-    }
-
-    /**
-    * READ
-    *
-    * @Route(
-    *  "/view/{id}",
-    *  name="app_missions_view",
-    *  requirements={
-    *      "id"="\d+"
-    *  }
-    * )
-    */
-    public function view(Mission $mission)
-    {
-        if (!$mission) {
-            throw $this->createNotFoundException('La fiche mission demandée n\'existe pas.');
-
-        }
-
-        return $this->render('mission/view.html.twig', array(
-            'mission' => $mission
-        ));
-    }
-
-    /**
-    * UPDATE
-    *
-    * @Route(
-    *  "/edit/{id}",
-    *  name="app_missions_edit",
-    *  requirements={
-    *      "id"="\d+"
-    *  }
-    * )
-    */
-    public function edit(Mission $mission, Request $request, FileUploader $fileUploader)
-    {
-        if (!$mission) {
-            throw $this->createNotFoundException('La fiche mission demandée n\'existe pas.');
-
-        }
-
-        // Saving previous scan to avoid delete by edit
-        $previousFileName = $mission->getAttachment();
-
-        if ($previousFileName) {
-            $mission->setAttachment(
-                new File($this->getParameter('app_attachment_directory').'/'.$previousFileName)
-            );
-        }
-
-        $form = $this->createForm(MissionType::class, $mission);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            
-            /****************** Update status ******************/
-            // $status = $mission->getStatus(); // Current mission status
-
-            // if ($mission->getDateFinished() !== null && $status !== Mission::STATUS_FINISHED) {
-            //     $mission->setStatus(Mission::STATUS_FINISHED);
-            // }
-            // else if ($mission->getDateAssigned() !== null && $status !== Mission::STATUS_ASSIGNED) {
-            //     $mission->setStatus(Mission::STATUS_ASSIGNED);
-            // }
-            // else if ($status !== Mission::STATUS_DEFAULT) {
-            //     $mission->setStatus(Mission::STATUS_DEFAULT);  // Shouldn't happen
-            // }
-            $mission->updateStatus();
-
-            /**************** Manage attachment ****************/
-            /** @var Symfony\Component\HttpFoundation\File\UploadedFile $file */
-            $file = $mission->getAttachment();
-
-            if ($file) {
-                $fileName = $fileUploader->upload($file);
-
-                $mission->setAttachment($fileName);
-            }
-            else if ($previousFileName) {
-                $mission->setAttachment($previousFileName);
-            }
-
-            /****************** Persist to DB ******************/
-            $em = $this->getDoctrine()->getManager();
-
-            $mission = $form->getData();
-
-            $em->persist($mission);
-            $em->flush();
-
-            return $this->redirectToRoute('app_missions_view', array(
-                'id' => $mission->getId()
-            ));
-        }
-
-        return $this->render('mission/edit.html.twig', array(
-            'form' => $form->createView(),
-            'mission' => $mission,
-            'attachmentUrl' => $previousFileName
-        ));
-    }
-
-    /**
-    * DELETE
-    * 
-    * @Route(
-    *  "/delete/{id}",
-    *  name="app_missions_delete",
-    *  requirements={
-    *      "id"="\d+"
-    *  }
-    * )
-    */
-    public function delete(Mission $mission, FileUploader $fileUploader)
-    {
-        if (!$mission) {
-            throw $this->createNotFoundException('La fiche mission demandée n\'existe pas.');
-
-        }
-
-        // Delete attached file from server
-        $fileName = $mission->getAttachment();
-        $fileUploader->delete($fileName);
-
-        $em = $this->getDoctrine()->getManager();
-        $em->remove($mission);
-        $em->flush();
-
-        $this->addFlash(
-            'notice',
-            'La fiche mission a bien été supprimée.'
-        );
-
-        return $this->redirectToRoute('app_missions_list');
-    }
-
-    /**
      * Close / re-open a mission if its current status is finished / closed respectively
      * 
      * @Route(
-     *  "/close/{id}",
+     *  "/fermer/{id}",
      *  name="app_missions_close",
      *  requirements={
      *      "id"="\d+"
@@ -283,44 +272,54 @@ class MissionController extends Controller
             throw new \Error('Une mission doit être terminée pour être fermée.');
         }
 
-        /****************** Persist to DB ******************/
+        // Persist changes to DB
         $em = $this->getDoctrine()->getManager();
         $em->persist($mission);
         $em->flush();
 
+        // Redirect to Mission view
         return $this->redirectToRoute('app_missions_view', array(
             'id' => $mission->getId()
         ));
     }
 
 
-        /**
-    * Empty field "attachment" and delete file
-    * 
-    * @Route(
-    *  "/delete-attachment/{id}",
-    *  name="app_missions_attachment-delete",
-    *  requirements={
-    *      "id"="\d+"
-    *  }
-    * )
-    */
+    /**
+     * Empty field "attachment" and delete file
+     * 
+     * @Route(
+     *  "/supprimer-pj/{id}",
+     *  name="app_missions_attachment-delete",
+     *  requirements={
+     *      "id"="\d+"
+     *  }
+     * )
+     */
     public function deleteAttachment(Mission $mission, FileUploader $fileUploader)
     { 
-        // Delete file from server
-        $fileName = $mission->getAttachment();
-        $fileUploader->delete($fileName);
+        // Retrieve user and allow action only if user is admin or mission's gla
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $user = $this->getUser();
 
-        // Empty field in database
-        $mission->setAttachment(null);
+        if($user->hasRole('ROLE_ADMIN') || $mission->getGla() === $user->getName()) {
+            // Delete file from server
+            $fileName = $mission->getAttachment();
+            $fileUploader->delete($fileName);
 
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($mission);
-        $em->flush();
+            // Empty field in database
+            $mission->setAttachment(null);
 
-        return $this->redirectToRoute('app_missions_view', array(
-                'id' => $mission->getId()
-        ));
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($mission);
+            $em->flush();
+
+            return $this->redirectToRoute('app_missions_view', array(
+                    'id' => $mission->getId()
+            ));
+        }
+        else {
+            throw new AccessDeniedException();
+        }
     }
 
     /**
@@ -354,16 +353,16 @@ class MissionController extends Controller
 
 
     /**
-    * Recap of opened (= any status but "closed") missions
-    *
-    * @Route(
-    *  "/recap/{page}",
-    *  name="app_missions_recap",
-    *  requirements={
-    *      "page"="\d+"
-    *  }
-    * )
-    */
+     * Recap of opened (= any status but "closed") missions
+     *
+     * @Route(
+     *  "/recap/{page}",
+     *  name="app_missions_recap",
+     *  requirements={
+     *      "page"="\d+"
+     *  }
+     * )
+     */
     public function recap($page = 1)
     {    
         $missions = $this->getNonClosedMissions();

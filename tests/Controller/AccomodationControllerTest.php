@@ -31,8 +31,8 @@ class AccomodationControllerTest extends WebTestCase
     {
         return [
             ['/logements'],
-            ['/logements/add'],
-            ['/logements/edit/1']
+            ['/logements/ajouter'],
+            ['/logements/modifier/1']
         ];
     }
 
@@ -75,7 +75,7 @@ class AccomodationControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $crawler = $client->request('GET', '/logements/add');
+        $crawler = $client->request('GET', '/logements/ajouter');
 
         $form = $crawler->selectButton('Valider')->form();
 
@@ -126,7 +126,7 @@ class AccomodationControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $crawler = $client->request('GET', '/logements/edit/12');
+        $crawler = $client->request('GET', '/logements/modifier/12');
 
         $form = $crawler->selectButton('Valider')->form();
 
@@ -149,7 +149,7 @@ class AccomodationControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $crawler = $client->request('GET', '/logements/edit/12');
+        $crawler = $client->request('GET', '/logements/modifier/12');
 
         $link = $crawler->selectLink('Supprimer')->link();
         
