@@ -4,17 +4,6 @@
 {% block header_h3 %}
   Modifier la fiche mission n°{{ mission.id }}
 {% endblock %}
-
-{% block header_button %}
-  {# Delete button opening a modal #}
-  {# only visible for admin #}
-  {% if is_granted('ROLE_ADMIN') %}
-    <button class="btn btn-sm btn-outline-danger" data-toggle="modal" data-target="#deleteModal">
-      <i class="fas fa-trash-alt"></i>
-      Supprimer
-    </button>
-  {% endif %}
-{% endblock %}
   
 
 {% block card_body %}
@@ -34,7 +23,7 @@
             Confirmez-vous la suppression de cette fiche mission ?
           </div>
           <div class="modal-footer">
-            <a href="{{ path('app_missions_delete', {'id': mission.id}) }}" class="btn btn-danger">Supprimer</a>
+            <a href="{{ path('app_mission_delete', {'id': mission.id}) }}" class="btn btn-danger">Supprimer</a>
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
           </div>
         </div>
@@ -98,11 +87,16 @@
 {% endblock %}
 
 {% block card_footer %}
-    <div class="d-flex justify-content-end">
+    <div class="d-flex justify-content-between">
+      {# Delete button opening a modal #}
+      {# only visible for admin #}
+      {% if is_granted('ROLE_ADMIN') %}
+        <button class="btn btn-sm btn-outline-danger" data-toggle="modal" data-target="#deleteModal">
+          <i class="fas fa-trash-alt"></i>
+          Supprimer la fiche mission
+        </button>
+      {% endif %}
       <input type="submit" class="btn btn-primary mr-2" value="Valider"/>
-      <a href="{{ path('app_missions_view', {'id': mission.id}) }}" class="btn btn-outline-secondary">
-        Annuler
-      </a>
     </div>
   {{ form_end(form) }}
 {% endblock %}

@@ -23,11 +23,11 @@
         {% if is_granted('ROLE_ADMIN') %}
           <div class="col-sm-auto">
             {% if mission.status == constant('STATUS_FINISHED', mission) %}
-              <a href="{{ path('app_missions_close', {'id': mission.id}) }}" class="btn btn-sm btn-primary">
+              <a href="{{ path('app_mission_close', {'id': mission.id}) }}" class="btn btn-sm btn-primary">
                 Fermer
               </a>
             {% elseif mission.status == constant('STATUS_CLOSED', mission) %}
-              <a href="{{ path('app_missions_close', {'id': mission.id}) }}" class="btn btn-sm btn-primary">
+              <a href="{{ path('app_mission_close', {'id': mission.id}) }}" class="btn btn-sm btn-primary">
                 Rouvrir
               </a>
             {% endif %}
@@ -136,7 +136,7 @@
         </a>
         {# delete attachment button only visible for admin or mission's gla #}
         {% if is_granted('ROLE_ADMIN') or (is_granted('ROLE_GLA') and mission.gla == app.user.name) %}
-          <a href="{{ path('app_missions_attachment-delete', {'id': mission.id}) }}" class="btn btn-sm btn-link text-danger">
+          <a href="{{ path('app_mission_attachment-delete', {'id': mission.id}) }}" class="btn btn-sm btn-link text-danger">
             <i class="fas fa-trash-alt"></i>
             Supprimer
           </a>
@@ -156,13 +156,13 @@
 
 {% block card_footer %}
   <div class="d-flex justify-content-between">
-    <a href="{{ path('app_missions_pdf-export', {'id': mission.id}) }}" class="btn btn-primary">
+    <a href="{{ path('app_mission_pdf-export', {'id': mission.id}) }}" class="btn btn-primary">
       <i class="fas fa-download"></i>
       Exporter en PDF
     </a>
     {# edit button only visible for admin, mission's gla or mission's volunteer #}
     {% if is_granted('ROLE_ADMIN') or (is_granted('ROLE_GLA') and mission.gla == app.user.name) or (is_granted('ROLE_VOLUNTEER') and mission.volunteer == app.user.name) %}
-      <a href="{{ path('app_missions_edit', {'id': mission.id}) }}" class="btn btn-outline-primary">
+      <a href="{{ path('app_mission_edit', {'id': mission.id}) }}" class="btn btn-outline-primary">
         <i class="fas fa-edit"></i>
         Modifier
       </a>

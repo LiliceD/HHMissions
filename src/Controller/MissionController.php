@@ -30,10 +30,10 @@ class MissionController extends Controller
     /**
      * @Route(
      *  "/ajouter",
-     *  name="app_missions_add"
+     *  name="app_mission_new"
      * )
      */
-    public function add(Request $request, FileUploader $fileUploader)
+    public function new(Request $request, FileUploader $fileUploader)
     {
         $mission = new Mission();
 
@@ -68,12 +68,12 @@ class MissionController extends Controller
             $em->flush();
 
             // Redirect to mission view
-            return $this->redirectToRoute('app_missions_view', array(
+            return $this->redirectToRoute('app_mission_view', array(
                 'id' => $mission->getId()
             ));
         }
 
-        return $this->render('mission/add.html.twig', array(
+        return $this->render('mission/new.html.twig', array(
             'form' => $form->createView()
         ));
     }
@@ -81,7 +81,7 @@ class MissionController extends Controller
     /**
      * @Route(
      *  "/voir/{id}",
-     *  name="app_missions_view",
+     *  name="app_mission_view",
      *  requirements={
      *      "id"="\d+"
      *  }
@@ -102,7 +102,7 @@ class MissionController extends Controller
     /**
      * @Route(
      *  "/modifier/{id}",
-     *  name="app_missions_edit",
+     *  name="app_mission_edit",
      *  requirements={
      *      "id"="\d+"
      *  }
@@ -160,7 +160,7 @@ class MissionController extends Controller
                 $em->flush();
 
                 // Redirect to mission view
-                return $this->redirectToRoute('app_missions_view', array(
+                return $this->redirectToRoute('app_mission_view', array(
                     'id' => $mission->getId()
                 ));
             }
@@ -179,7 +179,7 @@ class MissionController extends Controller
     /**
      * @Route(
      *  "/supprimer/{id}",
-     *  name="app_missions_delete",
+     *  name="app_mission_delete",
      *  requirements={
      *      "id"="\d+"
      *  }
@@ -207,13 +207,13 @@ class MissionController extends Controller
             'La fiche mission a bien été supprimée.'
         );
 
-        return $this->redirectToRoute('app_missions_list');
+        return $this->redirectToRoute('app_mission_list');
     }
 
     /**
      * @Route(
      *  "/{page}",
-     *  name="app_missions_list",
+     *  name="app_mission_list",
      *  requirements={
      *      "page"="\d+"
      *  }
@@ -240,7 +240,7 @@ class MissionController extends Controller
      * 
      * @Route(
      *  "/fermer/{id}",
-     *  name="app_missions_close",
+     *  name="app_mission_close",
      *  requirements={
      *      "id"="\d+"
      *  }
@@ -278,7 +278,7 @@ class MissionController extends Controller
         $em->flush();
 
         // Redirect to Mission view
-        return $this->redirectToRoute('app_missions_view', array(
+        return $this->redirectToRoute('app_mission_view', array(
             'id' => $mission->getId()
         ));
     }
@@ -289,7 +289,7 @@ class MissionController extends Controller
      * 
      * @Route(
      *  "/supprimer-pj/{id}",
-     *  name="app_missions_attachment-delete",
+     *  name="app_mission_attachment-delete",
      *  requirements={
      *      "id"="\d+"
      *  }
@@ -319,7 +319,7 @@ class MissionController extends Controller
                 'La pièce jointe a bien été supprimée.'
             );
 
-            return $this->redirectToRoute('app_missions_view', array(
+            return $this->redirectToRoute('app_mission_view', array(
                     'id' => $mission->getId()
             ));
         }
@@ -333,7 +333,7 @@ class MissionController extends Controller
      * 
      * @Route(
      *  "/pdf/{id}",
-     *  name="app_missions_pdf-export",
+     *  name="app_mission_pdf-export",
      *  requirements={
      *      "id"="\d+"
      *  }
@@ -341,7 +341,7 @@ class MissionController extends Controller
      */
     public function pdfExport(Mission $mission)
     {
-        $html = $this->renderView('pdf/mission.html.twig', array(
+        $html = $this->renderView('pdf/mission-view.html.twig', array(
             'mission' => $mission
         ));
 
@@ -363,7 +363,7 @@ class MissionController extends Controller
      *
      * @Route(
      *  "/recap/{page}",
-     *  name="app_missions_recap",
+     *  name="app_mission_recap",
      *  requirements={
      *      "page"="\d+"
      *  }
@@ -384,14 +384,14 @@ class MissionController extends Controller
      * 
      * @Route(
      *  "/recap/pdf",
-     *  name="app_missions_recap_pdf-export"
+     *  name="app_mission_recap_pdf-export"
      * )
      */
     public function recapPdfExport()
     {
         $missions = $this->getNonClosedMissions();
 
-        $html = $this->renderView('pdf/missions-recap.html.twig', array(
+        $html = $this->renderView('pdf/mission-recap.html.twig', array(
             'missions' => $missions
         ));
 

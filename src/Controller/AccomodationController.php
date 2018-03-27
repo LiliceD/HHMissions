@@ -39,10 +39,10 @@ class AccomodationController extends Controller
     /**
     * @Route(
     *  "/ajouter",
-    *  name="app_accomodation_add"
+    *  name="app_accomodation_new"
     * )
     */
-    public function add(Request $request)
+    public function new(Request $request)
     {
         $accomodation = new Accomodation();
 
@@ -65,7 +65,7 @@ class AccomodationController extends Controller
             return $this->redirectToRoute('app_accomodation_list');
         }
 
-        return $this->render('accomodation/add.html.twig', [
+        return $this->render('accomodation/new.html.twig', [
             'form' => $form->createView()
         ]);
     }

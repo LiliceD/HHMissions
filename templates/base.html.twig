@@ -29,7 +29,7 @@
     {% block nav %}
       <nav class="navbar navbar-expand-sm navbar-dark bg-primary">
         <div class="container">
-          <span class="navbar-brand mb-0 mr-5 h1" href="{{ path('app_missions_list') }}">Alys DEV</span>
+          <span class="navbar-brand mb-0 mr-5 h1" href="{{ path('app_mission_list') }}">Alys DEV</span>
           
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -44,17 +44,17 @@
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarMissions">
                   <a class="dropdown-item {{ app.request.pathinfo == '/missions' or app.request.pathinfo starts with '/missions/voir' or app.request.pathinfo starts with '/missions/modifier' ? 'active' }}" 
-                     href="{{ path('app_missions_list') }}">
+                     href="{{ path('app_mission_list') }}">
                     Liste
                   </a>
                   <a class="dropdown-item {{ app.request.pathinfo == '/missions/recap' ? 'active' }}" 
-                     href="{{ path('app_missions_recap') }}">
+                     href="{{ path('app_mission_recap') }}">
                     En cours
                   </a>
                   {% if is_granted('ROLE_GLA') %}
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item {{ app.request.pathinfo == '/missions/ajouter' ? 'active' }}" 
-                       href="{{ path('app_missions_add') }}">
+                       href="{{ path('app_mission_new') }}">
                       Créer une FM
                     </a>
                   {% endif %}
