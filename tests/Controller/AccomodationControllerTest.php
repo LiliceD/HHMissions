@@ -51,11 +51,11 @@ class AccomodationControllerTest extends WebTestCase
     }
 
     /**
-     * Access form to add accomodation from /logements
+     * Access form to create a new accomodation from /logements
      *
      * @group accomodation
      */
-    public function testAddAccomodationFromList()
+    public function testNewAccomodationFromList()
     {
         $client = static::createClient();
 
@@ -71,7 +71,7 @@ class AccomodationControllerTest extends WebTestCase
     /**
      * @group accomodation
      */
-    public function testAddAccomodation()
+    public function testNewAccomodation()
     {
         $client = static::createClient();
 
@@ -97,7 +97,7 @@ class AccomodationControllerTest extends WebTestCase
     }
 
     /**
-     * Access edit of the accomodation created in testAddAccomodation() from /logements
+     * Access edit of the accomodation created in testNewAccomodation() from /logements
      *
      * @group accomodation
      */
@@ -118,7 +118,7 @@ class AccomodationControllerTest extends WebTestCase
     }
 
     /**
-     * Edit access of the accomodation created in testAddAccomodation()
+     * Edit access of the accomodation created in testNewAccomodation()
      *
      * @group accomodation
      */

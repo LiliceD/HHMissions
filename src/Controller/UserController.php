@@ -15,7 +15,7 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 class UserController extends Controller
 {
     /**
-     * @Route("/ajouter", name="user_register")
+     * @Route("/ajouter", name="app_user_registration")
      */
     public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder)
     {
@@ -45,7 +45,7 @@ class UserController extends Controller
                 'L\'utilisateur a bien été créé.'
             );
 
-            return $this->redirectToRoute('app_missions_list');
+            return $this->redirectToRoute('app_mission_list');
         }
 
         return $this->render(
@@ -57,7 +57,7 @@ class UserController extends Controller
     /**
      * @Route(
      *  "/supprimer/{id}",
-     *  name="user_delete",
+     *  name="app_user_delete",
      *  requirements={
      *      "id"="\d+"
      *  }
@@ -80,7 +80,7 @@ class UserController extends Controller
             'L\'utilisateur a bien été supprimé.'
         );
 
-        return $this->redirectToRoute('app_missions_list');
+        return $this->redirectToRoute('app_mission_list');
     }
 
 }

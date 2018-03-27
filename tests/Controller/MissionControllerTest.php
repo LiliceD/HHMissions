@@ -53,9 +53,27 @@ class MissionControllerTest extends WebTestCase
     }
 
     /**
+     * Access form to create a new mission from /missions
+     *
      * @group mission
      */
-    public function testAddMission()
+    public function testNewMissionFromList()
+    {
+        $client = static::createClient();
+
+        $crawler = $client->request('GET', '/missions');
+
+        $link = $crawler->selectLink('Créer une fiche mission')->link();
+
+        $crawler = $client->click($link);
+
+        $this->assertSame(1, $crawler->filter('h3:contains("Fiche mission GLA-Bénévole n°5")')->count());
+    }
+
+    /**
+     * @group mission
+     */
+    public function testNewMission()
     {
         $client = static::createClient();
 
@@ -83,7 +101,7 @@ class MissionControllerTest extends WebTestCase
     }
 
     /**
-     * Access view of the mission created in testAddMission() from /missions
+     * Access view of the mission created in testNewMission() from /missions
      *
      * @group mission
      */
@@ -101,7 +119,7 @@ class MissionControllerTest extends WebTestCase
     }
 
     /**
-     * Access edit of the mission created in testAddMission() from /missions
+     * Access edit of the mission created in testNewMission() from /missions
      *
      * @group mission
      */
@@ -119,7 +137,7 @@ class MissionControllerTest extends WebTestCase
     }
 
     /**
-     * Edit the mission created in testAddMission()
+     * Edit the mission created in testNewMission()
      *
      * @group mission
      */
@@ -146,7 +164,7 @@ class MissionControllerTest extends WebTestCase
     }
 
     /**
-     * Delete the mission created in testAddMission()
+     * Delete the mission created in testNewMission()
      *
      * @group mission
      */
@@ -154,9 +172,9 @@ class MissionControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $crawler = $client->request('GET', '/missions/voir/5');
+        $crawler = $client->request('GET', '/missions/modifier/5');
 
-        $link = $crawler->selectLink('Supprimer')->link();
+        $link = $crawler->selectLink('Supprimer la fiche mission')->link();
 
         $crawler = $client->click($link);
         $crawler = $client->followRedirect();
