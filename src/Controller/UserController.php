@@ -49,7 +49,7 @@ class UserController extends Controller
         }
 
         return $this->render(
-            'user/register.html.twig',
+            'user/new.html.twig',
             array('form' => $form->createView())
         );
     }

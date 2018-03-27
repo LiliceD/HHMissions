@@ -4,20 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>{% block title %}Fiches Mission{% endblock %}</title>
+    <title>
+      {% block title %}
+        Fiches Mission
+      {% endblock %}
+    </title>
 
     <link rel="icon" type="image/ico" href="{{ absolute_url(asset('style/images/favicon.ico')) }}" />
 
 
     {% block stylesheets %}
-
       <!-- Bootstrap -->
       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
       <!-- Font Awesome -->
       <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
 
       <link href="{{ asset('style/css/style.css') }}" rel="stylesheet">
-
     {% endblock %}
 
   </head>
@@ -25,61 +27,67 @@
   <body>
 
     {% block nav %}
-
       <nav class="navbar navbar-expand-sm navbar-dark bg-primary">
         <div class="container">
-          <span class="navbar-brand mb-0 h1" href="{{ path('app_missions_list') }}">Fiches Mission DEV</span>
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-brand mb-0 mr-5 h1" href="{{ path('app_missions_list') }}">Alys DEV</span>
+          
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
-          <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+
+          {# left-hand-side nav #}
+          <div class="collapse navbar-collapse" id="navbar">
+            <ul class="navbar-nav mr-auto">
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle {{ app.request.pathinfo starts with '/missions' ? 'active' }}" href="#" id="navbarMissions" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Fiches Mission
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarMissions">
+                  <a class="dropdown-item {{ app.request.pathinfo == '/missions' or app.request.pathinfo starts with '/missions/voir' or app.request.pathinfo starts with '/missions/modifier' ? 'active' }}" 
+                     href="{{ path('app_missions_list') }}">
+                    Liste
+                  </a>
+                  <a class="dropdown-item {{ app.request.pathinfo == '/missions/recap' ? 'active' }}" 
+                     href="{{ path('app_missions_recap') }}">
+                    En cours
+                  </a>
+                  {% if is_granted('ROLE_GLA') %}
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item {{ app.request.pathinfo == '/missions/ajouter' ? 'active' }}" 
+                       href="{{ path('app_missions_add') }}">
+                      Créer une FM
+                    </a>
+                  {% endif %}
+                </div>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link {% if app.request.pathinfo starts with '/logements' %}active{% endif %}"
+                   href="{{ path('app_accomodation_list') }}">
+                  Logements
+                </a>
+              </li>
+            </ul>
+
+            {# right-hand-side nav #}
             <div class="navbar-nav">
-              <a class="nav-item nav-link {% if app.request.pathinfo == "/missions" %}active{% endif %}" href="{{ path('app_missions_list') }}">Liste</a>
-              <a class="nav-item nav-link {% if app.request.pathinfo == "/missions/add" %}active{% endif %}" href="{{ path('app_missions_add') }}">Créer une FM</a>
-              <a class="nav-item nav-link {% if app.request.pathinfo == "/missions/recap" %}active{% endif %}" href="{{ path('app_missions_recap') }}">Récap FM en cours</a>
-              <a class="nav-item nav-link {% if app.request.pathinfo == "/logements" %}active{% endif %}" href="{{ path('app_accomodation_list') }}">Logements</a>
+              {# <a class="nav-item nav-link" href="{{ path('logout') }}">
+                Déconnexion
+              </a> #}
+              <a class="nav-item nav-link" href="{{ path('logout') }}">
+                Se déconnecter
+              </a>
             </div>
           </div>
         </div>
       </nav>
-
     {% endblock %}
-
 
     <br>
     
-
     {% block body %}
-
-      <div class="container">
-        <h3>{% block layout_h3 %}Fiches Mission{% endblock %}</h3>
-
-        <hr>
-
-
-        {% block flash_messages %}
-
-          {% for message in app.flashes('notice') %}
-              <div class="alert alert-success">
-                  <a href="#" class="close" data-dismiss="alert" aria-label="Fermer">&times;</a>
-                  {{ message }}
-              </div>
-          {% endfor %}
-
-        {% endblock %}
-        
-
-        {% block content %}
-
-        {% endblock %}
-
-      </div>
-
     {% endblock %}
 
-
     {% block javascripts %}
-
       <!-- Bootstrap JavaScript -->
       <script
         src="https://code.jquery.com/jquery-3.3.1.min.js"
@@ -89,7 +97,6 @@
         src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" 
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" 
         crossorigin="anonymous"></script>
-
     {% endblock %}
 
   </body>

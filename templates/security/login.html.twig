@@ -1,21 +1,49 @@
-{% if error %}
-    <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-{% endif %}
+{% extends 'base.html.twig' %}
 
-<form action="{{ path('login') }}" method="post">
-    <label for="username">Nom d'utilisateur :</label>
-    <input type="text" id="username" name="_username" value="{{ last_username }}" />
 
-    <label for="password">Mot de passe :</label>
-    <input type="password" id="password" name="_password" />
+{% block nav %}
+{% endblock %}
 
-    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}" />
-    
-    {#
-        If you want to control the URL the user
-        is redirected to on success (more details below)
-        <input type="hidden" name="_target_path" value="/account" />
-    #}
 
-    <button type="submit">Connexion</button>
-</form>
+{% block body %}
+  <div class="container col-md-7 col-lg-6 mt-sm-5">
+    <div class="card bg-light mb-4">
+
+      <div class="card-header bg-white pt-3 d-flex justify-content-between">
+        <h4>Se connecter</h4>
+      </div>
+
+      <div class="card-body">
+        {% if error %}
+          <div class="alert alert-danger">
+            {{ error.messageKey|trans(error.messageData, 'security') }}
+          </div>
+        {% endif %}
+
+        <form action="{{ path('login') }}" method="post">
+          <div class="d-sm-flex align-items-center mb-4">
+            <label for="username" class="col-sm-auto">Nom d'utilisateur :</label>
+            <input type="text" id="username" name="_username" class="col-sm form-alike" value="{{ last_username }}" />
+          </div>
+          
+          <div class="d-sm-flex align-items-center mb-4">
+            <label for="password" class="col-sm-auto">Mot de passe :</label>
+            <input type="password" id="password" name="_password" class="col-sm form-alike" />
+          </div>
+
+          <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}" />
+          
+          {#
+              If you want to control the URL the user
+              is redirected to on success (more details below)
+              <input type="hidden" name="_target_path" value="/account" />
+          #}
+          <div class="d-flex justify-content-end">
+            <button type="submit" class="btn btn-primary">Connexion</button>
+          </div>
+        </form>
+      </div> {# div card-body #}
+
+    </div> {# div card #}
+  </div> {# div container #}
+{% endblock %}

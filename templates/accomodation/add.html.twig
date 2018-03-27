@@ -1,73 +1,13 @@
 {% extends 'accomodation/layout.html.twig' %}
 
-{% block layout_h3 %}
+
+{% block header_h3 %}
     Ajouter un logement
 {% endblock %}
 
-{% block form_content %}
-
-  {{ form_start(form) }}
-
-    <div class="row justify-content-between">
-      <div class="col-6">
-        {{ form_row(form.name) }}
-      </div>
-    </div>
-
-    {{ form_row(form.street) }}
-
-    <div class="row justify-content-between">
-      <div class="col-3">
-        {{ form_row(form.postalCode) }}
-      </div>
-      <div class="col-9">
-        {{ form_row(form.city) }}
-      </div>
-    </div>
-
-    <div class="row justify-content-between">
-      <div class="col-5">
-        {{ form_row(form.ownerType) }}
-      </div>
-    </div>
-
-    {{ form_row(form.access) }}
-    
-    <hr>
-
-    <div class="row justify-content-end align-items-center">
-      <input type="submit" class="btn btn-primary mr-2" value="Valider"/>
-      <a href="{{ path('app_accomodation_list') }}" class="btn btn-outline-secondary mr-4">
-        Annuler
-      </a>
-    </div>
-  {{ form_end(form) }}
-
-{% endblock %}
-
-{% block javascripts %}
-  {{ parent() }}
-
-  <script>
-  // Remove accent and capitalize address and city
-  document.getElementById("accomodation_street").addEventListener("input", function (e) {
-    e.target.value = standardizeInput(e.target.value);
-  });
-  document.getElementById("accomodation_city").addEventListener("input", function (e) {
-    e.target.value = standardizeInput(e.target.value);
-  });
-
-  // Replace with city name dynamic population
-  document.getElementById("accomodation_postalCode").addEventListener("change", function (e) {
-    const input = e.target.value; 
-    if (input.match(/^6900\d$/)) {
-        document.getElementById("accomodation_city").value = "LYON " + input[input.length - 1]; 
-    }
-  });
-
-  function standardizeInput(input) {
-    return input.normalize('NFD').replace(/[\u0300-\u036F]/g, "").toUpperCase();
-  }
-  </script>
-
+{% block header_button %}
+  <a href="{{ path('app_accomodation_list') }}" class="btn btn-outline-secondary">
+    <i class="fas fa-chevron-left"></i>
+    Retour à la liste
+  </a>
 {% endblock %}

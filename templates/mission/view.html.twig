@@ -1,232 +1,171 @@
-{% extends 'mission/layout.html.twig' %}
+{% extends 'layout-center.html.twig' %}
 
-{% block title %}
-  Suivi des {{ parent() }}
+{% block header_h3 %}
+  Fiche mission GLA-Bénévole n°{{ mission.id }}
 {% endblock %}
+     
 
-{% block layout_h3 %}
-  <div class="row justify-content-between">
-    <div class="col-md-6">
-      Fiche mission GLA-Bénévole n°{{ mission.id }}
-    </div>
-    <div class="col-md-6">
-      <div class="row justify-content-end align-items-center">
-        <a href="{{ path('app_missions_list') }}" class="btn btn-outline-secondary mr-4">
-          <i class="fas fa-chevron-left"></i>
-          Retour à la liste
-        </a>
-        {# edit button only visible for admin, mission's gla or mission's volunteer #}
-        {% if is_granted('ROLE_ADMIN') or (is_granted('ROLE_GLA') and mission.gla == app.user.name) or (is_granted('ROLE_VOLUNTEER') and mission.volunteer == app.user.name) %}
-          <a href="{{ path('app_missions_edit', {'id': mission.id}) }}" class="btn btn-outline-primary mr-2">
-            <i class="fas fa-edit"></i>
-            Modifier
-          </a>
-        {% endif %}
-        {# delete button only visible for admin #}
-        {# button opening a modal #}
-        {% if is_granted('ROLE_ADMIN') %}
-          <button class="btn btn-sm btn-outline-danger mr-4" data-toggle="modal" data-target="#deleteModal">
-            <i class="fas fa-trash-alt"></i>
-            Supprimer
-          </button>
-        {% endif %}
-      </div>
-    </div>
-  </div>
-{% endblock %}
-
-{% block content %}
-  {# delete modal only visible for admin #}
-  {# Modal to confirm mission delete #}
-  {% if is_granted('ROLE_ADMIN') %}
-    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="deleteModalLabel">Supprimer la fiche mission</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            Confirmez-vous la suppression de cette fiche mission ?
-          </div>
-          <div class="modal-footer">
-            <a href="{{ path('app_missions_delete', {'id': mission.id}) }}" class="btn btn-danger">Supprimer</a>
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  {% endif %}
-
-  {# Mission view #}
-  <div class="row justify-content-center">
-    <div class="col-md-10">
-
-      {# row Status/GLA/Volunteer + Dates #}
-      <div class="row justify-content-between align-items-center">
-        
-        {# block Status/GLA/Volunteer #}
-        <div class="col-md-6">
-          <div class="row align-items-center">
-            <div class="col-md-4 text-right">
-              Statut :
-            </div>
-            <div id="status" class="col-md-4">
-              {{ mission.status }}
-            </div>
-            {# Button to close / reopen a mission when finished #}
-            {# only visible for admin #}
-            {% if is_granted('ROLE_ADMIN') %}
-              <div class="col-md-4">
-                {% if mission.status == constant('STATUS_FINISHED', mission) %}
-                  <a href="{{ path('app_missions_close', {'id': mission.id}) }}" class="btn btn-sm btn-primary">
-                    Fermer
-                  </a>
-                {% elseif mission.status == constant('STATUS_CLOSED', mission) %}
-                  <a href="{{ path('app_missions_close', {'id': mission.id}) }}" class="btn btn-sm btn-primary">
-                    Rouvrir
-                  </a>
-                {% endif %}
-              </div>
-            {% endif %}
-          </div>
-          <div class="row">
-            <div class="col-md-4 text-right">
-              Provenance GLA :
-            </div>
-            <div id="gla" class="col-md-8 font-weight-bold">
-              {{ mission.gla }}
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-4 text-right">
-              Bénévole :
-            </div>
-            <div id="volunteer" class="col-md-8 font-weight-bold">
-              {{ mission.volunteer }}
-            </div>
-          </div>
-        </div>
-
-        {# block Dates #}
-        <div class="col-md-6">
-          <div class="row">
-            <div class="col-md-8 text-right">
-              Date création :
-            </div>
-            <div id="dateCreated" class="col-md-4 font-weight-bold">
-              {{ mission.dateCreated|date('d/m/Y') }}
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-8 text-right">
-              Date prise en charge :
-            </div>
-            <div id="dateAssigned" class="col-md-4 font-weight-bold">
-              {{ mission.dateAssigned ? mission.dateAssigned|date('d/m/Y') }}
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-8 text-right">
-              Date fin de mission :
-            </div>
-            <div id="dateFinished" class="col-md-4 font-weight-bold">
-              {{ mission.dateFinished ? mission.dateFinished|date('d/m/Y') }}
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <br>
-
-      {# rows Address + type of owner #}
-      <div class="row justify-content-start">
-        <div class="col-md-3 text-right">
-          Adresse d'intervention :
-        </div>
-        <div id="address" class="col-md-8 font-weight-bold">
-          {{ mission.accomodation.address }}
-        </div>
-      </div>
-      
-        <div class="row justify-content-start">
-          <div class="col-md-3 text-right">
-            Propriétaire :
-          </div>
-          <div class="col-md-8">
-            {% if mission.accomodation.ownerType %}
-              {{ mission.accomodation.ownerType }}
-            {% endif %}
-          </div>
-        </div>
-      
-
-      <br>
-
-      {# rows description/info/conclusions #}
-      <div class="row justify-content-center">
-        
-        <div class="col-lg-12">
-          <strong>Description mission :</strong>
-        </div>
-        <div id="description" class="col-lg-12 border mb-3">
-          {{ mission.description|nl2br }}
-          <br>
-          <br>
-          <br>
-        </div>
-        
-        <div class="col-lg-12">
-          <strong>Informations complémentaires :</strong>
-        </div>
-        <div id="info" class="col-lg-12 border mb-3">
-          {{ mission.info|nl2br }}
-          <br>
-          <br>
-        </div>
-        
-        <div class="col-lg-12">
-          <strong>Retour mission et conclusions :</strong>
-        </div>
-        <div id="conclusions" class="col-lg-12 border mb-3">
-          {{ mission.conclusions|nl2br }}
-          <br>
-          <br>
-          <br>
-        </div>
-
-      </div>
-
-    </div>
-  </div>
-  
-  <hr>
-
+{% block card_body %}
+  {# row Status/GLA/Volunteer + Dates #}
   <div class="row justify-content-between align-items-center">
-    <div class="col">
-      <a href="{{ path('app_missions_pdf-export', {'id': mission.id}) }}" class="btn btn-primary">
-        <i class="fas fa-download"></i>
-        Exporter en PDF
-      </a>
-    </div>
-    <div class="col-md-auto">
-      {% if mission.attachment %}
-        <a href="{{ asset('uploads/pdf/' ~ mission.attachment) }}" target="_blank" class="btn btn-primary mr-2">
-          Voir la pièce jointe
-        </a>
-        {# delete attachment button only visible for admin or mission's gla #}
-        {% if is_granted('ROLE_ADMIN') or (is_granted('ROLE_GLA') and mission.gla == app.user.name) %}
-          <a href="{{ path('app_missions_attachment-delete', {'id': mission.id}) }}" class="btn btn-outline-danger btn-sm mr-4">
-            Supprimer la pièce jointe
-          </a>
+    
+    {# col Status/GLA/Volunteer #}
+    <div class="col-sm-auto">
+      <div class="row align-items-center mb-2">
+        <div class="col-sm-auto">
+          Statut :
+        </div>
+        <div id="status" class="col-sm-auto text-form-alike font-weight-normal">
+          {{ mission.status }}
+        </div>
+        {# Button to close / reopen a mission when finished #}
+        {# only visible for admin #}
+        {% if is_granted('ROLE_ADMIN') %}
+          <div class="col-sm-auto">
+            {% if mission.status == constant('STATUS_FINISHED', mission) %}
+              <a href="{{ path('app_missions_close', {'id': mission.id}) }}" class="btn btn-sm btn-primary">
+                Fermer
+              </a>
+            {% elseif mission.status == constant('STATUS_CLOSED', mission) %}
+              <a href="{{ path('app_missions_close', {'id': mission.id}) }}" class="btn btn-sm btn-primary">
+                Rouvrir
+              </a>
+            {% endif %}
+          </div>
         {% endif %}
+      </div>
+      <div class="row align-items-center mb-2">
+        <div class="col-sm-auto">
+          Provenance GLA :
+        </div>
+        <div id="gla" class="col-sm-auto text-form-alike">
+          {{ mission.gla }}
+        </div>
+      </div>
+      <div class="row align-items-center mb-2">
+        <div class="col-sm-auto">
+          Bénévole :
+        </div>
+        <div id="volunteer" class="col-sm-auto text-form-alike">
+          {{ mission.volunteer ? : '-' }}
+        </div>
+      </div>
+    </div> {# col Status/GLA/Volunteer #}
+
+    {# col Dates #}
+    <div class="col-sm-auto">
+      <div class="row justify-content-end align-items-center mb-2">
+        <div class="col-sm-auto">
+          Date création :
+        </div>
+        <div id="dateCreated" class="col-sm-auto text-form-alike">
+          {{ mission.dateCreated|date('d/m/Y') }}
+        </div>
+      </div>
+      <div class="row justify-content-end align-items-center mb-2">
+        <div class="col-sm-auto">
+          Date prise en charge :
+        </div>
+        <div id="dateAssigned" class="col-sm-auto text-form-alike">
+          {{ mission.dateAssigned ? mission.dateAssigned|date('d/m/Y') : '-' }}
+        </div>
+      </div>
+      <div class="row justify-content-end align-items-center mb-2">
+        <div class="col-sm-auto">
+          Date fin de mission :
+        </div>
+        <div id="dateFinished" class="col-sm-auto text-form-alike">
+          {{ mission.dateFinished ? mission.dateFinished|date('d/m/Y') : '-' }}
+        </div>
+      </div>
+    </div> {# col Dates #}
+
+  </div> {# row Status/GLA/Volunteer + Dates #}
+
+  <br>
+
+  {# block Address + type of owner #}
+  <div class="row align-items-center mb-2">
+    <div class="col-sm-auto">
+      Adresse d'intervention :
+    </div>
+    <div class="pl-3 pr-3">
+      <div id="address" class="col-sm-auto form-alike text-form-alike">
+        {{ mission.accomodation.address }}
+      </div>
+    </div>
+  </div>
+  <div class="row align-items-center mb-2">
+    <div class="col-sm-auto">
+      Propriétaire :
+    </div>
+    <div class="col-sm-auto text-form-alike font-weight-normal">
+      {% if mission.accomodation.ownerType %}
+        {{ mission.accomodation.ownerType }}
       {% endif %}
     </div>
   </div>
 
   <br>
 
+  {# block description/info/attachment/conclusions #}
+  <div class="mb-2">
+    <strong>Description mission :</strong>
+  </div>
+  <div id="description" class="border mb-4 form-alike">
+    {{ mission.description|nl2br }}
+  </div>
+
+  <div class="mb-2">
+    <strong>Informations complémentaires :</strong>
+  </div>
+  <div id="info" class="border mb-4 form-alike">
+    {{ mission.info|nl2br ? : '<br>' }}
+  </div>
+
+  
+  {% if mission.attachment %}
+    <div class="d-sm-flex align-items-center mb-4">
+      <div class="mr-4">
+        <span>Pièce jointe : </span>
+      </div>
+      <div>
+        <a href="{{ asset('uploads/pdf/' ~ mission.attachment) }}" target="_blank" class="btn btn-primary mr-2">
+          <i class="fas fa-external-link-alt"></i>
+          Voir
+        </a>
+        {# delete attachment button only visible for admin or mission's gla #}
+        {% if is_granted('ROLE_ADMIN') or (is_granted('ROLE_GLA') and mission.gla == app.user.name) %}
+          <a href="{{ path('app_missions_attachment-delete', {'id': mission.id}) }}" class="btn btn-sm btn-link text-danger">
+            <i class="fas fa-trash-alt"></i>
+            Supprimer
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+  
+
+  <div class="mb-2">
+    <strong>Retour mission et conclusions :</strong>
+  </div>
+  <div id="conclusions" class="border mb-4 form-alike">
+    {{ mission.conclusions|nl2br ? : '<br><br><br><br>' }}
+  </div>
+{% endblock %}
+
+{% block card_footer %}
+  <div class="d-flex justify-content-between">
+    <a href="{{ path('app_missions_pdf-export', {'id': mission.id}) }}" class="btn btn-primary">
+      <i class="fas fa-download"></i>
+      Exporter en PDF
+    </a>
+    {# edit button only visible for admin, mission's gla or mission's volunteer #}
+    {% if is_granted('ROLE_ADMIN') or (is_granted('ROLE_GLA') and mission.gla == app.user.name) or (is_granted('ROLE_VOLUNTEER') and mission.volunteer == app.user.name) %}
+      <a href="{{ path('app_missions_edit', {'id': mission.id}) }}" class="btn btn-outline-primary">
+        <i class="fas fa-edit"></i>
+        Modifier
+      </a>
+    {% endif %}
+  </div>
 {% endblock %}

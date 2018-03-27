@@ -16,6 +16,23 @@
 }
 
 
+/* mission/view.html.twig */
+
+.form-alike {
+  padding: .375rem .75rem;
+  color: #495057;
+  background-color: #fff;
+  border: 1px solid #ced4da;
+  border-radius: .25rem;
+}
+
+.text-form-alike {
+  min-width: 117px;
+  color: #495057;
+  font-weight: bold;
+}
+
+
 /* mission/recap.html.twig */
 
 .table-recap {

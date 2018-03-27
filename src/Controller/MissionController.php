@@ -313,6 +313,12 @@ class MissionController extends Controller
             $em->persist($mission);
             $em->flush();
 
+            // Set a "flash" success message
+            $this->addFlash(
+                'notice',
+                'La pièce jointe a bien été supprimée.'
+            );
+
             return $this->redirectToRoute('app_missions_view', array(
                     'id' => $mission->getId()
             ));

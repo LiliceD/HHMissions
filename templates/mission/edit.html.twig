@@ -1,76 +1,108 @@
-{% extends 'mission/layout.html.twig' %}
+{% extends 'layout-center.html.twig' %}
 
-{% block title %}
-  {{ parent() }}
-{% endblock %}
 
-{% block layout_h3 %}
+{% block header_h3 %}
   Modifier la fiche mission n°{{ mission.id }}
 {% endblock %}
 
-{% block form_content %}
+{% block header_button %}
+  {# Delete button opening a modal #}
+  {# only visible for admin #}
+  {% if is_granted('ROLE_ADMIN') %}
+    <button class="btn btn-sm btn-outline-danger" data-toggle="modal" data-target="#deleteModal">
+      <i class="fas fa-trash-alt"></i>
+      Supprimer
+    </button>
+  {% endif %}
+{% endblock %}
   
+
+{% block card_body %}
+  {# Modal to confirm mission delete #}
+  {# only visible for admin #}
+  {% if is_granted('ROLE_ADMIN') %}
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="deleteModalLabel">Supprimer la fiche mission</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            Confirmez-vous la suppression de cette fiche mission ?
+          </div>
+          <div class="modal-footer">
+            <a href="{{ path('app_missions_delete', {'id': mission.id}) }}" class="btn btn-danger">Supprimer</a>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {# Form #}
   {{ form_start(form) }}
 
     <div class="row justify-content-between">
-      <div class="col-4">
-        {{ form_row(form.status, {'attr': {'readonly': 'true'}}) }}
+      <div class="d-flex">
+        <div class="col-sm">
+          {{ form_row(form.status, {'attr': {'readonly': 'true'}}) }}
+          {{ form_row(form.gla, {'attr': {'readonly': 'true'}}) }}
+          {{ form_row(form.volunteer) }}
+        </div>
       </div>
-      <div class="col-4">
-        {{ form_row(form.dateCreated, {'attr': {'readonly': 'true'}}) }}
-      </div>
-    </div>
-
-    <div class="row justify-content-between">
-      <div class="col-4">
-        {{ form_row(form.gla, {'attr': {'readonly': 'true'}}) }}
-      </div>
-      <div class="col-4">
-        {{ form_row(form.dateAssigned) }}
-      </div>
-    </div>
-
-    <div class="row justify-content-between">
-      <div class="col-4">
-        {{ form_row(form.volunteer) }}
-      </div>
-      <div class="col-4">
-        {{ form_row(form.dateFinished) }}
+      <div class="d-flex">
+        <div class="col-sm">
+          {{ form_row(form.dateCreated, {'attr': {'readonly': 'true'}}) }}
+          {{ form_row(form.dateAssigned) }}
+          {{ form_row(form.dateFinished) }}
+        </div>
       </div>
     </div>
 
     {{ form_row(form.accomodation, {'attr': {'readonly': 'true'}}) }}
     
-    <div class="form-group">
-      <label for="accomodation_ownerType" class="form-control-label">Propriétaire :</label>
-      <input type="text" id="accomodation_ownerType" name="accomodation[ownerType]" readonly="true" class="form-control" value="{{ mission.accomodation.ownerType }}" />
+    <div class="d-flex">
+      <div class="form-group">
+        <label for="accomodation_ownerType" class="form-control-label">Propriétaire :</label>
+        <input type="text" id="accomodation_ownerType" name="accomodation[ownerType]" readonly="true" class="form-control" value="{{ mission.accomodation.ownerType }}" />
+      </div>
     </div>
 
     <br>
-    <br>
 
     {{ form_row(form.description) }}
+
     {{ form_row(form.info) }}
-    {{ form_row(form.conclusions) }}
 
     {{ form_label(form.attachment) }}
     {% if mission.attachment %}
+      <div class="alert alert-info">
+        <a href="#" class="close" data-dismiss="alert" aria-label="Fermer">&times;</a>
+        Il n'est possible de joindre qu'<strong>un seul fichier</strong>, au format <strong>PDF uniquement</strong>.
+      </div>
       <div class="alert alert-warning">
-        Attention, cette mission a déjà une pièce jointe ! Si vous ajoutez un fichier, il remplacera le fichier existant.<br>
-        Pour voir le PDF actuellement enregistré, <a href="{{ asset('uploads/pdf/' ~ attachmentUrl) }}" target="_blank" class="alert-link">cliquez ici</a>.
+        <a href="#" class="close" data-dismiss="alert" aria-label="Fermer">&times;</a>
+        <strong>Attention, cette mission a déjà une pièce jointe !</strong>
+        Pour la voir, <a href="{{ asset('uploads/pdf/' ~ attachmentUrl) }}" target="_blank" class="alert-link">cliquez ici</a>.<br>
+        Si vous ajoutez un nouveau fichier, il remplacera le fichier existant.<br>
       </div>
     {% endif %}
     {{ form_widget(form.attachment) }}
+    
+    <br>
+    
+    {{ form_row(form.conclusions) }}
+{% endblock %}
 
-    <hr>
-
-    <div class="row justify-content-end align-items-center">
+{% block card_footer %}
+    <div class="d-flex justify-content-end">
       <input type="submit" class="btn btn-primary mr-2" value="Valider"/>
-      <a href="{{ path('app_missions_view', {'id': mission.id}) }}" class="btn btn-outline-secondary mr-4">
+      <a href="{{ path('app_missions_view', {'id': mission.id}) }}" class="btn btn-outline-secondary">
         Annuler
       </a>
     </div>
   {{ form_end(form) }}
-
-  <br>
 {% endblock %}

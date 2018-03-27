@@ -1,76 +1,69 @@
-{% extends 'mission/layout.html.twig' %}
+{% extends 'layout-large.html.twig' %}
 
-{% block title %}
-  Suivi des {{ parent() }}
+
+{% block header_h3 %}
+  Récapitulatif des fiches mission en cours
 {% endblock %}
 
-{% block body %}
-  <div class="container-fluid">
-    <div class="row justify-content-between">
-      <h3 class="col-md-6">Récapitulatif des fiches mission en cours</h3>
-      <div class="col-md-3">
-        <div class="row justify-content-end">
-          <a href="{{ path('app_missions_recap_pdf-export') }}" class="btn btn-primary mr-4  right">
-            <i class="fas fa-download"></i>
-            Exporter en PDF
-          </a>
-        </div>
-      </div>
-    </div>
 
-    <hr>
+{% block content %}
+  <div>
+    <a href="{{ path('app_missions_recap_pdf-export') }}" class="btn btn-primary">
+      <i class="fas fa-download"></i>
+      Exporter au format PDF
+    </a>
+  </div>
 
-    <div class="table-responsive">
-      <table class="table table-sm table-hover table-recap">
+  <br>
 
-        <thead class="thead-light">
+  <div class="table-responsive">
+    <table class="table table-sm table-hover table-recap">
+
+      <thead class="thead-light">
+        <tr>
+          <th scope="col" class="table-recap-id">#</th>
+          <th scope="col" class="table-recap-date">Date demande</th>
+          <th scope="col" class="table-recap-date">Provenance GLA</th>
+          <th scope="col" class="table-recap-date">Date prise en charge</th>
+          <th scope="col" class="table-recap-date">Date fin mission</th>
+          <th scope="col" class="table-recap-address">Adresse</th>
+          <th scope="col" class="table-recap-description">Description mission</th>
+          <th scope="col" class="table-recap-date">Bénévole</th>
+          <th scope="col" class="table-recap-description">Retour mission et conclusions</th>
+          <th scope="col" class="table-recap-statut">Statut</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for mission in missions %}
           <tr>
-            <th scope="col" class="table-recap-id">#</th>
-            <th scope="col" class="table-recap-date">Date demande</th>
-            <th scope="col" class="table-recap-date">Provenance GLA</th>
-            <th scope="col" class="table-recap-date">Date prise en charge</th>
-            <th scope="col" class="table-recap-date">Date fin mission</th>
-            <th scope="col" class="table-recap-address">Adresse</th>
-            <th scope="col" class="table-recap-description">Description mission</th>
-            <th scope="col" class="table-recap-date">Bénévole</th>
-            <th scope="col" class="table-recap-description">Retour mission et conclusions</th>
-            <th scope="col" class="table-recap-statut">Statut</th>
+            <td>
+              <a href="{{ path('app_missions_view', {'id': mission.id}) }}" title="Voir la FM">
+                {{ mission.id }}
+              </a>
+            </td>
+            <th scope="row">
+              {{ mission.dateCreated|date('d/m/y') }}
+            </th>
+            <td>{{ mission.gla }}</td>
+            <td>{{ mission.dateAssigned|date('d/m/y') }}</td>
+            <td>{{ mission.dateFinished|date('d/m/y') }}</td>
+            <td>
+              {% if mission.accomodation.name %}
+                {{ mission.accomodation.name }} - 
+              {% endif %}
+              {{ mission.accomodation.street }}
+              <br>
+              {{ mission.accomodation.postalCode }} {{ mission.accomodation.city }}
+            </td>
+            <td>{{ mission.description|nl2br }}</td>
+            <td>{{ mission.volunteer }}</td>
+            <td>{{ mission.conclusions|nl2br }}</td>
+            <td>{{ mission.status }}</td>
           </tr>
-        </thead>
+        {% endfor %}
+      </tbody>
 
-        <tbody>
-
-          {% for mission in missions %}
-            <tr>
-              <td>
-                <a href="{{ path('app_missions_view', {'id': mission.id}) }}" title="Voir la FM">
-                  {{ mission.id }}
-                </a>
-              </td>
-              <th scope="row">
-                {{ mission.dateCreated|date('d/m/y') }}
-              </th>
-              <td>{{ mission.gla }}</td>
-              <td>{{ mission.dateAssigned|date('d/m/y') }}</td>
-              <td>{{ mission.dateFinished|date('d/m/y') }}</td>
-              <td>
-                {% if mission.accomodation.name %}
-                  {{ mission.accomodation.name }} - 
-                {% endif %}
-                {{ mission.accomodation.street }}
-                <br>
-                {{ mission.accomodation.postalCode }} {{ mission.accomodation.city }}
-              </td>
-              <td>{{ mission.description|nl2br }}</td>
-              <td>{{ mission.volunteer }}</td>
-              <td>{{ mission.conclusions|nl2br }}</td>
-              <td>{{ mission.status }}</td>
-            </tr>
-          {% endfor %}
-
-        </tbody>
-      </table>
-    </div>
-
+    </table>
   </div>
 {% endblock %}

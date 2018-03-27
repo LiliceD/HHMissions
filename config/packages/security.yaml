@@ -20,6 +20,7 @@ security:
                 check_path: login
                 login_path: login
                 csrf_token_generator: security.csrf.token_manager # protection against CSRF attacks
+                default_target_path: app_missions_list
             logout:
                 path: /logout
                 target: /login

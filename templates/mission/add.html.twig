@@ -1,18 +1,12 @@
-{% extends 'mission/layout.html.twig' %}
+{% extends 'layout-center.html.twig' %}
 
 
-{% block title %}
-  {{ parent() }}
-{% endblock %}
-
-
-{% block layout_h3 %}
+{% block header_h3 %}
   Créer une fiche mission
 {% endblock %}
 
 
-{% block form_content %}
-
+{% block card_body %}
   {{ form_start(form) }}
 
     {{ form_widget(form.status, {'attr': {'hidden': 'true'}}) }}
@@ -20,51 +14,56 @@
     {{ form_widget(form.dateFinished, {'attr': {'hidden': 'true'}}) }}
     {{ form_widget(form.volunteer, {'attr': {'hidden': 'true'}}) }}
 
-    <div class="row">
-      <div class="col-5">
+    <div class="row justify-content-between">
+      <div class="col-sm d-flex">
         {{ form_row(form.gla) }}
       </div>
-      <div class="col-5 offset-2">
+      <div class="col-sm d-flex justify-content-sm-end">
         {{ form_row(form.dateCreated, {'attr': {'readonly': 'true'}}) }}
       </div>
     </div>
 
     {{ form_row(form.accomodation) }}
 
-    <div class="form-group">
-      <label for="accomodation_ownerType" class="form-control-label">Propriétaire :</label>
-      <input type="text" id="accomodation_ownerType" name="accomodation[ownerType]" readonly="true" class="form-control"/>
+    <div class="row justify-content-between">
+      <div class="col-sm order-sm-2 d-flex justify-content-end align-items-start">
+        <a href="{{ path('app_accomodation_add') }}" class="btn btn-sm btn-outline-secondary">
+          <i class="fas fa-plus"></i>
+          Ajouter une adresse
+        </a>
+      </div>
+
+      <div class="d-flex">
+        <div class="col-sm form-group">
+          <label for="accomodation_ownerType" class="form-control-label">Propriétaire :</label>
+          <input type="text" id="accomodation_ownerType" name="accomodation[ownerType]" readonly="true" class="form-control"/>
+        </div>
+      </div>
     </div>
 
-    <div class="row justify-content-end">
-      <a href="{{ path('app_accomodation_add') }}" class="btn btn-sm btn-outline-secondary mr-4">
-        <i class="fas fa-plus"></i>
-        Ajouter une adresse
-      </a>
-    </div>
-
-    <br>
     <br>
 
     {{ form_row(form.description) }}
     {{ form_row(form.info) }}
     {{ form_widget(form.conclusions, {'attr': {'hidden': 'true'}}) }}
 
-    {{ form_row(form.attachment) }}
-    
-    <div class="row justify-content-end align-items-center">
-      <input type="submit" class="btn btn-primary mr-2" value="Créer la Fiche Mission"/>
-      <a href="{{ path('app_missions_list') }}" class="btn btn-outline-secondary mr-4">
-        Annuler
+    {{ form_label(form.attachment) }}
+    <div class="alert alert-info">
+      Il n'est possible de joindre qu'<strong>un seul fichier</strong>, au format <strong>PDF uniquement</strong>.
+    </div>
+    {{ form_widget(form.attachment) }}
+{% endblock %}
+
+{% block card_footer %}
+    <div class="d-flex justify-content-end">
+      <input type="submit" class="btn btn-primary mr-2" value="Créer la fiche mission"/>
+      <a href="{{ path('app_missions_add') }}" class="btn btn-outline-secondary">
+        Vider
       </a>
     </div>
 
   {{ form_end(form) }}
-
-  <br>
-
 {% endblock %}
-
 
 {% block javascripts %}
 

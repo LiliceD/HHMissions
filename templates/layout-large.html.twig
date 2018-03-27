@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+
+  <div class="container">
+    
+    <div class="d-flex justify-content-between">
+      <h3>
+
+        {% block header_h3 %}
+          Fiches Mission
+        {% endblock %}
+
+      </h3>
+
+      <div>
+
+        {% block header_button %}
+          <a href="{{ path('app_missions_list') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-chevron-left"></i>
+            Retour à la liste
+          </a>
+        {% endblock %}
+
+      </div>
+    </div> {# div d-flex justify-content-between #}
+
+    <hr>
+
+    {% block flash_messages %}
+      {% for message in app.flashes('notice') %}
+          <div class="alert alert-success">
+              <a href="#" class="close" data-dismiss="alert" aria-label="Fermer">&times;</a>
+              {{ message }}
+          </div>
+      {% endfor %}
+    {% endblock %}
+    
+    {% block content %}
+    {% endblock %}
+
+  </div> {# div container #}
+
+{% endblock %}

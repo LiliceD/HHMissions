@@ -1,23 +1,19 @@
 {% extends 'accomodation/layout.html.twig' %}
 
-{% block layout_h3 %}
-	<div class="row justify-content-between">
-    <div class="col-md-6">
-      Modifier un logement
-    </div>
-    <div class="col-md-6">
-      <div class="row justify-content-end align-items-center">
-        {# button opening a modal #}
-        <button class="btn btn-sm btn-outline-danger mr-4" data-toggle="modal" data-target="#deleteModal">
-          <i class="fas fa-trash-alt"></i>
-          Supprimer
-        </button>
-      </div>
-    </div>
-  </div>
+
+{% block header_h3 %}
+  Modifier un logement
 {% endblock %}
 
-{% block form_content %}
+{% block header_button %}
+  {# button opening a modal #}
+  <button class="btn btn-sm btn-outline-danger" data-toggle="modal" data-target="#deleteModal">
+    <i class="fas fa-trash-alt"></i>
+    Supprimer
+  </button>
+{% endblock %}
+
+{% block card_body %}
   {# Modal to confirm mission delete #}
   <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -47,68 +43,5 @@
   </div>
 
   {# Edit form #}
-  {{ form_start(form) }}
-
-    <div class="row justify-content-between">
-      <div class="col-6">
-        {{ form_row(form.name) }}
-      </div>
-    </div>
-
-    {{ form_row(form.street) }}
-
-    <div class="row justify-content-between">
-      <div class="col-3">
-        {{ form_row(form.postalCode) }}
-      </div>
-      <div class="col-9">
-        {{ form_row(form.city) }}
-      </div>
-    </div>
-
-    <div class="row justify-content-between">
-      <div class="col-5">
-        {{ form_row(form.ownerType) }}
-      </div>
-    </div>
-
-    {{ form_row(form.access) }}
-    
-    <hr>
-
-    <div class="row justify-content-end align-items-center">
-      <input type="submit" class="btn btn-primary mr-2" value="Valider"/>
-      <a href="{{ path('app_accomodation_list') }}" class="btn btn-outline-secondary mr-4">
-        Annuler
-      </a>
-    </div>
-  {{ form_end(form) }}
-
-{% endblock %}
-
-{% block javascripts %}
   {{ parent() }}
-
-  <script>
-  // Remove accent and capitalize address and city
-  document.getElementById("accomodation_street").addEventListener("input", function (e) {
-  	e.target.value = standardizeInput(e.target.value);
-  });
-  document.getElementById("accomodation_city").addEventListener("input", function (e) {
-  	e.target.value = standardizeInput(e.target.value);
-  });
-
-  // Replace with city name dynamic population
-  document.getElementById("accomodation_postalCode").addEventListener("change", function (e) {
-  	const input = e.target.value; 
-  	if (input.match(/^6900\d$/)) {
-  		document.getElementById("accomodation_city").value = "LYON " + input[input.length - 1]; 
-  	}
-  });
-
-  function standardizeInput(input) {
-  	return input.normalize('NFD').replace(/[\u0300-\u036F]/g, "").toUpperCase();
-  }
-  </script>
-
 {% endblock %}

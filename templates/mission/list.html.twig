@@ -1,12 +1,20 @@
-{% extends 'mission/layout.html.twig' %}
+{% extends 'layout-large.html.twig' %}
 
-{% block title %}
-  Suivi des {{ parent() }}
+
+{% block header_h3 %}
+  Liste des fiches mission
 {% endblock %}
 
-{% block layout_h3 %}
-  Liste des missions
+{% block header_button %}
+  {# new mission button only visible for gla (and admin) #}
+  {% if is_granted('ROLE_GLA') %}
+    <a href="{{ path('app_missions_add') }}" class="btn btn-success">
+      <i class="fas fa-plus"></i>
+      Créer une fiche mission
+    </a>
+  {% endif %}
 {% endblock %}
+
 
 {% block content %}
   
@@ -26,12 +34,12 @@
     </thead>
 
     <tbody>
-
       {% for mission in missions %}
         <tr id="mission-{{ mission.id }}">
           <td>{{ mission.id }}</td>
           <th scope="row">{{ mission.dateCreated|date('d/m/y') }}</th>
           <td>{{ mission.gla }}</td>
+          {# address #}
           <td>
             {% if mission.accomodation.name %}
               {{ mission.accomodation.name }} - 
@@ -42,6 +50,7 @@
           </td>
           <td><div class="text-ellipsis">{{ mission.description }}</div></td>
           <td>{{ mission.status }}</td>
+          {# view button #}
           <td>
             <a href="{{ path('app_missions_view', {'id': mission.id}) }}" title="Voir la FM {{ mission.id }}" class="btn btn-sm btn-primary">
               <i class="fas fa-eye"></i>
@@ -59,8 +68,8 @@
           {% endif %}
         </tr>
       {% endfor %}
-
     </tbody>
+
   </table>
   
 {% endblock %}
