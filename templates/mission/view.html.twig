@@ -1,6 +1,6 @@
 {% extends 'layout-center.html.twig' %}
 
-{% block header_h3 %}
+{% block header_h2 %}
   Fiche mission GLA-Bénévole n°{{ mission.id }}
 {% endblock %}
      
@@ -160,8 +160,8 @@
       <i class="fas fa-download"></i>
       Exporter en PDF
     </a>
-    {# edit button only visible for admin, mission's gla or mission's volunteer #}
-    {% if is_granted('ROLE_ADMIN') or (is_granted('ROLE_GLA') and mission.gla == app.user.name) or (is_granted('ROLE_VOLUNTEER') and mission.volunteer == app.user.name) %}
+    {# edit button only visible for admin, or if mission is not closed and user is its gla or volunteer #}
+    {% if is_granted('ROLE_ADMIN') or (mission.status != constant('STATUS_CLOSED', mission) and ((is_granted('ROLE_GLA') and mission.gla == app.user.name) or (is_granted('ROLE_VOLUNTEER') and mission.volunteer == app.user.name))) %}
       <a href="{{ path('app_mission_edit', {'id': mission.id}) }}" class="btn btn-outline-primary">
         <i class="fas fa-edit"></i>
         Modifier

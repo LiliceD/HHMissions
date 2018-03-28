@@ -1,7 +1,7 @@
 {% extends 'layout-large.html.twig' %}
 
 
-{% block header_h3 %}
+{% block header_h2 %}
   Liste des fiches mission
 {% endblock %}
 
@@ -18,7 +18,9 @@
 
 {% block content %}
   
-  <table class="table table-hover">
+  <h3>Missions à attribuer :</h3>
+
+  <table id="newMissions" class="table table-hover">
 
     <thead class="thead-light">
       <tr>
@@ -34,7 +36,7 @@
     </thead>
 
     <tbody>
-      {% for mission in missions %}
+      {% for mission in newMissions %}
         <tr id="mission-{{ mission.id }}">
           <td>{{ mission.id }}</td>
           <th scope="row">{{ mission.dateCreated|date('d/m/y') }}</th>
@@ -71,5 +73,151 @@
     </tbody>
 
   </table>
+
+  <hr>
+
+  <h3>Missions en cours ou terminées :</h3>
+
+  {# User role passed to JS through data attributes #}
+  <div id="userData" data-name="{{ app.user.name }}" data-is-gla="{{ app.user.isGla ? true : false }}" data-is-volunteer="{{ app.user.isVolunteer ? 'true' : 'false' }}" class="d-flex align-items-center">
+    <input type="checkbox" id="myMissionsCheckbox" name="myMissionsCheckbox" class="mb-2" />
+    <label for="myMissionsCheckbox" class="mb-2 ml-2">Afficher uniquement mes missions</label>
+  </div>
+
+
+  <table id="otherMissions" class="table table-hover">
+
+    <thead class="thead-light">
+      <tr>
+        <th scope="col">N°</th>
+        <th scope="col">Date demande</th>
+        <th scope="col">Provenance GLA</th>
+        <th scope="col">Adresse</th>
+        <th scope="col">Bénévole</th>
+        <th scope="col">Statut</th>
+        <th></th>
+        <th></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for mission in otherMissions %}
+        <tr id="mission-{{ mission.id }}" class="{{ mission.status == constant('STATUS_CLOSED', mission) ? 'text-secondary' }}">
+          <td>{{ mission.id }}</td>
+          <th scope="row">{{ mission.dateCreated|date('d/m/y') }}</th>
+          <td>{{ mission.gla }}</td>
+          {# address #}
+          <td>
+            {% if mission.accomodation.name %}
+              {{ mission.accomodation.name }} - 
+            {% endif %}
+            {{ mission.accomodation.street }}
+            <br>
+            {{ mission.accomodation.postalCode }} {{ mission.accomodation.city }}
+          </td>
+          <td>{{ mission.volunteer }}</td>
+          <td>{{ mission.status }}</td>
+          {# view button #}
+          <td>
+            <a href="{{ path('app_mission_view', {'id': mission.id}) }}" title="Voir la FM {{ mission.id }}" class="btn btn-sm btn-primary">
+              <i class="fas fa-eye"></i>
+              Voir
+            </a>
+          </td>
+          {# edit button only visible for admin, or if mission is not closed and user is its gla or volunteer #}
+          {% if is_granted('ROLE_ADMIN') or (mission.status != constant('STATUS_CLOSED', mission) and ((is_granted('ROLE_GLA') and mission.gla == app.user.name) or (is_granted('ROLE_VOLUNTEER') and mission.volunteer == app.user.name))) %}
+            <td>
+              <a href="{{ path('app_mission_edit', {'id': mission.id}) }}" title="Modifier la FM {{ mission.id }}" class="btn btn-sm btn-outline-primary">
+                <i class="fas fa-edit"></i>
+                Modifier
+              </a>
+            </td>
+          {% endif %}
+        </tr>
+      {% endfor %}
+    </tbody>
+
+  </table>
   
+{% endblock %}
+
+
+{% block javascripts %}
+
+  {{ parent() }}
+
+  <script>
+  // Filter table based on array of filters [td_index, value]
+  function filterTable(table, filters) {
+    let tr = table.getElementsByTagName("tr");
+
+    // Case unsensitive filter
+    filters.forEach(filter => {
+      filter[1] = filter[1].toUpperCase();
+    });
+
+    // Loop through all table rows, and hide those who don't match the search query
+    for (let i = 0, c = tr.length; i < c; i++) {
+      td = tr[i].getElementsByTagName("td");
+
+      // For each row, loop through filters elements until there is a match. If no match, hide row
+      for (let j = 0, filtersLength = filters.length; j < filters.length; j++) {
+        let filterIndex = filters[j][0],
+            filterValue = filters[j][1],
+            cell = td[filterIndex];
+
+        if (cell) {
+          if (cell.innerHTML.toUpperCase() === filterValue) {
+            tr[i].style.display = "";
+            break;
+          } else if (j === filtersLength - 1) {
+            tr[i].style.display = "none";
+          }
+        }
+      }
+    }
+  }
+
+  // Show all table rows
+  function unfilterTable(table) {
+    let tr = table.getElementsByTagName("tr");
+
+    for (let i = 0, c = tr.length; i < c; i++) {
+      tr[i].style.display = "";
+    }
+  }
+
+
+  let name, isGla, isVolunteer;
+
+  // Get user's name, isGla and isVolunteer from Twig
+  document.addEventListener('DOMContentLoaded', function() {
+    let userDataElt = document.getElementById('userData');
+    if (userDataElt) {
+      name = userDataElt.getAttribute('data-name');
+      isGla = userDataElt.getAttribute('data-is-gla');
+      isVolunteer = userDataElt.getAttribute('data-is-volunteer');
+    }
+  });
+
+  // If myMissionsCheckbox is checked, show only missions where user is gla and/or volunteer
+  document.getElementById('myMissionsCheckbox').addEventListener('change', function (e) {
+    let otherMissionsTable = document.getElementById('otherMissions'),
+        value = name.toUpperCase();
+
+    if(e.target.checked) {
+      let filters = [];
+      if (isGla) {
+        filters.push([1, value]);
+      }
+      if (isVolunteer) {
+        filters.push([3, value]);
+      }
+      filterTable(otherMissionsTable, filters);
+    } else {
+      unfilterTable(otherMissionsTable);
+    }
+  });
+  </script>
+
 {% endblock %}

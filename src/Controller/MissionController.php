@@ -120,7 +120,12 @@ class MissionController extends Controller
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         $user = $this->getUser();
 
-        if($user->hasRole('ROLE_ADMIN') || $mission->getGla() === $user->getName() || $mission->getVolunteer() === $user->getName()) {
+        if($user->hasRole('ROLE_ADMIN') || (
+            $mission->getStatus() !== Mission::STATUS_CLOSED && (
+                ($user->hasRole('ROLE_GLA') && $mission->getGla() === $user->getName()) || 
+                ($user->hasRole('ROLE_VOLUNTEER') && $mission->getVolunteer() === $user->getName())
+            )
+        )) {
             // Saving previous scan to avoid delete by edit with no changes
             $previousFileName = $mission->getAttachment();
 
@@ -210,6 +215,15 @@ class MissionController extends Controller
         return $this->redirectToRoute('app_mission_list');
     }
 
+
+// ██████╗  █████╗  ██████╗ ███████╗███████╗
+// ██╔══██╗██╔══██╗██╔════╝ ██╔════╝██╔════╝
+// ██████╔╝███████║██║  ███╗█████╗  ███████╗
+// ██╔═══╝ ██╔══██║██║   ██║██╔══╝  ╚════██║
+// ██║     ██║  ██║╚██████╔╝███████╗███████║
+// ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚══════╝
+
+
     /**
      * @Route(
      *  "/{page}",
@@ -223,17 +237,52 @@ class MissionController extends Controller
     {    
         $repository = $this->getDoctrine()->getRepository(Mission::class);
 
-        $missions = $repository->findBy(array(), array('dateCreated' => 'DESC'));
+        $newMissions = $repository->findByStatus([Mission::STATUS_DEFAULT], 'DESC');
+        
+        $nonNewStatuses = array_values(Mission::getStatuses()); // Array of possible statuses
+        array_shift($nonNewStatuses);
+        $otherMissions = $repository->findByStatus($nonNewStatuses, 'DESC');
+        // $missions = $repository->findBy(array(), array('dateCreated' => 'DESC'));
 
-        if (!$missions) {
+        if (!$newMissions && !$otherMissions) {
             throw $this->createNotFoundException('Aucune fiche mission trouvée.');
 
         }
 
         return $this->render('mission/list.html.twig', array(
+            'newMissions' => $newMissions,
+            'otherMissions' => $otherMissions
+        ));
+    }
+
+    /**
+     * Recap of opened (= any status but "closed") missions
+     *
+     * @Route(
+     *  "/recap/{page}",
+     *  name="app_mission_recap",
+     *  requirements={
+     *      "page"="\d+"
+     *  }
+     * )
+     */
+    public function recap($page = 1)
+    {    
+        $missions = $this->getNonClosedMissions();
+
+        return $this->render('mission/recap.html.twig', array(
             'missions' => $missions
         ));
     }
+
+
+//  █████╗  ██████╗████████╗██╗ ██████╗ ███╗   ██╗███████╗
+// ██╔══██╗██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║██╔════╝
+// ███████║██║        ██║   ██║██║   ██║██╔██╗ ██║███████╗
+// ██╔══██║██║        ██║   ██║██║   ██║██║╚██╗██║╚════██║
+// ██║  ██║╚██████╗   ██║   ██║╚██████╔╝██║ ╚████║███████║
+// ╚═╝  ╚═╝ ╚═════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝
+
 
     /**
      * Close / re-open a mission if its current status is finished / closed respectively
@@ -282,7 +331,6 @@ class MissionController extends Controller
             'id' => $mission->getId()
         ));
     }
-
 
     /**
      * Empty field "attachment" and delete file
@@ -357,28 +405,6 @@ class MissionController extends Controller
         );
     }
 
-
-    /**
-     * Recap of opened (= any status but "closed") missions
-     *
-     * @Route(
-     *  "/recap/{page}",
-     *  name="app_mission_recap",
-     *  requirements={
-     *      "page"="\d+"
-     *  }
-     * )
-     */
-    public function recap($page = 1)
-    {    
-        $missions = $this->getNonClosedMissions();
-
-        return $this->render('mission/recap.html.twig', array(
-            'missions' => $missions
-        ));
-    }
-
-
     /**
      * Export recap of opened missions to PDF
      * 
@@ -410,15 +436,24 @@ class MissionController extends Controller
         );
     }
 
+
+// ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗███████╗
+// ██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║██╔════╝
+// █████╗  ██║   ██║██╔██╗ ██║██║        ██║   ██║██║   ██║██╔██╗ ██║███████╗
+// ██╔══╝  ██║   ██║██║╚██╗██║██║        ██║   ██║██║   ██║██║╚██╗██║╚════██║
+// ██║     ╚██████╔╝██║ ╚████║╚██████╗   ██║   ██║╚██████╔╝██║ ╚████║███████║
+// ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝
+
+
     private function getNonClosedMissions()
     {
-        $statuses = array_values(Mission::getStatuses()); // Array of possible statuses
-        array_pop($statuses); // Remove STATUS_CLOSED
+        $nonClosedStatuses = array_values(Mission::getStatuses()); // Array of possible statuses
+        array_pop($nonClosedStatuses); // Remove STATUS_CLOSED
 
         $repository = $this->getDoctrine()->getRepository(Mission::class);
 
-        // Get all missions with status not "Fermée"
-        $missions = $repository->findByStatus($statuses);
+        // Get all missions with status not "Fermée" ordered by ASC id
+        $missions = $repository->findByStatus($nonClosedStatuses, 'ASC');
 
         return $missions;
     }

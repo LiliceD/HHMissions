@@ -1,4 +1,7 @@
 /* mission/list.html.twig */
+h3 {
+  margin-bottom: 24px;
+}
 
 .text-ellipsis {
   width: 250px;

@@ -13,12 +13,12 @@ class MissionRepository extends ServiceEntityRepository
         parent::__construct($registry, Mission::class);
     }
 
-    public function findByStatus($value)
+    public function findByStatus($value, $order)
     {
         $qb = $this->createQueryBuilder('m');
         return $qb->add('where', $qb->expr()->in('m.status', ':value'))
+            ->orderBy('m.id', $order)
             ->setParameter('value', $value)
-            ->orderBy('m.dateCreated', 'ASC')
             // ->setMaxResults(10)
             ->getQuery()
             ->getResult()
