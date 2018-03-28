@@ -6,6 +6,32 @@
      
 
 {% block card_body %}
+  {# Modal to confirm mission assignment #}
+  {# only visible for volunteer #}
+  {% if is_granted('ROLE_VOLUNTEER') %}
+    <div class="modal fade" id="assignModal" tabindex="-1" role="dialog" aria-labelledby="assignModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="assignModalLabel">Prendre en charge la mission</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            En cliquant sur valider vous serez le ou la bénévole en charge de la mission. (Vous ne pourrez pas annuler ce choix.)
+          </div>
+          <div class="modal-footer">
+            <a href="{{ path('app_mission_assign', {'id': mission.id}) }}" class="btn btn-primary">Valider</a>
+            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+
+  {# Mission view #}
   {# row Status/GLA/Volunteer + Dates #}
   <div class="row justify-content-between align-items-center">
     
@@ -160,12 +186,23 @@
       <i class="fas fa-download"></i>
       Exporter en PDF
     </a>
-    {# edit button only visible for admin, or if mission is not closed and user is its gla or volunteer #}
-    {% if is_granted('ROLE_ADMIN') or (mission.status != constant('STATUS_CLOSED', mission) and ((is_granted('ROLE_GLA') and mission.gla == app.user.name) or (is_granted('ROLE_VOLUNTEER') and mission.volunteer == app.user.name))) %}
-      <a href="{{ path('app_mission_edit', {'id': mission.id}) }}" class="btn btn-outline-primary">
-        <i class="fas fa-edit"></i>
-        Modifier
-      </a>
-    {% endif %}
+    <div>
+      {# Assign button opening a modal, only visible for volunteers #}
+      {% if is_granted('ROLE_VOLUNTEER') %}
+        <td>
+          <button class="btn btn-outline-success" data-toggle="modal" data-target="#assignModal">
+            <i class="fas fa-check-square"></i>
+            Prendre en charge
+          </button>
+        </td>
+      {% endif %}
+      {# edit button only visible for admin, or if mission is not closed and user is its gla or volunteer #}
+      {% if is_granted('ROLE_ADMIN') or (mission.status != constant('STATUS_CLOSED', mission) and ((is_granted('ROLE_GLA') and mission.gla == app.user.name) or (is_granted('ROLE_VOLUNTEER') and mission.volunteer == app.user.name))) %}
+        <a href="{{ path('app_mission_edit', {'id': mission.id}) }}" class="btn btn-outline-primary">
+          <i class="fas fa-edit"></i>
+          Modifier
+        </a>
+      {% endif %}
+    </div>
   </div>
 {% endblock %}

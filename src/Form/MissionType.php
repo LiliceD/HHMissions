@@ -60,7 +60,7 @@ class MissionType extends AbstractType
                 },
                 'choice_label' => 'name',
                 'label' => 'Bénévole :',
-                'placeholder' => false,
+                'placeholder' => '',
                 'required' => false
             ])
             ->add('accomodation', EntityType::class, [

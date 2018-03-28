@@ -17,7 +17,6 @@
 
 
 {% block content %}
-  
   <h3>Missions à attribuer :</h3>
 
   <table id="newMissions" class="table table-hover">
@@ -59,10 +58,10 @@
               Voir
             </a>
           </td>
-          {# edit button only visible for admin, mission's gla or mission's volunteer #}
-          {% if is_granted('ROLE_ADMIN') or (is_granted('ROLE_GLA') and mission.gla == app.user.name) or (is_granted('ROLE_VOLUNTEER') and mission.volunteer == app.user.name) %}
+          {# edit button only visible for admin or mission's gla #}
+          {% if is_granted('ROLE_ADMIN') or (is_granted('ROLE_GLA') and mission.gla == app.user.name) %}
             <td>
-              <a href="{{ path('app_mission_edit', {'id': mission.id}) }}" title="Modifier la FM {{ mission.id }}" class="btn btn-sm btn-outline-primary">
+              <a href="{{ path('app_mission_edit', {'id': mission.id}) }}" title="Modifier la fiche mission" class="btn btn-sm btn-outline-primary">
                 <i class="fas fa-edit"></i>
                 Modifier
               </a>
