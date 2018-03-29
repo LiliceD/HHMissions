@@ -15,7 +15,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class User implements UserInterface, \Serializable
 {
-    const EMAIL_DOMAIN = '@habitat-humanisme.org';
     // List of possible roles
     // const ROLE_ADMIN = 'ROLE_ADMIN';
     // const ROLE_GLA = 'ROLE_GLA';
@@ -58,11 +57,11 @@ class User implements UserInterface, \Serializable
      */
     private $roles;
 
-    /**
-     * @ORM\Column(type="string", length=25)
-     * @Assert\Choice(callback="getCategories")
-     */
-    private $category;
+    // *
+    //  * @ORM\Column(type="string", length=25)
+    //  * @Assert\Choice(callback="getCategories")
+     
+    // private $category;
 
     /**
      * @ORM\Column(type="string", length=25, unique=true)
@@ -90,51 +89,48 @@ class User implements UserInterface, \Serializable
 
     /************** Methods *****************/
 
-    // Callback for $category Choice
-    public static function getCategories()
-    {
-        return array(
-            'Administrateur' => 'ROLE_ADMIN',
-            'GLA' => 'ROLE_GLA',
-            'Bénévole' => 'ROLE_VOLUNTEER'
-        );
-    }
+    // // Callback for $category Choice
+    // public static function getCategories()
+    // {
+    //     return array(
+    //         'Administrateur' => 'ROLE_ADMIN',
+    //         'GLA' => 'ROLE_GLA',
+    //         'Bénévole' => 'ROLE_VOLUNTEER'
+    //     );
+    // }
 
     public function setIsGlaIsVolunteer()
     {
         // ROLE_GLA (resp. ROLE_VOLUNTEER) is only in Gla list (resp. Volunteer list)
 
-        $category = $this->getCategory();
+        $roles = $this->getRoles();
 
-        $this->isGla = $category === 'ROLE_ADMIN' || $category === 'ROLE_GLA';
-        $this->isVolunteer = $category === 'ROLE_ADMIN' || $category === 'ROLE_VOLUNTEER';
-
+        $this->isGla = in_array('ROLE_ADMIN', $roles) || in_array('ROLE_GLA', $roles);
+        $this->isVolunteer = in_array('ROLE_ADMIN', $roles) || in_array('ROLE_VOLUNTEER', $roles);
     }
 
-    public function hasRole($role)
-    {
-        return in_array($role, $this->roles);
-    }
+    // public function hasRole($role)
+    // {
+    //     return in_array($role, $this->roles);
+    // }
 
-    public function addRole($role)
-    {
-        if (!in_array($role, $this->roles, true)) {
-            array_push($this->roles, $role);
-        }
-    }
+    // public function addRole($role)
+    // {
+    //     if (!in_array($role, $this->roles, true)) {
+    //         array_push($this->roles, $role);
+    //     }
+    // }
 
-    public function removeRole($role)
-    {
-        if (($key = array_search($role, $this->roles)) !== false) {
-            unset($this->roles[$key]);
-        }
-    }
+    // public function removeRole($role)
+    // {
+    //     if (($key = array_search($role, $this->roles)) !== false) {
+    //         unset($this->roles[$key]);
+    //     }
+    // }
 
     public function __construct()
     {
         $this->isActive = true;
-        $this->isGla = false;
-        $this->isVolunteer = false;
     }
 
     public function __toString()
@@ -142,21 +138,19 @@ class User implements UserInterface, \Serializable
         return $this->name;
     }
 
+    // Mandatory function
     public function getSalt()
     {
         // The bcrypt algorithm doesn't require a separate salt.
         return null;
     }
 
-    public function getRoles()
-    {
-        return $this->roles;
-    }
-
+    // Mandatory function
     public function eraseCredentials()
     {
     }
 
+    // Mandatory function
     /** @see \Serializable::serialize() */
     public function serialize()
     {
@@ -167,6 +161,7 @@ class User implements UserInterface, \Serializable
         ));
     }
 
+    // Mandatory function
     /** @see \Serializable::unserialize() */
     public function unserialize($serialized)
     {
@@ -218,6 +213,18 @@ class User implements UserInterface, \Serializable
     public function setEmail($email)
     {
         $this->email = $email;
+    }
+
+    // Mandatory function
+    public function getRoles()
+    {
+        return $this->roles;
+    }
+
+    public function setRoles($roles)
+    {
+        $this->roles = $roles;
+        $this->setIsGlaIsVolunteer();
     }
 
     public function getCategory()

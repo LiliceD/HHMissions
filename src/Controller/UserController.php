@@ -32,8 +32,17 @@ class UserController extends Controller
             $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
             $user->setPassword($password);
 
-            // Set isGla and isVolunteer based on category
-            $user->setIsGlaIsVolunteer();
+            // Set roles
+            $category = $form->get('category')->getData();
+            $roles = [$category];
+            // A volunteer can get ROLE_GLA too in order to create missions
+            if ($form->get('glaRole')->getData()) {
+                array_push($roles, 'ROLE_GLA');
+            }
+            $user->setRoles($roles);
+
+            // // Set isGla and isVolunteer based on roles
+            // $user->setIsGlaIsVolunteer();
 
             // Save the User
             $entityManager = $this->getDoctrine()->getManager();
@@ -51,10 +60,7 @@ class UserController extends Controller
 
         return $this->render(
             'user/new.html.twig',
-            [
-                'form' => $form->createView(),
-                'emailDomain' => User::EMAIL_DOMAIN
-            ]
+            array('form' => $form->createView())
         );
     }
 
@@ -88,12 +94,12 @@ class UserController extends Controller
     }
 
     /**
-    * @Route(
-    *  "/suggestions",
-    *  name="app_user_suggestions",
-    * )
-    */
-    public function getMatchingUsers(Request $request)
+     * @Route(
+     *  "/suggestions",
+     *  name="app_user_suggestions"
+     * )
+     */
+    public function userAutocomplete(Request $request)
     {
         $category = $request->request->get('category');
         $search = $request->request->get('search');
