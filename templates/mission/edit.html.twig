@@ -111,62 +111,13 @@
   {{ parent() }}
 
   <script src="{{ asset('js/ajax.js') }}"></script>
+  <script src="{{ asset('js/searchSuggestions.js') }}"></script>
 
   <script>
   (function() {
-    let volunteerInput = document.getElementById('mission_volunteer'),
-        resultsDiv = document.getElementById('volunteerSearchResults');
-
-    // Suggestion of volunteers based on input
-    function volunteerSuggestions(search) {
-      // Ajax query to get volunteers matching search
-      ajaxPost("{{ path('app_user_suggestions') }}", {'search': search, 'category': 'volunteer'}, (data) => {
-        let volunteers = data.split('|');
-
-        if (volunteers && volunteers[0] !== '') {
-          resultsDiv.innerHTML = '';
-          
-          // Add volunteer to suggestions
-          volunteers.forEach(volunteer => displaySuggestion(volunteer));
-
-          // Show suggestions
-          resultsDiv.style.display = "block";
-        }
-      });
-    }
-
-    function displaySuggestion(volunteer) {
-      // Create a dropdown item for each volunteer
-      let a = document.createElement('a');
-      a.className = 'dropdown-item';
-      a.href = '#';
-      a.innerHTML = volunteer;
-
-      a.addEventListener('click', (e) => {
-        // Fill volunteer input with selected name
-        let value = e.target.innerHTML;
-        volunteerInput.value = value;
-        // Hide suggestions once one has been selected
-        resultsDiv.style.display = "none";
-      });
-
-      resultsDiv.appendChild(a);
-    }
-
-
-    volunteerInput.addEventListener('input', (e) => {
-      let search = e.target.value.trim();
-      volunteerSuggestions(search);
-    });
-
-    volunteerInput.addEventListener('focus', (e) => {
-      let search = e.target.value.trim();
-      volunteerSuggestions(search);
-    });
-
-    volunteerInput.addEventListener('blur', () => {
-      setTimeout(() => resultsDiv.style.display = "none", 200)
-    });
+    // Display suggestions of GLAs in a dropdown with user input
+    // arguments : id of search element, id of results element, user category, controller url
+    searchSuggestions('mission_volunteer', 'volunteerSearchResults', 'volunteer', "{{ path('app_user_suggestions') }}");
   })();
   </script>
 
