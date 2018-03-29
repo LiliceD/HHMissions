@@ -15,6 +15,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class User implements UserInterface, \Serializable
 {
+    const EMAIL_DOMAIN = '@habitat-humanisme.org';
     // List of possible roles
     // const ROLE_ADMIN = 'ROLE_ADMIN';
     // const ROLE_GLA = 'ROLE_GLA';

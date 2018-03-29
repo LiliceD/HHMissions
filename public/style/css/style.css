@@ -64,6 +64,10 @@ h3 {
   width: 60px;
 }
 
+/* mission/edit.html.twig */
+.searchResults {
+  margin-top: -1rem; 
+}
 
 /* accomodation/list.html.twig */
 

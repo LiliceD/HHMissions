@@ -39,7 +39,11 @@
         <div class="col-sm">
           {{ form_row(form.status, {'attr': {'readonly': 'true'}}) }}
           {{ form_row(form.gla, {'attr': {'readonly': 'true'}}) }}
-          {{ form_row(form.volunteer) }}
+          {{ form_row(form.volunteer, {'attr': {'autocomplete': 'off', 'placeholder': 'Saisir un nom'}}) }}
+          <div class="dropdown">
+            <div id ="volunteerSearchResults" class="dropdown-menu searchResults">
+            </div>
+          </div>
         </div>
       </div>
       <div class="d-flex">
@@ -99,4 +103,71 @@
       <input type="submit" class="btn btn-primary mr-2" value="Valider"/>
     </div>
   {{ form_end(form) }}
+{% endblock %}
+
+
+{% block javascripts %}
+
+  {{ parent() }}
+
+  <script src="{{ asset('js/ajax.js') }}"></script>
+
+  <script>
+  (function() {
+    let volunteerInput = document.getElementById('mission_volunteer'),
+        resultsDiv = document.getElementById('volunteerSearchResults');
+
+    // Suggestion of volunteers based on input
+    function volunteerSuggestions(search) {
+      // Ajax query to get volunteers matching search
+      ajaxPost("{{ path('app_user_suggestions') }}", {'search': search, 'category': 'volunteer'}, (data) => {
+        let volunteers = data.split('|');
+
+        if (volunteers && volunteers[0] !== '') {
+          resultsDiv.innerHTML = '';
+          
+          // Add volunteer to suggestions
+          volunteers.forEach(volunteer => displaySuggestion(volunteer));
+
+          // Show suggestions
+          resultsDiv.style.display = "block";
+        }
+      });
+    }
+
+    function displaySuggestion(volunteer) {
+      // Create a dropdown item for each volunteer
+      let a = document.createElement('a');
+      a.className = 'dropdown-item';
+      a.href = '#';
+      a.innerHTML = volunteer;
+
+      a.addEventListener('click', (e) => {
+        // Fill volunteer input with selected name
+        let value = e.target.innerHTML;
+        volunteerInput.value = value;
+        // Hide suggestions once one has been selected
+        resultsDiv.style.display = "none";
+      });
+
+      resultsDiv.appendChild(a);
+    }
+
+
+    volunteerInput.addEventListener('input', (e) => {
+      let search = e.target.value.trim();
+      volunteerSuggestions(search);
+    });
+
+    volunteerInput.addEventListener('focus', (e) => {
+      let search = e.target.value.trim();
+      volunteerSuggestions(search);
+    });
+
+    volunteerInput.addEventListener('blur', () => {
+      setTimeout(() => resultsDiv.style.display = "none", 200)
+    });
+  })();
+  </script>
+
 {% endblock %}

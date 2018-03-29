@@ -9,12 +9,12 @@
 {% block card_body %}
     {{ form_start(form) }}
 
-        {{ form_row(form.category) }}
-        {{ form_row(form.name) }}
-        {{ form_row(form.username) }}
         {{ form_row(form.email) }}
+        {{ form_row(form.username) }}
+        {{ form_row(form.name) }}
         {{ form_row(form.plainPassword.first) }}
         {{ form_row(form.plainPassword.second) }}
+        {{ form_row(form.category) }}
 {% endblock %}
 
 {% block card_footer %}
@@ -30,19 +30,19 @@
   {{ parent() }}
 
   <script>
-    document.getElementById("user_name").addEventListener("change", function (e) {
-      const name = e.target.value;
-      const splitName = name.trim().split(' ');
+  (function() {
+    document.getElementById("user_email").addEventListener("change", function (e) {
+      const emailLocalPart = e.target.value;
 
-      if (splitName.length > 1) {
-        const firstName = splitName[0],
-              lastName = splitName[1];
-        
-        const username = (firstName.substr(0, 1) + '.' + lastName).toLowerCase();
+      if (emailLocalPart) {
+        const username = emailLocalPart.toLowerCase(),
+              email = username + '{{ emailDomain }}';
+
         document.getElementById("user_username").value = username;
-        document.getElementById("user_email").value = username + '@habitat-humanisme.org';
+        document.getElementById("user_email").value = email;
       }
     });
+  })();
   </script>
 
 {% endblock %}

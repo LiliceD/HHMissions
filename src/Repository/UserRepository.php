@@ -12,4 +12,21 @@ class UserRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, User::class);
     }
+
+    public function findByCategory($category)
+    {
+        $qb = $this->createQueryBuilder('u');
+        $qb->select('u.name');
+        
+        if ($category === 'volunteer') {
+            $qb->add('where', $qb->expr()->in('u.isVolunteer', 'true'));
+        } elseif ($category === 'gla') {
+            $qb->add('where', $qb->expr()->in('u.isGla', 'true'));
+        }
+        
+        return $qb->orderBy('u.name', 'ASC')
+            ->getQuery()
+            ->getArrayResult()
+        ;
+    }
 }

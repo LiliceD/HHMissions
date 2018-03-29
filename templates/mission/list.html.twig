@@ -146,77 +146,80 @@
   {{ parent() }}
 
   <script>
-  // Filter table based on array of filters [td_index, value]
-  function filterTable(table, filters) {
-    let tr = table.getElementsByTagName("tr");
+  (function() {
+    let name, isGla, isVolunteer;
 
-    // Case unsensitive filter
-    filters.forEach(filter => {
-      filter[1] = filter[1].toUpperCase();
-    });
 
-    // Loop through all table rows, and hide those who don't match the search query
-    for (let i = 0, c = tr.length; i < c; i++) {
-      td = tr[i].getElementsByTagName("td");
+    // Filter table based on array of filters [td_index, value]
+    function filterTable(table, filters) {
+      let tr = table.getElementsByTagName("tr");
 
-      // For each row, loop through filters elements until there is a match. If no match, hide row
-      for (let j = 0, filtersLength = filters.length; j < filters.length; j++) {
-        let filterIndex = filters[j][0],
-            filterValue = filters[j][1],
-            cell = td[filterIndex];
+      // Case unsensitive filter
+      filters.forEach(filter => {
+        filter[1] = filter[1].toUpperCase();
+      });
 
-        if (cell) {
-          if (cell.innerHTML.toUpperCase() === filterValue) {
-            tr[i].style.display = "";
-            break;
-          } else if (j === filtersLength - 1) {
-            tr[i].style.display = "none";
+      // Loop through all table rows, and hide those who don't match the search query
+      for (let i = 0, c = tr.length; i < c; i++) {
+        td = tr[i].getElementsByTagName("td");
+
+        // For each row, loop through filters elements until there is a match. If no match, hide row
+        for (let j = 0, filtersLength = filters.length; j < filters.length; j++) {
+          let filterIndex = filters[j][0],
+              filterValue = filters[j][1],
+              cell = td[filterIndex];
+
+          if (cell) {
+            if (cell.innerHTML.toUpperCase() === filterValue) {
+              tr[i].style.display = "";
+              break;
+            } else if (j === filtersLength - 1) {
+              tr[i].style.display = "none";
+            }
           }
         }
       }
     }
-  }
 
-  // Show all table rows
-  function unfilterTable(table) {
-    let tr = table.getElementsByTagName("tr");
+    // Show all table rows
+    function unfilterTable(table) {
+      let tr = table.getElementsByTagName("tr");
 
-    for (let i = 0, c = tr.length; i < c; i++) {
-      tr[i].style.display = "";
-    }
-  }
-
-
-  let name, isGla, isVolunteer;
-
-  // Get user's name, isGla and isVolunteer from Twig
-  document.addEventListener('DOMContentLoaded', function() {
-    let userDataElt = document.getElementById('userData');
-    if (userDataElt) {
-      name = userDataElt.getAttribute('data-name');
-      isGla = userDataElt.getAttribute('data-is-gla');
-      isVolunteer = userDataElt.getAttribute('data-is-volunteer');
-    }
-  });
-
-  // If myMissionsCheckbox is checked, show only missions where user is gla and/or volunteer
-  document.getElementById('myMissionsCheckbox').addEventListener('change', function (e) {
-    let otherMissionsTable = document.getElementById('otherMissions'),
-        value = name.toUpperCase();
-
-    if(e.target.checked) {
-      let filters = [];
-      if (isGla) {
-        filters.push([1, value]);
+      for (let i = 0, c = tr.length; i < c; i++) {
+        tr[i].style.display = "";
       }
-      if (isVolunteer) {
-        filters.push([3, value]);
-      }
-      filterTable(otherMissionsTable, filters);
-    } else {
-      unfilterTable(otherMissionsTable);
     }
-  });
+
+
+    // Get user's name, isGla and isVolunteer from Twig
+    document.addEventListener('DOMContentLoaded', function() {
+      let userDataElt = document.getElementById('userData');
+      if (userDataElt) {
+        name = userDataElt.getAttribute('data-name');
+        isGla = userDataElt.getAttribute('data-is-gla');
+        isVolunteer = userDataElt.getAttribute('data-is-volunteer');
+      }
+    });
+
+    // If myMissionsCheckbox is checked, show only missions where user is gla and/or volunteer
+    document.getElementById('myMissionsCheckbox').addEventListener('change', function (e) {
+      let otherMissionsTable = document.getElementById('otherMissions'),
+          value = name.toUpperCase();
+
+      if(e.target.checked) {
+        let filters = [];
+        if (isGla) {
+          filters.push([1, value]);
+        }
+        if (isVolunteer) {
+          filters.push([3, value]);
+        }
+        filterTable(otherMissionsTable, filters);
+      } else {
+        unfilterTable(otherMissionsTable);
+      }
+    });
+  })();
   </script>
 
 {% endblock %}

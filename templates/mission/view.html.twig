@@ -188,7 +188,7 @@
     </a>
     <div>
       {# Assign button opening a modal, only visible for volunteers #}
-      {% if is_granted('ROLE_VOLUNTEER') %}
+      {% if mission.status == constant('STATUS_DEFAULT', mission) and is_granted('ROLE_VOLUNTEER') %}
         <td>
           <button class="btn btn-outline-success" data-toggle="modal" data-target="#assignModal">
             <i class="fas fa-check-square"></i>

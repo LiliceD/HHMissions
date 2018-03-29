@@ -285,6 +285,46 @@ class MissionController extends Controller
 
 
     /**
+     * Assign user as volunteer of the mission
+     * 
+     * @Route(
+     *  "/assigner/{id}",
+     *  name="app_mission_assign",
+     *  requirements={
+     *      "id"="\d+"
+     *  }
+     * )
+     */
+    public function assign(Mission $mission)
+    {
+        if ($mission->getStatus() === Mission::STATUS_DEFAULT) {
+            // Retrieve user and allow action only if user is admin or mission's gla
+            $this->denyAccessUnlessGranted('ROLE_VOLUNTEER');
+            $user = $this->getUser();
+
+            // Set volunteer, dateAssigned and status
+            $mission->setVolunteer($user->getName());
+            $mission->setDateAssigned(new \DateTime());
+            $mission->setStatus(Mission::STATUS_ASSIGNED);
+
+            // Persist changes to DB
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($mission);
+            $em->flush();
+
+            $this->addFlash(
+                'notice',
+                'Vous avez pris en charge la mission.'
+            );
+
+            // Redirect to Mission view
+            return $this->redirectToRoute('app_mission_view', array(
+                'id' => $mission->getId()
+            ));
+        }
+    }
+
+    /**
      * Close / re-open a mission if its current status is finished / closed respectively
      * 
      * @Route(
@@ -325,44 +365,6 @@ class MissionController extends Controller
         $em = $this->getDoctrine()->getManager();
         $em->persist($mission);
         $em->flush();
-
-        // Redirect to Mission view
-        return $this->redirectToRoute('app_mission_view', array(
-            'id' => $mission->getId()
-        ));
-    }
-
-    /**
-     * Assign user as volunteer of the mission
-     * 
-     * @Route(
-     *  "/assigner/{id}",
-     *  name="app_mission_assign",
-     *  requirements={
-     *      "id"="\d+"
-     *  }
-     * )
-     */
-    public function assign(Mission $mission)
-    {
-        // Retrieve user and allow action only if user is admin or mission's gla
-        $this->denyAccessUnlessGranted('ROLE_VOLUNTEER');
-        $user = $this->getUser();
-
-        // Set volunteer, dateAssigned and status
-        $mission->setVolunteer($user->getName());
-        $mission->setDateAssigned(new \DateTime());
-        $mission->setStatus(Mission::STATUS_ASSIGNED);
-
-        // Persist changes to DB
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($mission);
-        $em->flush();
-
-        $this->addFlash(
-            'notice',
-            'Vous avez pris en charge la fiche mission.'
-        );
 
         // Redirect to Mission view
         return $this->redirectToRoute('app_mission_view', array(

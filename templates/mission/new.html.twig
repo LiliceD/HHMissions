@@ -14,9 +14,16 @@
     {{ form_widget(form.dateFinished, {'attr': {'hidden': 'true'}}) }}
     {{ form_widget(form.volunteer, {'attr': {'hidden': 'true'}}) }}
 
-    <div class="row justify-content-between">
-      <div class="col-sm d-flex">
-        {{ form_row(form.gla) }}
+    {# User role passed to JS through data attributes #}
+    <div id="userData" data-name="{{ app.user.name }}" data-is-gla="{{ app.user.isGla ? true : false }}" class="row justify-content-between">
+      <div class="d-flex">
+        <div class="col-sm">
+        {{ form_row(form.gla, {'attr': {'autocomplete': 'off'}}) }}
+        <div class="dropdown">
+          <div id ="glaSearchResults" class="dropdown-menu searchResults">
+          </div>
+        </div>
+      </div>
       </div>
       <div class="col-sm d-flex justify-content-sm-end">
         {{ form_row(form.dateCreated, {'attr': {'readonly': 'true'}}) }}
@@ -69,37 +76,97 @@
 
   {{ parent() }}
 
+  <script src="{{ asset('js/ajax.js') }}"></script>
+
   <script>
-  // Prepopulate fields "owner type" and "info" with selected accomodation info
-  function getAccomodationInfo() {
+  (function() {
+    let name, isGla, isVolunteer;
 
-    const id = encodeURIComponent(document.getElementById('mission_accomodation').value);
-    let xhr = new XMLHttpRequest();
-
-    xhr.open('POST', "{{ path('app_accomodation_info') }}");
-    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    xhr.send('id=' + id);
-
-    xhr.addEventListener('readystatechange', function() {
-
-      if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-        
-        var data = JSON.parse(xhr.responseText);
+    // Prepopulate fields "owner type" and "info" with selected accomodation info
+    function getAccomodationInfo() {
+      const id = encodeURIComponent(document.getElementById('mission_accomodation').value);
+      
+      ajaxPost("{{ path('app_accomodation_info') }}", {'id': id}, function(JSONResponse) {
+        let data = JSON.parse(JSONResponse);
 
         document.getElementById('accomodation_ownerType').value = data.ownerType;
         document.getElementById('mission_info').value = data.access;
+      });
+    }
 
-      } else if (xhr.readyState === XMLHttpRequest.DONE && xhr.status !== 200) {
-        
-        console.error('Erreur lors de la requête Ajax');
-
+    // Get user's name and isGla from Twig and prepopulate field "Provenance GLA"
+    function setGla() {
+      let userDataElt = document.getElementById('userData');
+      if (userDataElt) {
+        name = userDataElt.getAttribute('data-name');
+        isGla = userDataElt.getAttribute('data-is-gla');
       }
+      if (isGla) {
+        document.getElementById('mission_gla').value = name;
+      }
+    }
+    
 
+    document.addEventListener('DOMContentLoaded', setGla);
+
+    document.addEventListener('DOMContentLoaded', getAccomodationInfo);
+    document.getElementById('mission_accomodation').addEventListener('change', getAccomodationInfo);
+
+
+    let glaInput = document.getElementById('mission_gla'),
+        resultsDiv = document.getElementById('glaSearchResults');
+
+    // Suggestion of GLAs based on input
+    function glaSuggestions(search) {
+      // Ajax query to get GLAs matching search
+      ajaxPost("{{ path('app_user_suggestions') }}", {'search': search, 'category': 'gla'}, (data) => {
+        let glas = data.split('|');
+
+        if (glas && glas[0] !== '') {
+          resultsDiv.innerHTML = '';
+          
+          // Add GLA to suggestions
+          glas.forEach(gla => displaySuggestion(gla));
+
+          // Show suggestions
+          resultsDiv.style.display = "block";
+        }
+      });
+    }
+
+    function displaySuggestion(gla) {
+      // Create a dropdown item for each GLA
+      let a = document.createElement('a');
+      a.className = 'dropdown-item';
+      a.href = '#';
+      a.innerHTML = gla;
+
+      a.addEventListener('click', (e) => {
+        // Fill GLA input with selected name
+        let value = e.target.innerHTML;
+        glaInput.value = value;
+        // Hide suggestions once one has been selected
+        resultsDiv.style.display = "none";
+      });
+
+      resultsDiv.appendChild(a);
+    }
+
+
+    glaInput.addEventListener('input', (e) => {
+      let search = e.target.value.trim();
+      glaSuggestions(search);
     });
-  }
 
-  document.addEventListener('DOMContentLoaded', getAccomodationInfo);
-  document.getElementById('mission_accomodation').addEventListener('change', getAccomodationInfo);
+    glaInput.addEventListener('focus', (e) => {
+      let search = e.target.value.trim();
+      glaSuggestions(search);
+    });
+
+    glaInput.addEventListener('blur', () => {
+      setTimeout(() => resultsDiv.style.display = "none", 200)
+    });
+  })();
   </script>
 
 {% endblock %}

@@ -38,29 +38,9 @@ class MissionType extends AbstractType
                 'widget' => 'single_text',
                 'required' => false
             ])
-            ->add('gla', EntityType::class, [
-                // Dropdown from User table with GLA only
-                'class' => User::class,
-                'query_builder' => function (EntityRepository $er) {
-                    return $er->createQueryBuilder('u')
-                        ->where('u.isGla = 1')
-                        ->orderBy('u.name', 'ASC');
-                },
-                'choice_label' => 'name',
-                'label' => 'Provenance GLA :',
-                'placeholder' => false
-            ])
-            ->add('volunteer', EntityType::class, [
-                // Dropdown from User table with Volunteers only
-                'class' => User::class,
-                'query_builder' => function (EntityRepository $er) {
-                    return $er->createQueryBuilder('u')
-                        ->where('u.isVolunteer = 1')
-                        ->orderBy('u.name', 'ASC');
-                },
-                'choice_label' => 'name',
+            ->add('gla', null, ['label'=> 'Provenance GLA'])
+            ->add('volunteer', null, [
                 'label' => 'Bénévole :',
-                'placeholder' => '',
                 'required' => false
             ])
             ->add('accomodation', EntityType::class, [

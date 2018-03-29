@@ -6,6 +6,7 @@ use App\Form\UserType;
 use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
@@ -50,7 +51,10 @@ class UserController extends Controller
 
         return $this->render(
             'user/new.html.twig',
-            array('form' => $form->createView())
+            [
+                'form' => $form->createView(),
+                'emailDomain' => User::EMAIL_DOMAIN
+            ]
         );
     }
 
@@ -83,4 +87,45 @@ class UserController extends Controller
         return $this->redirectToRoute('app_mission_list');
     }
 
+    /**
+    * @Route(
+    *  "/suggestions",
+    *  name="app_user_suggestions",
+    * )
+    */
+    public function getMatchingUsers(Request $request)
+    {
+        $category = $request->request->get('category');
+        $search = $request->request->get('search');
+
+        // Get all users with isVolunteer/Gla = true ordered by ASC name
+        $repository = $this->getDoctrine()->getRepository(User::class);
+        $users = $repository->findByCategory($category);
+        
+        $matchingUsers = [];
+
+        if ($search) {
+            // Fill an array with volunteers/GLAs matching search
+            foreach($users as $user) {
+                $userName = $user['name'];
+                if (stripos($userName, $search) > -1) {
+                    array_push($matchingUsers, $userName);
+                }
+            }
+        } else {
+            // Or with all volunteers/GLAs if no search input
+            foreach($users as $user) {
+                $userName = $user['name'];
+                array_push($matchingUsers, $userName);
+            }
+        }
+
+        sort($matchingUsers, SORT_NATURAL);
+
+        $response = new Response();
+        $response->setContent(implode('|', $matchingUsers));
+        $response->headers->set('Content-Type', 'text/plain');
+
+        return $response;
+    }
 }
