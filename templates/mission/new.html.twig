@@ -77,6 +77,7 @@
   {{ parent() }}
 
   <script src="{{ asset('js/ajax.js') }}"></script>
+  <script src="{{ asset('js/searchSuggestions.js') }}"></script>
 
   <script>
   (function() {
@@ -106,66 +107,17 @@
       }
     }
     
-
+    // Prepopulate field GLA with user's name
     document.addEventListener('DOMContentLoaded', setGla);
 
+    // Prepopulate fields OwnerType and Mission's info with accomodation selection
     document.addEventListener('DOMContentLoaded', getAccomodationInfo);
     document.getElementById('mission_accomodation').addEventListener('change', getAccomodationInfo);
 
 
-    let glaInput = document.getElementById('mission_gla'),
-        resultsDiv = document.getElementById('glaSearchResults');
-
-    // Suggestion of GLAs based on input
-    function glaSuggestions(search) {
-      // Ajax query to get GLAs matching search
-      ajaxPost("{{ path('app_user_suggestions') }}", {'search': search, 'category': 'gla'}, (data) => {
-        let glas = data.split('|');
-
-        if (glas && glas[0] !== '') {
-          resultsDiv.innerHTML = '';
-          
-          // Add GLA to suggestions
-          glas.forEach(gla => displaySuggestion(gla));
-
-          // Show suggestions
-          resultsDiv.style.display = "block";
-        }
-      });
-    }
-
-    function displaySuggestion(gla) {
-      // Create a dropdown item for each GLA
-      let a = document.createElement('a');
-      a.className = 'dropdown-item';
-      a.href = '#';
-      a.innerHTML = gla;
-
-      a.addEventListener('click', (e) => {
-        // Fill GLA input with selected name
-        let value = e.target.innerHTML;
-        glaInput.value = value;
-        // Hide suggestions once one has been selected
-        resultsDiv.style.display = "none";
-      });
-
-      resultsDiv.appendChild(a);
-    }
-
-
-    glaInput.addEventListener('input', (e) => {
-      let search = e.target.value.trim();
-      glaSuggestions(search);
-    });
-
-    glaInput.addEventListener('focus', (e) => {
-      let search = e.target.value.trim();
-      glaSuggestions(search);
-    });
-
-    glaInput.addEventListener('blur', () => {
-      setTimeout(() => resultsDiv.style.display = "none", 200)
-    });
+    // Display suggestions of GLAs in a dropdown with user input
+    // arguments : id of search element, id of results element, user category, controller url
+    searchSuggestions('mission_gla', 'glaSearchResults', 'gla', "{{ path('app_user_suggestions') }}");
   })();
   </script>
 
