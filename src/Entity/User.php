@@ -89,44 +89,28 @@ class User implements UserInterface, \Serializable
 
     /************** Methods *****************/
 
-    // // Callback for $category Choice
-    // public static function getCategories()
-    // {
-    //     return array(
-    //         'Administrateur' => 'ROLE_ADMIN',
-    //         'GLA' => 'ROLE_GLA',
-    //         'Bénévole' => 'ROLE_VOLUNTEER'
-    //     );
-    // }
+    public static function getCategories()
+    {
+        return array(
+            'Administrateur' => 'ROLE_ADMIN',
+            'GLA' => 'ROLE_GLA',
+            'Bénévole' => 'ROLE_VOLUNTEER'
+        );
+    }
 
     public function setIsGlaIsVolunteer()
     {
-        // ROLE_GLA (resp. ROLE_VOLUNTEER) is only in Gla list (resp. Volunteer list)
-
         $roles = $this->getRoles();
-
+        
+        // ROLE_GLA (resp. ROLE_VOLUNTEER) is only in Gla list (resp. Volunteer list)
         $this->isGla = in_array('ROLE_ADMIN', $roles) || in_array('ROLE_GLA', $roles);
         $this->isVolunteer = in_array('ROLE_ADMIN', $roles) || in_array('ROLE_VOLUNTEER', $roles);
     }
 
-    // public function hasRole($role)
-    // {
-    //     return in_array($role, $this->roles);
-    // }
-
-    // public function addRole($role)
-    // {
-    //     if (!in_array($role, $this->roles, true)) {
-    //         array_push($this->roles, $role);
-    //     }
-    // }
-
-    // public function removeRole($role)
-    // {
-    //     if (($key = array_search($role, $this->roles)) !== false) {
-    //         unset($this->roles[$key]);
-    //     }
-    // }
+    public function hasRole($role)
+    {
+        return in_array($role, $this->roles);
+    }
 
     public function __construct()
     {

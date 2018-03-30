@@ -1,5 +1,7 @@
-function searchSuggestions(searchElementId, resultsDivId, userCategory, controllerUrl) {
-  let searchElement = document.getElementById(searchElementId),
+function searchSuggestions(userCategory, controllerUrl) {
+  let searchElementId = 'mission_' + userCategory,
+      resultsDivId = userCategory + 'SearchResults',
+      searchElement = document.getElementById(searchElementId),
       resultsDiv = document.getElementById(resultsDivId),
       previousValue ='',
       previousRequest;

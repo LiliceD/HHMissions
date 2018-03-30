@@ -35,14 +35,7 @@ class UserController extends Controller
             // Set roles
             $category = $form->get('category')->getData();
             $roles = [$category];
-            // A volunteer can get ROLE_GLA too in order to create missions
-            if ($form->get('glaRole')->getData()) {
-                array_push($roles, 'ROLE_GLA');
-            }
             $user->setRoles($roles);
-
-            // // Set isGla and isVolunteer based on roles
-            // $user->setIsGlaIsVolunteer();
 
             // Save the User
             $entityManager = $this->getDoctrine()->getManager();

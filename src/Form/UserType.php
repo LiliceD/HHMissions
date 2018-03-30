@@ -26,11 +26,13 @@ class UserType extends AbstractType
                 'second_options' => ['label' => 'Repeat Password'],
             ])
             ->add('category', ChoiceType::class, [
-                'choices' => [
-                    'Administrateur' => 'ROLE_ADMIN',
-                    'GLA' => 'ROLE_GLA',
-                    'Bénévole' => 'ROLE_VOLUNTEER'
-                ],
+
+                'choices' => User::getCategories(),
+                // [
+                //     'Administrateur' => 'ROLE_ADMIN',
+                //     'GLA' => 'ROLE_GLA',
+                //     'Bénévole' => 'ROLE_VOLUNTEER'
+                // ],
                 'label' => 'Catégorie :',
                 'placeholder' => '-',
                 'mapped' => false

@@ -14,7 +14,7 @@ function ajaxPost(url, param, callback) {
 
         if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
             callback(xhr.responseText);
-        } else if (xhr.readyState === XMLHttpRequest.DONE && xhr.status !== 200) {
+        } else if (xhr.readyState === XMLHttpRequest.DONE && xhr.status !== 200 && xhr.status !== 0) {
             console.error('Erreur lors de la requête Ajax');
         }
     });

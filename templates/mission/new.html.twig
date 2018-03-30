@@ -116,8 +116,8 @@
 
 
     // Display suggestions of GLAs in a dropdown with user input
-    // arguments : id of search element, id of results element, user category, controller url
-    searchSuggestions('mission_gla', 'glaSearchResults', 'gla', "{{ path('app_user_suggestions') }}");
+    // arguments : user category, controller url
+    searchSuggestions('gla', "{{ path('app_user_suggestions') }}");
   })();
   </script>
 
