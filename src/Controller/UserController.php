@@ -32,8 +32,10 @@ class UserController extends Controller
             $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
             $user->setPassword($password);
 
-            // Set isGla and isVolunteer based on category
-            $user->setIsGlaIsVolunteer();
+            // Set roles
+            $category = $form->get('category')->getData();
+            $roles = [$category];
+            $user->setRoles($roles);
 
             // Save the User
             $entityManager = $this->getDoctrine()->getManager();
