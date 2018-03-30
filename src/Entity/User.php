@@ -15,11 +15,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class User implements UserInterface, \Serializable
 {
-    // List of possible roles
-    // const ROLE_ADMIN = 'ROLE_ADMIN';
-    // const ROLE_GLA = 'ROLE_GLA';
-    // const ROLE_VOLUNTEER = 'ROLE_VOLUNTEER';
-
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")
@@ -53,15 +48,8 @@ class User implements UserInterface, \Serializable
 
     /**
      * @ORM\Column(type="simple_array")
-     * @Assert\NotBlank()
      */
     private $roles;
-
-    // *
-    //  * @ORM\Column(type="string", length=25)
-    //  * @Assert\Choice(callback="getCategories")
-     
-    // private $category;
 
     /**
      * @ORM\Column(type="string", length=25, unique=true)
@@ -75,20 +63,21 @@ class User implements UserInterface, \Serializable
     private $isActive;
 
     /**
-     * Adds (or not) user to dropdown gla "Provenance GLA" in Mission forms
+     * Adds (or not) user to suggestions of gla in Mission add form
      * @ORM\Column(name="is_gla", type="boolean")
      */
     private $isGla;
 
     /**
-     * Adds (or not) user to dropdown volunteer "Bénévole" in Mission forms
+     * Adds (or not) user to suggestions of volunteer in Mission edit form
      * @ORM\Column(name="is_volunteer", type="boolean")
      */
     private $isVolunteer;
 
 
-    /************** Methods *****************/
+    /************** Public methods *****************/
 
+    // Category dropdown in UserType
     public static function getCategories()
     {
         return array(
@@ -98,19 +87,12 @@ class User implements UserInterface, \Serializable
         );
     }
 
-    public function setIsGlaIsVolunteer()
-    {
-        $roles = $this->getRoles();
-        
-        // ROLE_GLA (resp. ROLE_VOLUNTEER) is only in Gla list (resp. Volunteer list)
-        $this->isGla = in_array('ROLE_ADMIN', $roles) || in_array('ROLE_GLA', $roles);
-        $this->isVolunteer = in_array('ROLE_ADMIN', $roles) || in_array('ROLE_VOLUNTEER', $roles);
-    }
 
     public function hasRole($role)
     {
         return in_array($role, $this->roles);
     }
+
 
     public function __construct()
     {
@@ -121,6 +103,7 @@ class User implements UserInterface, \Serializable
     {
         return $this->name;
     }
+
 
     // Mandatory function
     public function getSalt()
@@ -157,6 +140,19 @@ class User implements UserInterface, \Serializable
     }
 
 
+    /********** Private functions *************/
+
+    private function setIsGlaIsVolunteer()
+    {
+        $roles = $this->getRoles();
+        
+        // ROLE_GLA (resp. ROLE_VOLUNTEER) is only in Gla list (resp. Volunteer list)
+        // ROLE_ADMIN is in both lists
+        $this->isGla = in_array('ROLE_ADMIN', $roles) || in_array('ROLE_GLA', $roles);
+        $this->isVolunteer = in_array('ROLE_ADMIN', $roles) || in_array('ROLE_VOLUNTEER', $roles);
+    }
+
+
     /********** Getters and setters *************/
 
     public function getUsername()
@@ -168,6 +164,7 @@ class User implements UserInterface, \Serializable
     {
         $this->username = $username;
     }
+
 
     public function getPlainPassword()
     {
@@ -189,6 +186,7 @@ class User implements UserInterface, \Serializable
         $this->password = $password;
     }
 
+
     public function getEmail()
     {
         return $this->email;
@@ -198,6 +196,7 @@ class User implements UserInterface, \Serializable
     {
         $this->email = $email;
     }
+
 
     // Mandatory function
     public function getRoles()
@@ -211,16 +210,6 @@ class User implements UserInterface, \Serializable
         $this->setIsGlaIsVolunteer();
     }
 
-    public function getCategory()
-    {
-        return $this->category;
-    }
-
-    public function setCategory($category)
-    {
-        $this->category = $category;
-        $this->roles = [$category];
-    }
 
     public function getName()
     {
@@ -232,23 +221,14 @@ class User implements UserInterface, \Serializable
         $this->name = $name;
     }
 
+
     public function getIsGla()
     {
         return $this->isGla;
     }
 
-    public function setIsGla($isGla)
-    {
-        $this->isGla = $isGla;
-    }
-
     public function getIsVolunteer()
     {
         return $this->isVolunteer;
-    }
-
-    public function setIsVolunteer($isVolunteer)
-    {
-        $this->isVolunteer = $isVolunteer;
     }
 }

@@ -16,32 +16,20 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class AccomodationController extends Controller
 {
-    /**
-    * @Route(
-    *  "/{page}",
-    *  name="app_accomodation_list",
-    *  requirements={
-    *      "page"="\d+"
-    *  }
-    * )
-    */
-    public function list($page = 1)
-    {    
-        $repository = $this->getDoctrine()->getRepository(Accomodation::class);
-
-        $accomodations = $repository->findBy(array(), array('street' => 'ASC'));
-
-        return $this->render('accomodation/list.html.twig', [
-            'accomodations' => $accomodations
-        ]);
-    }
+    
+    //  ██████╗██████╗ ██╗   ██╗██████╗ 
+    // ██╔════╝██╔══██╗██║   ██║██╔══██╗
+    // ██║     ██████╔╝██║   ██║██║  ██║
+    // ██║     ██╔══██╗██║   ██║██║  ██║
+    // ╚██████╗██║  ██║╚██████╔╝██████╔╝
+    //  ╚═════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ 
 
     /**
-    * @Route(
-    *  "/ajouter",
-    *  name="app_accomodation_new"
-    * )
-    */
+     * @Route(
+     *  "/ajouter",
+     *  name="app_accomodation_new"
+     * )
+     */
     public function new(Request $request)
     {
         $accomodation = new Accomodation();
@@ -71,14 +59,14 @@ class AccomodationController extends Controller
     }
 
     /**
-    * @Route(
-    *  "/modifier/{id}",
-    *  name="app_accomodation_edit",
-    *  requirements={
-    *      "id"="\d+"
-    *  }
-    * )
-    */
+     * @Route(
+     *  "/modifier/{id}",
+     *  name="app_accomodation_edit",
+     *  requirements={
+     *      "id"="\d+"
+     *  }
+     * )
+     */
     public function edit(Accomodation $accomodation, Request $request)
     {
         $form = $this->createForm(AccomodationType::class, $accomodation);
@@ -107,14 +95,14 @@ class AccomodationController extends Controller
     }
 
     /**
-    * @Route(
-    *  "/supprimer/{id}",
-    *  name="app_accomodation_delete",
-    *  requirements={
-    *      "id"="\d+"
-    *  }
-    * )
-    */
+     * @Route(
+     *  "/supprimer/{id}",
+     *  name="app_accomodation_delete",
+     *  requirements={
+     *      "id"="\d+"
+     *  }
+     * )
+     */
     public function delete(Accomodation $accomodation)
     {
         $em = $this->getDoctrine()->getManager();
@@ -129,12 +117,50 @@ class AccomodationController extends Controller
         return $this->redirectToRoute('app_accomodation_list');
     }
 
+
+// ██████╗  █████╗  ██████╗ ███████╗███████╗
+// ██╔══██╗██╔══██╗██╔════╝ ██╔════╝██╔════╝
+// ██████╔╝███████║██║  ███╗█████╗  ███████╗
+// ██╔═══╝ ██╔══██║██║   ██║██╔══╝  ╚════██║
+// ██║     ██║  ██║╚██████╔╝███████╗███████║
+// ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚══════╝
+
+
     /**
-    * @Route(
-    *  "/info",
-    *  name="app_accomodation_info",
-    * )
-    */
+     * @Route(
+     *  "/{page}",
+     *  name="app_accomodation_list",
+     *  requirements={
+     *      "page"="\d+"
+     *  }
+     * )
+     */
+    public function list($page = 1)
+    {    
+        $repository = $this->getDoctrine()->getRepository(Accomodation::class);
+
+        $accomodations = $repository->findBy(array(), array('street' => 'ASC'));
+
+        return $this->render('accomodation/list.html.twig', [
+            'accomodations' => $accomodations
+        ]);
+    }
+
+
+//  █████╗      ██╗ █████╗ ██╗  ██╗
+// ██╔══██╗     ██║██╔══██╗╚██╗██╔╝
+// ███████║     ██║███████║ ╚███╔╝ 
+// ██╔══██║██   ██║██╔══██║ ██╔██╗ 
+// ██║  ██║╚█████╔╝██║  ██║██╔╝ ██╗
+// ╚═╝  ╚═╝ ╚════╝ ╚═╝  ╚═╝╚═╝  ╚═╝
+
+    
+    /**
+     * @Route(
+     *  "/info",
+     *  name="app_accomodation_info",
+     * )
+     */
     public function info(Request $request)
     {
         $id = $request->request->get('id');

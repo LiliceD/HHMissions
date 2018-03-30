@@ -15,6 +15,15 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
  */
 class UserController extends Controller
 {
+    
+    //  ██████╗██████╗ ██╗   ██╗██████╗ 
+    // ██╔════╝██╔══██╗██║   ██║██╔══██╗
+    // ██║     ██████╔╝██║   ██║██║  ██║
+    // ██║     ██╔══██╗██║   ██║██║  ██║
+    // ╚██████╗██║  ██║╚██████╔╝██████╔╝
+    //  ╚═════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ 
+
+
     /**
      * @Route("/ajouter", name="app_user_registration")
      */
@@ -28,7 +37,7 @@ class UserController extends Controller
         
         if ($form->isSubmitted() && $form->isValid()) {
 
-            // Encode the password
+            // Encode and set the password
             $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
             $user->setPassword($password);
 
@@ -38,9 +47,9 @@ class UserController extends Controller
             $user->setRoles($roles);
 
             // Save the User
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($user);
-            $entityManager->flush();
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($user);
+            $em->flush();
 
             // Set a "flash" success message
             $this->addFlash(
@@ -86,18 +95,30 @@ class UserController extends Controller
         return $this->redirectToRoute('app_mission_list');
     }
 
+
+//  █████╗      ██╗ █████╗ ██╗  ██╗
+// ██╔══██╗     ██║██╔══██╗╚██╗██╔╝
+// ███████║     ██║███████║ ╚███╔╝ 
+// ██╔══██║██   ██║██╔══██║ ██╔██╗ 
+// ██║  ██║╚█████╔╝██║  ██║██╔╝ ██╗
+// ╚═╝  ╚═╝ ╚════╝ ╚═╝  ╚═╝╚═╝  ╚═╝
+    
+
     /**
+     * Send a text Response with a list of users in $category and whose name matches $search
+     *
      * @Route(
      *  "/suggestions",
      *  name="app_user_suggestions"
      * )
      */
-    public function userAutocomplete(Request $request)
+    public function searchSuggestions(Request $request)
     {
+        // Get request parameters
         $category = $request->request->get('category');
         $search = $request->request->get('search');
 
-        // Get all users with isVolunteer/Gla = true ordered by ASC name
+        // Get all users of the requested category, ordered alphabetically
         $repository = $this->getDoctrine()->getRepository(User::class);
         $users = $repository->findByCategory($category);
         
@@ -119,8 +140,7 @@ class UserController extends Controller
             }
         }
 
-        sort($matchingUsers, SORT_NATURAL);
-
+        // Convert array to text and send response
         $response = new Response();
         $response->setContent(implode('|', $matchingUsers));
         $response->headers->set('Content-Type', 'text/plain');
