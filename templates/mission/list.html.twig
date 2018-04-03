@@ -20,9 +20,8 @@
   <h3>Missions à attribuer :</h3>
 
   <table id="newMissions" class="table table-hover">
-
-    <thead class="thead-light">
-      <tr>
+    <thead>
+      <tr class="w3-deep-orange">
         <th scope="col">N°</th>
         <th scope="col">Date demande</th>
         <th scope="col">Provenance GLA</th>
@@ -118,7 +117,7 @@
           <td>{{ mission.status }}</td>
           {# view button #}
           <td>
-            <a href="{{ path('app_mission_view', {'id': mission.id}) }}" title="Voir la FM {{ mission.id }}" class="btn btn-sm btn-primary">
+            <a href="{{ path('app_mission_view', {'id': mission.id}) }}" title="Voir la FM" class="btn btn-sm btn-primary">
               <i class="fas fa-eye"></i>
               Voir
             </a>
@@ -135,9 +134,7 @@
         </tr>
       {% endfor %}
     </tbody>
-
   </table>
-  
 {% endblock %}
 
 
