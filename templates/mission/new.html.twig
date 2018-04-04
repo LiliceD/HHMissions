@@ -59,9 +59,9 @@
       Il n'est possible de joindre qu'<strong>un seul fichier</strong>, au format <strong>PDF uniquement</strong>.
     </div>
     {{ form_widget(form.attachment) }}
-{% endblock %}
 
-{% block card_footer %}
+    <br>
+
     <div class="d-flex justify-content-end">
       <input type="submit" class="btn btn-primary mr-2" value="Créer la fiche mission"/>
       <a href="{{ path('app_mission_new') }}" class="btn btn-outline-secondary">
@@ -72,53 +72,52 @@
   {{ form_end(form) }}
 {% endblock %}
 
-{% block javascripts %}
 
+{% block javascripts %}
   {{ parent() }}
 
   <script src="{{ asset('js/ajax.js') }}"></script>
   <script src="{{ asset('js/searchSuggestions.js') }}"></script>
 
   <script>
-  (function() {
-    let name, isGla, isVolunteer;
+    (function() {
+      let name, isGla, isVolunteer;
 
-    // Prepopulate fields "owner type" and "info" with selected accomodation info
-    function getAccomodationInfo() {
-      const id = encodeURIComponent(document.getElementById('mission_accomodation').value);
+      // Prepopulate fields "owner type" and "info" with selected accomodation info
+      function getAccomodationInfo() {
+        const id = encodeURIComponent(document.getElementById('mission_accomodation').value);
+        
+        ajaxPost("{{ path('app_accomodation_info') }}", {'id': id}, function(JSONResponse) {
+          let data = JSON.parse(JSONResponse);
+
+          document.getElementById('accomodation_ownerType').value = data.ownerType;
+          document.getElementById('mission_info').value = data.access;
+        });
+      }
+
+      // Get user's name and isGla from Twig and prepopulate field "Provenance GLA"
+      function setGla() {
+        let userDataElt = document.getElementById('userData');
+        if (userDataElt) {
+          name = userDataElt.getAttribute('data-name');
+          isGla = userDataElt.getAttribute('data-is-gla');
+        }
+        if (isGla) {
+          document.getElementById('mission_gla').value = name;
+        }
+      }
       
-      ajaxPost("{{ path('app_accomodation_info') }}", {'id': id}, function(JSONResponse) {
-        let data = JSON.parse(JSONResponse);
+      // Prepopulate field GLA with user's name
+      document.addEventListener('DOMContentLoaded', setGla);
 
-        document.getElementById('accomodation_ownerType').value = data.ownerType;
-        document.getElementById('mission_info').value = data.access;
-      });
-    }
-
-    // Get user's name and isGla from Twig and prepopulate field "Provenance GLA"
-    function setGla() {
-      let userDataElt = document.getElementById('userData');
-      if (userDataElt) {
-        name = userDataElt.getAttribute('data-name');
-        isGla = userDataElt.getAttribute('data-is-gla');
-      }
-      if (isGla) {
-        document.getElementById('mission_gla').value = name;
-      }
-    }
-    
-    // Prepopulate field GLA with user's name
-    document.addEventListener('DOMContentLoaded', setGla);
-
-    // Prepopulate fields OwnerType and Mission's info with accomodation selection
-    document.addEventListener('DOMContentLoaded', getAccomodationInfo);
-    document.getElementById('mission_accomodation').addEventListener('change', getAccomodationInfo);
+      // Prepopulate fields OwnerType and Mission's info with accomodation selection
+      document.addEventListener('DOMContentLoaded', getAccomodationInfo);
+      document.getElementById('mission_accomodation').addEventListener('change', getAccomodationInfo);
 
 
-    // Display suggestions of GLAs in a dropdown with user input
-    // arguments : user category, controller url
-    searchSuggestions('gla', "{{ path('app_user_suggestions') }}");
-  })();
+      // Display suggestions of GLAs in a dropdown with user input
+      // arguments : user category, controller url
+      searchSuggestions('gla', "{{ path('app_user_suggestions') }}");
+    })();
   </script>
-
 {% endblock %}

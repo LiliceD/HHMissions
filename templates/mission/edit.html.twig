@@ -88,37 +88,41 @@
     <br>
     
     {{ form_row(form.conclusions) }}
-{% endblock %}
 
-{% block card_footer %}
-    <div class="d-flex justify-content-between">
-      {# Delete button opening a modal #}
-      {# only visible for admin #}
-      {% if is_granted('ROLE_ADMIN') %}
-        <button class="btn btn-sm btn-outline-danger" data-toggle="modal" data-target="#deleteModal">
-          <i class="fas fa-trash-alt"></i>
-          Supprimer la fiche mission
-        </button>
-      {% endif %}
+    <br>
+
+    <div class="d-flex justify-content-end">
       <input type="submit" class="btn btn-primary mr-2" value="Valider"/>
+      <a href="{{ path('app_mission_view', {'id': mission.id}) }}" class="btn btn-outline-secondary">
+        Annuler
+      </a>
     </div>
   {{ form_end(form) }}
 {% endblock %}
 
+{% block card_footer %}
+  {# Delete button opening a modal #}
+  {# only visible for admin #}
+  {% if is_granted('ROLE_ADMIN') %}
+    <button class="btn btn-sm btn-outline-danger" data-toggle="modal" data-target="#deleteModal">
+      <i class="fas fa-trash-alt"></i>
+      Supprimer la fiche mission
+    </button>
+  {% endif %}
+{% endblock %}
+
 
 {% block javascripts %}
-
   {{ parent() }}
 
   <script src="{{ asset('js/ajax.js') }}"></script>
   <script src="{{ asset('js/searchSuggestions.js') }}"></script>
 
   <script>
-  (function() {
-    // Display suggestions of GLAs in a dropdown with user input
-    // arguments : user category, controller url
-    searchSuggestions('volunteer', "{{ path('app_user_suggestions') }}");
-  })();
+    (function() {
+      // Display suggestions of GLAs in a dropdown with user input
+      // arguments : user category, controller url
+      searchSuggestions('volunteer', "{{ path('app_user_suggestions') }}");
+    })();
   </script>
-
 {% endblock %}

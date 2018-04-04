@@ -24,14 +24,14 @@
     {{ form_widget(form.name, {'attr': {'hidden': 'true'}}) }}
     {{ form_widget(form.plainPassword.first, {'attr': {'hidden': 'true'}}) }}
     {{ form_widget(form.plainPassword.second, {'attr': {'hidden': 'true'}}) }}
-{% endblock %}
 
-{% block card_footer %}
-        <div class="d-flex justify-content-end">
-          <input type="submit" class="btn btn-primary mr-2" valye="Valider" />
-        </div>
+    <br>
 
-    {{ form_end(form) }}
+    <div class="d-flex justify-content-end">
+      <input type="submit" class="btn btn-primary mr-2" valye="Valider" />
+    </div>
+
+  {{ form_end(form) }}
 {% endblock %}
 
 
