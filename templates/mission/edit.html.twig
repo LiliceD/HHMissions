@@ -8,8 +8,8 @@
 
 {% block card_body %}
   {# Modal to confirm mission delete #}
-  {# only visible for admin #}
-  {% if is_granted('ROLE_ADMIN') %}
+  {# only visible for admin or mission's GLA #}
+  {% if is_granted('ROLE_ADMIN') or (is_granted('ROLE_GLA') and mission.gla == app.user.name) %}
     <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -70,21 +70,26 @@
 
     {{ form_row(form.info) }}
 
-    {{ form_label(form.attachment) }}
-    {% if mission.attachment %}
-      <div class="alert alert-info">
-        <a href="#" class="close" data-dismiss="alert" aria-label="Fermer">&times;</a>
-        Il n'est possible de joindre qu'<strong>un seul fichier</strong>, au format <strong>PDF uniquement</strong>.
-      </div>
-      <div class="alert alert-warning">
-        <a href="#" class="close" data-dismiss="alert" aria-label="Fermer">&times;</a>
-        <strong>Attention, cette mission a déjà une pièce jointe !</strong>
-        Pour la voir, <a href="{{ asset('uploads/pdf/' ~ attachmentUrl) }}" target="_blank" class="alert-link">cliquez ici</a>.<br>
-        Si vous ajoutez un nouveau fichier, il remplacera le fichier existant.<br>
-      </div>
+    {# only visible for admin or mission's GLA #}
+    {% if is_granted('ROLE_ADMIN') or (is_granted('ROLE_GLA') and mission.gla == app.user.name) %}
+      {{ form_label(form.attachment) }}
+      {% if mission.attachment %}
+        <div class="alert alert-info">
+          <a href="#" class="close" data-dismiss="alert" aria-label="Fermer">&times;</a>
+          Il n'est possible de joindre qu'<strong>un seul fichier</strong>, au format <strong>PDF uniquement</strong>.
+        </div>
+        <div class="alert alert-warning">
+          <a href="#" class="close" data-dismiss="alert" aria-label="Fermer">&times;</a>
+          <strong>Attention, cette mission a déjà une pièce jointe !</strong>
+          Pour la voir, <a href="{{ asset('uploads/pdf/' ~ attachmentUrl) }}" target="_blank" class="alert-link">cliquez ici</a>.<br>
+          Si vous ajoutez un nouveau fichier, il remplacera le fichier existant.<br>
+        </div>
+      {% endif %}
+      {{ form_widget(form.attachment) }}
+    {% else %}
+      {{ form_widget(form.attachment, {'attr': {'hidden': 'true'}}) }}
     {% endif %}
-    {{ form_widget(form.attachment) }}
-    
+
     <br>
     
     {{ form_row(form.conclusions) }}
@@ -102,8 +107,8 @@
 
 {% block card_footer %}
   {# Delete button opening a modal #}
-  {# only visible for admin #}
-  {% if is_granted('ROLE_ADMIN') %}
+  {# only visible for admin or mission's GLA #}
+  {% if is_granted('ROLE_ADMIN') or (is_granted('ROLE_GLA') and mission.gla == app.user.name) %}
     <button class="btn btn-sm btn-outline-danger" data-toggle="modal" data-target="#deleteModal">
       <i class="fas fa-trash-alt"></i>
       Supprimer la fiche mission

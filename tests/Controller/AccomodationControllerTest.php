@@ -127,7 +127,7 @@ class AccomodationControllerTest extends WebTestCase
 
         $form = $crawler->selectButton('Valider')->form();
 
-        $this->assertSame(1, $crawler->filter('h2:contains("Modifier un logement")')->count());
+        $this->assertSame(1, $crawler->filter('h2:contains("Modifier le logement")')->count());
         $this->assertEquals('25 RUE DU PERRON', $crawler->filter('#accomodation_street')->attr('value'));
     }
 

@@ -44,28 +44,27 @@
   {{ parent() }}
 
   <script>
-  (function() {
-    function standardizeInput(input) {
-      return input.normalize('NFD').replace(/[\u0300-\u036F]/g, "").toUpperCase();
-    }
-
-
-    // Remove accent and capitalize address and city
-    document.getElementById("accomodation_street").addEventListener("input", function (e) {
-      e.target.value = standardizeInput(e.target.value);
-    });
-    document.getElementById("accomodation_city").addEventListener("input", function (e) {
-      e.target.value = standardizeInput(e.target.value);
-    });
-
-    // Replace with city name dynamic population
-    document.getElementById("accomodation_postalCode").addEventListener("change", function (e) {
-      const input = e.target.value; 
-      if (input.match(/^6900\d$/)) {
-        document.getElementById("accomodation_city").value = "LYON " + input[input.length - 1]; 
+    (function() {
+      function standardizeInput(input) {
+        return input.normalize('NFD').replace(/[\u0300-\u036F]/g, "").toUpperCase();
       }
-    });
-  })();
-  </script>
 
+
+      // Remove accent and capitalize address and city
+      document.getElementById("accomodation_street").addEventListener("input", function (e) {
+        e.target.value = standardizeInput(e.target.value);
+      });
+      document.getElementById("accomodation_city").addEventListener("input", function (e) {
+        e.target.value = standardizeInput(e.target.value);
+      });
+
+      // Replace with city name dynamic population
+      document.getElementById("accomodation_postalCode").addEventListener("change", function (e) {
+        const input = e.target.value; 
+        if (input.match(/^6900\d$/)) {
+          document.getElementById("accomodation_city").value = "LYON " + input[input.length - 1]; 
+        }
+      });
+    })();
+  </script>
 {% endblock %}

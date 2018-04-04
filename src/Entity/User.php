@@ -88,12 +88,6 @@ class User implements UserInterface, \Serializable
     }
 
 
-    public function hasRole($role)
-    {
-        return in_array($role, $this->roles);
-    }
-
-
     public function __construct()
     {
         $this->isActive = true;
