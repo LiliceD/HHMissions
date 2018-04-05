@@ -43,22 +43,39 @@ class MissionControllerTest extends WebTestCase
      *
      * @dataProvider missionUrls
      */
-    public function testMissionUrls($url)
+    public function testMissionUrls($url, $role, $code)
     {
-        $this->clientA->request('GET', $url);
+        if ($role === 'ROLE_ADMIN') {
+            $client = $this->clientA;    
+        } else if ($role === 'ROLE_GLA') {
+            $client = $this->clientG;    
+        } else if ($role === 'ROLE_VOLUNTEER') {
+            $client = $this->clientV;    
+        }
 
-        $this->assertEquals(200, $this->clientA->getResponse()->getStatusCode());
+        $client->request('GET', $url);
+
+        $this->assertEquals($code, $client->getResponse()->getStatusCode());
     }
 
     public function missionUrls()
     {
-        // a.test is a dummy user with ROLE_ADMIN
         return [
-            ['/missions'],
-            ['/missions/ajouter'],
-            ['/missions/voir/1'],
-            ['/missions/modifier/1'],
-            ['/missions/recap']
+            ['/missions', 'ROLE_GLA', 200],
+            ['/missions', 'ROLE_VOLUNTEER', 200],
+            ['/missions/recap', 'ROLE_GLA', 200],
+            ['/missions/recap', 'ROLE_VOLUNTEER', 200],
+            ['/missions/voir/1', 'ROLE_GLA', 200],
+            ['/missions/voir/1', 'ROLE_VOLUNTEER', 200],
+            
+            ['/missions/modifier/2', 'ROLE_GLA', 200], // Gla TEST has created mission 2
+            ['/missions/modifier/2', 'ROLE_VOLUNTEER', 200], // Volunteer TEST is assigned to mission 2
+            ['/missions/modifier/3', 'ROLE_ADMIN', 200],
+            ['/missions/modifier/3', 'ROLE_GLA', 403], // Gla TEST has NOT created mission 3
+            ['/missions/modifier/3', 'ROLE_VOLUNTEER', 403], // Volunteer TEST is NOT assigned to mission 3
+
+            ['/missions/ajouter', 'ROLE_GLA', 200],
+            ['/missions/ajouter', 'ROLE_VOLUNTEER', 403], // Volunteers can't create missions
         ];
     }
 

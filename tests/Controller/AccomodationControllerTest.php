@@ -42,19 +42,30 @@ class AccomodationControllerTest extends WebTestCase
      * 
      * @dataProvider accomodationUrls
      */
-    public function testAccomodationUrls($url)
+    public function testAccomodationUrls($url, $role, $code)
     {
-        $this->clientA->request('GET', $url);
+        if ($role === 'ROLE_ADMIN') {
+            $client = $this->clientA;    
+        } else if ($role === 'ROLE_GLA') {
+            $client = $this->clientG;    
+        } else if ($role === 'ROLE_VOLUNTEER') {
+            $client = $this->clientV;    
+        }
 
-        $this->assertEquals(200, $this->clientA->getResponse()->getStatusCode());
+        $client->request('GET', $url);
+
+        $this->assertEquals($code, $client->getResponse()->getStatusCode());
     }
 
     public function accomodationUrls()
     {
         return [
-            ['/logements'],
-            ['/logements/ajouter'],
-            ['/logements/modifier/1']
+            ['/logements', 'ROLE_GLA', 200],
+            ['/logements', 'ROLE_VOLUNTEER', 200],
+            ['/logements/modifier/1', 'ROLE_GLA', 200],
+            ['/logements/modifier/1', 'ROLE_VOLUNTEER', 403], // Volunteers can't edit accomodations
+            ['/logements/ajouter', 'ROLE_GLA', 200],
+            ['/logements/ajouter', 'ROLE_VOLUNTEER', 403] // Volunteers can't add accomodations
         ];
     }
 
