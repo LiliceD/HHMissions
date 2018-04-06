@@ -1,0 +1,56 @@
+{% extends 'layout-large.html.twig' %}
+
+
+{% block header_h2 %}
+  Liste des utilisateurs et utilisatrices
+{% endblock %}
+
+
+{% block header_button %}
+  {# button to add user #}
+  <a href="{{ path('app_user_new') }}" class="btn btn-success">
+    <i class="fas fa-plus"></i>
+    Ajouter un·e utilisateur·trice
+  </a>
+{% endblock %}
+
+    
+{% block content %}
+  
+  <table class="table table-sm table-hover users-table">
+
+    <thead class="thead-light">
+      <tr>
+        <th scope="col">Nom</th>
+        <th scope="col">Identifiant</th>
+        <th scope="col">Catégorie</th>
+        <th></th>
+        <th></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for user in users %}
+        <tr id="user-{{ user.id }}">
+          <td>{{ user.name }}</td>
+          <td>{{ user.username }}</td>
+          <td>{{ user.category }}{% if user.category == constant('CAT_VOLUNTEER', user) and user.isGla %} ++{% endif %}</td>
+          {# view button #}
+          <td>
+            <a href="{{ path('app_user_view', {'id': user.id}) }}" class="btn btn-xs btn-primary">
+              <i class="fas fa-eye"></i>
+              Voir
+            </a>
+          </td>
+          {# edit button #}
+          <td>
+            <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-xs btn-outline-primary">
+              <i class="fas fa-edit"></i>
+              Modifier
+            </a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

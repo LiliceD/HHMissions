@@ -1,0 +1,24 @@
+{% extends 'layout-center.html.twig' %}
+
+
+{% block header_h2 %}
+  Modifier le mot de passe
+{% endblock %}
+
+
+{% block card_body %}
+  {{ form_start(form) }}
+
+    <div class="col-6">
+      {{ form_row(form.plainPassword.first) }}
+      {{ form_row(form.plainPassword.second) }}
+
+      <br>
+
+      <div class="d-flex justify-content-end">
+        <input type="submit" class="btn btn-primary mr-2" valye="Valider" />
+      </div>
+    </div>
+    
+  {{ form_end(form) }}
+{% endblock %}

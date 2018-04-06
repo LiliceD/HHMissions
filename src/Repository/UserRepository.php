@@ -13,7 +13,7 @@ class UserRepository extends ServiceEntityRepository
         parent::__construct($registry, User::class);
     }
 
-    public function findByCategory($category)
+    public function findNameByCategory($category)
     {
         $qb = $this->createQueryBuilder('u');
         $qb->select('u.name');

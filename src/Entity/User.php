@@ -34,7 +34,7 @@ class User implements UserInterface, \Serializable
     private $username;
 
     /**
-     * @Assert\NotBlank()
+     * @Assert\NotBlank(groups={"change_password"})
      * @Assert\Length(max=4096)
      */
     private $plainPassword;
@@ -57,8 +57,8 @@ class User implements UserInterface, \Serializable
     private $roles;
 
     /**
-     * @ORM\Column(type="string", length=25, unique=true)
-     * @Assert\NotBlank()
+     * @ORM\Column(type="string", length=25)
+     * @Assert\NotBlank(groups={"edit"})
      */
     private $name;
 

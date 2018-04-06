@@ -116,7 +116,7 @@ class AccomodationControllerTest extends WebTestCase
 
         // New accomodation id is 12 because of test database initialization
         $this->assertSame(1, $crawler->filter('h2:contains("Liste des logements")')->count());
-        $this->assertSame(1, $crawler->filter('.alert-success:contains("Le logement a bien été ajouté à la liste")')->count());     
+        $this->assertSame(1, $crawler->filter('.alert-success:contains("Le logement a bien été ajouté")')->count());     
         $this->assertSame(1, $crawler->filter('#accomodation-12:contains("9 RUE MATHIEU VARILLE")')->count());
         $this->assertSame(1, $crawler->filter('#accomodation-12:contains("69007")')->count());
         $this->assertSame(1, $crawler->filter('#accomodation-12:contains("LYON 7")')->count());

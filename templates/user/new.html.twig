@@ -18,6 +18,9 @@
       </div>
     </div>
 
+    <div class="alert alert-danger">
+      Vérifiez bien que <strong>l'adresse email est celle fournie par Habitat et Humanisme</strong>. Si ce n'est pas le cas, modifiez l'identifiant.
+    </div>
     <div class="form-row">
       <div class="form-group col-sm-4">
         {{ form_row(form.username) }}
@@ -27,6 +30,7 @@
       </div>
     </div>
     
+    {# Category / roles #}
     <div class="form-row align-items-end">
       <div class="form-group col-sm-4">
         {{ form_row(form.category) }}
@@ -36,9 +40,21 @@
       </div>
     </div>
 
+    {# Password #}
+    <div class="alert alert-info">
+      Par défaut le mot de passe initial est égal à l'<strong>identifiant</strong>, mais vous pouvez le modifier ci-dessous.
+    </div>
+    <div class="form-row align-items-end">
+      <div class="form-group col-sm-6">
+        {{ form_row(form.plainPassword.first) }}
+      </div>
+      <div class="form-group col-sm-6">
+        {{ form_row(form.plainPassword.second) }}
+      </div>
+    </div>
+    
+
     {{ form_widget(form.name, {'attr': {'hidden': 'true'}}) }}
-    {{ form_widget(form.plainPassword.first, {'attr': {'hidden': 'true'}}) }}
-    {{ form_widget(form.plainPassword.second, {'attr': {'hidden': 'true'}}) }}
 
     <br>
 
@@ -98,11 +114,13 @@
       function usernameUpdate() {
         let username = usernameElt.value;
 
-        // Set email to username@domain
-        emailElt.value = username + '@habitat-humanisme.org';
+        if (usernameElt.value) {
+          // Set email to username@domain
+          emailElt.value = username + '@habitat-humanisme.org';
 
-        // Set initial password to username
-        pwd1Elt.value = pwd2Elt.value = username;
+          // Set initial password to username
+          pwd1Elt.value = pwd2Elt.value = username;
+        }
       }
 
       function capitalizeFirstLetter(string) {
@@ -126,11 +144,7 @@
       lastNameElt.addEventListener('change', namesUpdate);
       
       // Update email with username changes
-      usernameElt.addEventListener('change', () => {
-        if (usernameElt.value) {
-          emailElt.value = usernameElt.value + '@habitat-humanisme.org';
-        }
-      });
+      usernameElt.addEventListener('change', usernameUpdate);
 
 
       // Display or not 'glaRole' checkbox with category value
