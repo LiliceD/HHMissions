@@ -18,10 +18,11 @@ class UserRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('u');
         $qb->select('u.name');
         
-        if ($category === 'volunteer') {
-            $qb->add('where', $qb->expr()->in('u.isVolunteer', 'true'));
-        } elseif ($category === 'gla') {
-            $qb->add('where', $qb->expr()->in('u.isGla', 'true'));
+        switch ($category) {
+            case 'volunteer':
+                $qb->add('where', $qb->expr()->in('u.isVolunteer', 'true'));
+            case 'gla':
+                $qb->add('where', $qb->expr()->in('u.isGla', 'true'));
         }
         
         return $qb->orderBy('u.name', 'ASC')
