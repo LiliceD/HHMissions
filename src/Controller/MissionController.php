@@ -68,14 +68,14 @@ class MissionController extends Controller
             $em->flush();
 
             // Redirect to mission view
-            return $this->redirectToRoute('app_mission_view', array(
+            return $this->redirectToRoute('app_mission_view', [
                 'id' => $mission->getId()
-            ));
+            ]);
         }
 
-        return $this->render('mission/new.html.twig', array(
+        return $this->render('mission/new.html.twig', [
             'form' => $form->createView()
-        ));
+        ]);
     }
 
     /**
@@ -89,13 +89,9 @@ class MissionController extends Controller
      */
     public function view(Mission $mission)
     {
-        if (!$mission) {
-            throw $this->createNotFoundException('La fiche mission demandée n\'existe pas.');
-        }
-
-        return $this->render('mission/view.html.twig', array(
+        return $this->render('mission/view.html.twig', [
             'mission' => $mission
-        ));
+        ]);
     }
 
     /**
@@ -109,11 +105,6 @@ class MissionController extends Controller
      */
     public function edit(Mission $mission, Request $request, FileUploader $fileUploader)
     {
-        // Throw error if mission is not found
-        if (!$mission) {
-            throw $this->createNotFoundException('La fiche mission demandée n\'existe pas.');
-        }
-
         // Closed mission can't be edited
         if ($mission->getStatus() !== Mission::STATUS_CLOSED) {
             
@@ -163,18 +154,18 @@ class MissionController extends Controller
                     $em->flush();
 
                     // Redirect to mission view
-                    return $this->redirectToRoute('app_mission_view', array(
+                    return $this->redirectToRoute('app_mission_view', [
                         'id' => $mission->getId()
-                    ));
+                    ]);
                 }
 
-                return $this->render('mission/edit.html.twig', array(
+                return $this->render('mission/edit.html.twig', [
                     'form' => $form->createView(),
                     'mission' => $mission,
                     'attachmentUrl' => $previousFileName
-                ));
+                ]);
             } else {
-                throw $this->createAccessDeniedException('Une fiche mission ne peut être modifiée que par la/le GLA qui l\'a créée, par la/le bénévole qui l\'a prise en charge ou par un·e admin.');
+                throw $this->createAccessDeniedException('Une fiche mission ne peut être modifiée que par la ou le GLA qui l\'a créée ou par la ou le bénévole qui l\'a prise en charge.');
             }
         } else {
             throw new Exception('Une mission fermée ne peut plus être modifiée.');
@@ -192,10 +183,6 @@ class MissionController extends Controller
      */
     public function delete(Mission $mission, FileUploader $fileUploader)
     {
-        if (!$mission) {
-            throw $this->createNotFoundException('La fiche mission demandée n\'existe pas.');
-        }
-
         // Retrieve user and allow action only if user is admin or mission's gla
         $this->denyAccessUnlessGranted('ROLE_GLA');
         $user = $this->getUser();
@@ -218,7 +205,7 @@ class MissionController extends Controller
 
             return $this->redirectToRoute('app_mission_list');
         } else {
-            throw $this->createAccessDeniedException('Une fiche mission ne peut être supprimée que par la/le GLA qui l\'a créée ou par un·e admin.');
+            throw $this->createAccessDeniedException('Une fiche mission ne peut être supprimée que par la ou le GLA qui l\'a créée.');
         }
     }
 
@@ -249,17 +236,16 @@ class MissionController extends Controller
         $nonNewStatuses = array_values(Mission::getStatuses()); // Array of possible statuses
         array_shift($nonNewStatuses);
         $otherMissions = $repository->findByStatus($nonNewStatuses, 'DESC');
-        // $missions = $repository->findBy(array(), array('dateCreated' => 'DESC'));
 
         if (!$newMissions && !$otherMissions) {
             throw $this->createNotFoundException('Aucune fiche mission trouvée.');
 
         }
 
-        return $this->render('mission/list.html.twig', array(
+        return $this->render('mission/list.html.twig', [
             'newMissions' => $newMissions,
             'otherMissions' => $otherMissions
-        ));
+        ]);
     }
 
     /**
@@ -277,9 +263,9 @@ class MissionController extends Controller
     {    
         $missions = $this->getNonClosedMissions();
 
-        return $this->render('mission/recap.html.twig', array(
+        return $this->render('mission/recap.html.twig', [
             'missions' => $missions
-        ));
+        ]);
     }
 
 
@@ -319,15 +305,16 @@ class MissionController extends Controller
             $em->persist($mission);
             $em->flush();
 
+            // Set a "flash" success message
             $this->addFlash(
                 'notice',
-                'Vous avez pris en charge la mission.'
+                'La mission vous a bien été attribuée.'
             );
 
             // Redirect to Mission view
-            return $this->redirectToRoute('app_mission_view', array(
+            return $this->redirectToRoute('app_mission_view', [
                 'id' => $mission->getId()
-            ));
+            ]);
         } else {
             throw new Exception('Seule une mission ayant le statut "'. Mission::STATUS_DEFAULT . '" peut être prise en charge par un·e bénévole.');
         }
@@ -353,6 +340,7 @@ class MissionController extends Controller
         if($this->isGranted('ROLE_ADMIN') || $mission->getGla() === $user->getName()) {
             $status = $mission->getStatus();
 
+            // Change status and set a "flash" success message
             if ($status === Mission::STATUS_FINISHED) {
                 $mission->setStatus(Mission::STATUS_CLOSED);
 
@@ -377,11 +365,11 @@ class MissionController extends Controller
             $em->flush();
 
             // Redirect to Mission view
-            return $this->redirectToRoute('app_mission_view', array(
+            return $this->redirectToRoute('app_mission_view', [
                 'id' => $mission->getId()
-            ));
+            ]);
         } else {
-            throw $this->createAccessDeniedException('Une fiche mission ne peut être fermée ou rouverte que par la/le GLA l\'ayant créée ou par un·e admin.');
+            throw $this->createAccessDeniedException('Une fiche mission ne peut être fermée ou rouverte que par la ou le GLA qui l\'a créée.');
         }
     }
 
@@ -408,9 +396,10 @@ class MissionController extends Controller
             $fileUploader->delete($fileName);
 
             // Empty field in database
+            $em = $this->getDoctrine()->getManager();
+            
             $mission->setAttachment(null);
 
-            $em = $this->getDoctrine()->getManager();
             $em->persist($mission);
             $em->flush();
 
@@ -420,11 +409,11 @@ class MissionController extends Controller
                 'La pièce jointe a bien été supprimée.'
             );
 
-            return $this->redirectToRoute('app_mission_view', array(
+            return $this->redirectToRoute('app_mission_view', [
                     'id' => $mission->getId()
-            ));
+            ]);
         } else {
-            throw $this->createAccessDeniedException('La PJ d\'une fiche mission ne peut être supprimée que par la/le GLA ayant créé la mission ou par un·e admin.');
+            throw $this->createAccessDeniedException('La PJ d\'une fiche mission ne peut être supprimée que par la ou le GLA qui a créé la mission.');
         }
     }
 
@@ -441,9 +430,9 @@ class MissionController extends Controller
      */
     public function pdfExport(Mission $mission)
     {
-        $html = $this->renderView('pdf/mission-view.html.twig', array(
+        $html = $this->renderView('pdf/mission-view.html.twig', [
             'mission' => $mission
-        ));
+        ]);
 
         $filename = sprintf('fm-%s_%s.pdf', $mission->getId(), date('Y-m-d_His'));
 
@@ -469,17 +458,17 @@ class MissionController extends Controller
     {
         $missions = $this->getNonClosedMissions();
 
-        $html = $this->renderView('pdf/mission-recap.html.twig', array(
+        $html = $this->renderView('pdf/mission-recap.html.twig', [
             'missions' => $missions
-        ));
+        ]);
 
         $filename = sprintf('fm-recap_%s.pdf', date('Y-m-d_His'));
 
         return new Response(
-            $this->get('knp_snappy.pdf')->getOutputFromHtml($html, array(
+            $this->get('knp_snappy.pdf')->getOutputFromHtml($html, [
                 'page-size' => 'A3',
                 'orientation' => 'Landscape'
-            )),
+            ]),
             200,
             [
                 'Content-Type'        => 'application/pdf',

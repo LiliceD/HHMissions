@@ -1,0 +1,79 @@
+{% extends 'layout-center.html.twig' %}
+
+
+{% block header_h2 %}
+  Modifier l'utilisateur·trice
+{% endblock %}
+
+
+{% block card_body %}
+  {{ form_start(form) }}
+    
+    {{ form_row(form.name) }}
+
+    {# User role passed to JS through data attributes #}
+    <div id="appUserData" data-is-admin="{{ is_granted('ROLE_ADMIN') ? true : false }}" class="form-row">
+      <div class="form-group col-sm-4">
+        {{ form_row(form.username, {'attr': {'readonly': 'true'}}) }}
+      </div>
+      <div class="form-group col-sm-8">
+        {{ form_row(form.email, {'attr': {'readonly': 'true'}}) }}
+      </div>
+    </div>
+    
+    {% if is_granted('ROLE_ADMIN') %}
+      <div class="form-row align-items-end">
+        <div class="form-group col-sm-4">
+          {{ form_row(form.category) }}
+        </div>
+        <div id="userData" data-is-gla="{{ user.isGla ? true : false }}" class="form-group col-sm-8 mb-4">
+          {{ form_row(form.glaRole) }}
+        </div>
+      </div>
+    {% else %}
+      {{ form_widget(form.category, {'attr': {'hidden': 'true'}}) }}
+      {{ form_widget(form.glaRole, {'attr': {'hidden': 'true'}}) }}
+    {% endif %}
+
+    <br>
+
+    <div class="d-flex justify-content-end">
+      <input type="submit" class="btn btn-primary mr-2" valye="Valider" />
+    </div>
+
+  {{ form_end(form) }}
+{% endblock %}
+
+
+{% block javascripts %}
+  {{ parent() }}
+
+  <script src="{{ asset('js/displayGlaRole.js') }}"></script>
+
+  <script>
+    (function() {
+      // Get *app* user's role from Twig
+      function isAppUserAdmin() {
+        let appUserDataElt = document.getElementById('appUserData');
+        if (appUserDataElt) {
+          return appUserDataElt.getAttribute('data-is-admin');
+        }
+      }
+
+      // Get *edited* user's role from Twig
+      function isUserGla() {
+        let userDataElt = document.getElementById('userData');
+        if (userDataElt) {
+          return userDataElt.getAttribute('data-is-gla');
+        }
+      }
+      
+      document.addEventListener('DOMContentLoaded', () => {
+        console.log("checking box")
+        document.getElementById('user_glaRole').checked = isUserGla();
+      });
+      // If connected user is Admin : display or not 'glaRole' checkbox with category value
+      displayGlaRole(isAppUserAdmin());
+    })();
+  </script>
+{% endblock %}

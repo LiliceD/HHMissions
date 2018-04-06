@@ -15,7 +15,7 @@
     {{ form_widget(form.volunteer, {'attr': {'hidden': 'true'}}) }}
 
     {# User role passed to JS through data attributes #}
-    <div id="userData" data-name="{{ app.user.name }}" data-is-gla="{{ app.user.isGla ? true : false }}" class="row justify-content-between">
+    <div id="appUserData" data-name="{{ app.user.name }}" data-is-gla="{{ is_granted('ROLE_GLA') ? true : false }}" class="row justify-content-between">
       <div class="d-flex">
         <div class="col-sm">
         {{ form_row(form.gla, {'attr': {'autocomplete': 'off'}}) }}
@@ -40,6 +40,7 @@
         </a>
       </div>
 
+      {# Owner type #}
       <div class="d-flex">
         <div class="col-sm form-group">
           <label for="accomodation_ownerType" class="form-control-label">Propriétaire :</label>
@@ -97,10 +98,10 @@
 
       // Get user's name and isGla from Twig and prepopulate field "Provenance GLA"
       function setGla() {
-        let userDataElt = document.getElementById('userData');
-        if (userDataElt) {
-          name = userDataElt.getAttribute('data-name');
-          isGla = userDataElt.getAttribute('data-is-gla');
+        let appUserDataElt = document.getElementById('appUserData');
+        if (appUserDataElt) {
+          name = appUserDataElt.getAttribute('data-name');
+          isGla = appUserDataElt.getAttribute('data-is-gla');
         }
         if (isGla) {
           document.getElementById('mission_gla').value = name;

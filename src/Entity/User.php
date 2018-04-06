@@ -15,6 +15,11 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class User implements UserInterface, \Serializable
 {
+    // Categories (cf getCategory() to see relation to roles)
+    const CAT_ADMIN = 'Admin';
+    const CAT_GLA = 'GLA';
+    const CAT_VOLUNTEER = 'Bénévole';
+
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")
@@ -63,13 +68,13 @@ class User implements UserInterface, \Serializable
     private $isActive;
 
     /**
-     * Adds (or not) user to suggestions of gla in Mission add form
+     * Adds (or not) user to suggestions of gla in 'new mission' form
      * @ORM\Column(name="is_gla", type="boolean")
      */
     private $isGla;
 
     /**
-     * Adds (or not) user to suggestions of volunteer in Mission edit form
+     * Adds (or not) user to suggestions of volunteer in 'edit mission' form
      * @ORM\Column(name="is_volunteer", type="boolean")
      */
     private $isVolunteer;
@@ -80,11 +85,27 @@ class User implements UserInterface, \Serializable
     // Category dropdown in UserType
     public static function getCategories()
     {
-        return array(
-            'Administrateur' => 'ROLE_ADMIN',
-            'GLA' => 'ROLE_GLA',
-            'Bénévole' => 'ROLE_VOLUNTEER'
-        );
+        return [
+            Self::CAT_ADMIN => 'ROLE_ADMIN',
+            Self::CAT_GLA => 'ROLE_GLA',
+            Self::CAT_VOLUNTEER => 'ROLE_VOLUNTEER'
+        ];
+    }
+
+    // Mapping roles to category
+    public function getCategory() {
+        $roles = $this->roles;
+
+        if (in_array('ROLE_ADMIN', $roles)) {
+            $category = Self::CAT_ADMIN;
+        } else if (in_array('ROLE_VOLUNTEER', $roles)) {
+            // User with ROLE_VOLUNTEER and ROLE_GLA is in Volunteers category
+            $category = Self::CAT_VOLUNTEER;
+        } else if (in_array('ROLE_GLA', $roles)) {
+            $category = Self::CAT_GLA;
+        }
+
+        return $category;
     }
 
 
@@ -148,6 +169,11 @@ class User implements UserInterface, \Serializable
 
 
     /********** Getters and setters *************/
+
+    public function getId()
+    {
+        return $this->id;
+    }
 
     public function getUsername()
     {

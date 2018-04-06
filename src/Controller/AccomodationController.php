@@ -38,6 +38,7 @@ class AccomodationController extends Controller
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Persist to DB
             $em = $this->getDoctrine()->getManager();
 
             $accomodation = $form->getData();
@@ -45,9 +46,10 @@ class AccomodationController extends Controller
             $em->persist($accomodation);
             $em->flush();
 
+            // Set a "flash" success message
             $this->addFlash(
                 'notice',
-                'Le logement a bien été ajouté à la liste.'
+                'Le logement a bien été ajouté.'
             );
 
             return $this->redirectToRoute('app_accomodation_list');
@@ -73,6 +75,7 @@ class AccomodationController extends Controller
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Persist changes to DB
             $em = $this->getDoctrine()->getManager();
 
             $accomodation = $form->getData();
@@ -80,6 +83,7 @@ class AccomodationController extends Controller
             $em->persist($accomodation);
             $em->flush();
 
+            // Set a "flash" success message
             $this->addFlash(
                 'notice',
                 'Les modifications ont bien été enregistrées.'
@@ -105,10 +109,12 @@ class AccomodationController extends Controller
      */
     public function delete(Accomodation $accomodation)
     {
+        // Persist changes to DB
         $em = $this->getDoctrine()->getManager();
         $em->remove($accomodation);
         $em->flush();
 
+        // Set a "flash" success message
         $this->addFlash(
             'notice',
             'Le logement a bien été supprimé.'
@@ -139,7 +145,7 @@ class AccomodationController extends Controller
     {    
         $repository = $this->getDoctrine()->getRepository(Accomodation::class);
 
-        $accomodations = $repository->findBy(array(), array('street' => 'ASC'));
+        $accomodations = $repository->findBy([], ['street' => 'ASC']);
 
         return $this->render('accomodation/list.html.twig', [
             'accomodations' => $accomodations
@@ -165,18 +171,22 @@ class AccomodationController extends Controller
     {
         $id = $request->request->get('id');
 
+        // Retrieve the requested Accomodation
         $accomodation = $this->getDoctrine()
             ->getRepository(Accomodation::class)
             ->find($id);
 
+        // Get values
         $access = $accomodation->getAccess();
         $ownerType = $accomodation->getOwnerType();
 
-        $json = array(
+        // Format values in JSON
+        $json = [
             'access' => $access,
             'ownerType' => $ownerType
-        );
+        ];
 
+        // Return a JSON response
         return new JsonResponse($json);
     }
 }

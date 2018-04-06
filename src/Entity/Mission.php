@@ -12,10 +12,10 @@ use Symfony\Component\Validator\Constraints as Assert; // this use statement is 
 class Mission
 {
     // Possible statuses for a mission
-    const STATUS_DEFAULT = "Créée";
-    const STATUS_ASSIGNED = "Prise en charge";
-    const STATUS_FINISHED = "Terminée";
-    const STATUS_CLOSED = "Fermée";
+    const STATUS_DEFAULT = 'Créée';
+    const STATUS_ASSIGNED = 'Prise en charge';
+    const STATUS_FINISHED = 'Terminée';
+    const STATUS_CLOSED = 'Fermée';
 
     /**
      * @ORM\Id

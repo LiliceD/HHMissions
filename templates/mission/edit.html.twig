@@ -57,6 +57,7 @@
 
     {{ form_row(form.accomodation, {'attr': {'readonly': 'true'}}) }}
     
+    {# Owner type #}
     <div class="d-flex">
       <div class="form-group">
         <label for="accomodation_ownerType" class="form-control-label">Propriétaire :</label>
@@ -70,6 +71,7 @@
 
     {{ form_row(form.info) }}
 
+    {# Attachment #}
     {# only visible for admin or mission's GLA #}
     {% if is_granted('ROLE_ADMIN') or (is_granted('ROLE_GLA') and mission.gla == app.user.name) %}
       {{ form_label(form.attachment) }}
@@ -96,6 +98,7 @@
 
     <br>
 
+    {# Buttons #}
     <div class="d-flex justify-content-end">
       <input type="submit" class="btn btn-primary mr-2" value="Valider"/>
       <a href="{{ path('app_mission_view', {'id': mission.id}) }}" class="btn btn-outline-secondary">

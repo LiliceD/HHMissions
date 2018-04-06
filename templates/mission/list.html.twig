@@ -77,7 +77,7 @@
   <h3>Missions en cours ou terminées :</h3>
 
   {# User role passed to JS through data attributes #}
-  <div id="userData" data-name="{{ app.user.name }}" data-is-gla="{{ app.user.isGla ? true : false }}" data-is-volunteer="{{ app.user.isVolunteer ? 'true' : 'false' }}" class="d-flex align-items-center">
+  <div id="userData" data-name="{{ app.user.name }}" data-is-gla="{{ is_granted('ROLE_GLA') ? true : false }}" data-is-volunteer="{{ is_granted('ROLE_VOLUNTEER') ? 'true' : 'false' }}" class="d-flex align-items-center">
     <input type="checkbox" id="myMissionsCheckbox" name="myMissionsCheckbox" class="mb-2" />
     <label for="myMissionsCheckbox" class="mb-2 ml-2">Afficher uniquement mes missions</label>
   </div>

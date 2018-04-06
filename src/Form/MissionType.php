@@ -26,7 +26,6 @@ class MissionType extends AbstractType
             ->add('dateCreated', DateType::class, [
                 'label' => 'Date demande :',
                 'widget' => 'single_text',
-
             ])
             ->add('dateAssigned', DateType::class, [
                 'label' => 'Date prise en charge :',

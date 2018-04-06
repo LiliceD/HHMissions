@@ -36,17 +36,22 @@ class UserController extends Controller
         $form->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
-
-            // Encode and set the password
+            // Encode and set initial password to username
             $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
             $user->setPassword($password);
 
             // Set roles
             $category = $form->get('category')->getData();
             $roles = [$category];
+
+            if ($category === 'ROLE_VOLUNTEER' && $form->get('glaRole')->getData()) {
+                // Add 'ROLE_GLA' to volunteers allowed to create missions
+                array_push($roles, 'ROLE_GLA');
+            }
+
             $user->setRoles($roles);
 
-            // Save the User
+            // Persist to DB
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
             $em->flush();
@@ -54,7 +59,7 @@ class UserController extends Controller
             // Set a "flash" success message
             $this->addFlash(
                 'notice',
-                'L\'utilisateur a bien été créé.'
+                'L\'utilisateur·trice a bien été créé·e.'
             );
 
             return $this->redirectToRoute('app_mission_list');
@@ -62,8 +67,80 @@ class UserController extends Controller
 
         return $this->render(
             'user/new.html.twig',
-            array('form' => $form->createView())
+            ['form' => $form->createView()]
         );
+    }
+
+    /**
+     * @Route(
+     *  "/voir/{id}",
+     *  name="app_user_view",
+     *  requirements={
+     *      "id"="\d+"
+     *  }
+     * )
+     */
+    public function view(User $user)
+    {
+        return $this->render('user/view.html.twig', [
+            'user' => $user
+        ]);
+    }
+
+    /**
+     * @Route(
+     *  "/modifier/{id}",
+     *  name="app_user_edit",
+     *  requirements={
+     *      "id"="\d+"
+     *  }
+     * )
+     */
+    public function edit(User $user, Request $request, UserPasswordEncoderInterface $passwordEncoder)
+    {
+        // Retrieve app user and allow action only if they are admin or editing themselves
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $appUser = $this->getUser();
+
+        if($this->isGranted('ROLE_ADMIN') || $appUser === $user) {
+
+            $form = $this->createForm(UserType::class, $user);
+            $form->handleRequest($request);
+            
+            if ($form->isSubmitted() && $form->isValid()) {
+                // Encode and set the password
+                $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
+                $user->setPassword($password);
+
+                // Set roles
+                $category = $form->get('category')->getData();
+                $roles = [$category];
+
+                if ($category === 'ROLE_VOLUNTEER' && $form->get('glaRole')->getData()) {
+                    // Add 'ROLE_GLA' to volunteers allowed to create missions
+                    array_push($roles, 'ROLE_GLA');
+                }
+
+                $user->setRoles($roles);
+
+                // Persist changes to DB
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($user);
+                $em->flush();
+
+                // Redirect to user view
+                return $this->redirectToRoute('app_user_view', [
+                    'id' => $user->getId()
+                ]);
+            }
+
+            return $this->render('user/edit.html.twig', [
+                'form' => $form->createView(),
+                'user' => $user
+            ]);
+        } else {
+            throw $this->createAccessDeniedException('Un·e utilisateur·trice ne peut être modifié·e que par lui-même ou par un·e admin.');
+        }
     }
 
     /**

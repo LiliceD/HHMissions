@@ -2,7 +2,7 @@
 
 
 {% block header_h2 %}
-  Ajouter un utilisateur
+  Créer un·e utilisateur·trice
 {% endblock %}
 
 
@@ -17,9 +17,24 @@
         {{ form_row(form.lastName) }}
       </div>
     </div>
-    {{ form_row(form.username) }}
-    {{ form_row(form.email, {'attr': {'readonly': 'true'}}) }}
-    {{ form_row(form.category) }}
+
+    <div class="form-row">
+      <div class="form-group col-sm-4">
+        {{ form_row(form.username) }}
+      </div>
+      <div class="form-group col-sm-8">
+        {{ form_row(form.email, {'attr': {'readonly': 'true'}}) }}
+      </div>
+    </div>
+    
+    <div class="form-row align-items-end">
+      <div class="form-group col-sm-4">
+        {{ form_row(form.category) }}
+      </div>
+      <div class="form-group col-sm-8 mb-4">
+        {{ form_row(form.glaRole) }}
+      </div>
+    </div>
 
     {{ form_widget(form.name, {'attr': {'hidden': 'true'}}) }}
     {{ form_widget(form.plainPassword.first, {'attr': {'hidden': 'true'}}) }}
@@ -38,82 +53,88 @@
 {% block javascripts %}
   {{ parent() }}
 
+  <script src="{{ asset('js/displayGlaRole.js') }}"></script>
+
   <script>
-  (function() {
-    let firstNameElt = document.getElementById("user_firstName"),
-        lastNameElt = document.getElementById("user_lastName"),
-        nameElt = document.getElementById("user_name"),
-        usernameElt = document.getElementById("user_username"),
-        emailElt = document.getElementById("user_email"),
-        pwd1Elt = document.getElementById("user_plainPassword_first"),
-        pwd2Elt = document.getElementById("user_plainPassword_second");
+    (function() {
+      let firstNameElt = document.getElementById('user_firstName'),
+          lastNameElt = document.getElementById('user_lastName'),
+          nameElt = document.getElementById('user_name'),
+          usernameElt = document.getElementById('user_username'),
+          emailElt = document.getElementById('user_email'),
+          pwd1Elt = document.getElementById('user_plainPassword_first'),
+          pwd2Elt = document.getElementById('user_plainPassword_second');
 
 
-    function namesUpdate() {
-      // Get first and last name
-      let firstName = firstNameElt.value,
-          lastName = lastNameElt.value;
+      function namesUpdate() {
+        // Get first and last name
+        let firstName = firstNameElt.value,
+            lastName = lastNameElt.value;
 
-      if (firstName && lastName) {
-        firstName = firstName.trim().replace(/\s+/g, '-');
-        lastName = lastName.trim();
+        if (firstName && lastName) {
+          firstName = firstName.trim().replace(/\s+/g, '-');
+          lastName = lastName.trim();
 
-        // Set name to "Firstname LASTNAME"
-        nameElt.value = capitalizeFirstLetter(firstName) + ' ' + lastName.toUpperCase();
+          // Set name to "Firstname LASTNAME"
+          nameElt.value = capitalizeFirstLetter(firstName) + ' ' + lastName.toUpperCase();
 
-        let username,
-            hyphenIndex = firstName.indexOf('-');
+          let username,
+              hyphenIndex = firstName.indexOf('-');
+
+          if (hyphenIndex > -1) {
+            // If first name is hyphenated (e.g. Jean-Michel), set username to jm.lastname
+            username = firstName.toLowerCase().slice(0, 1) + firstName.toLowerCase().slice(hyphenIndex + 1, hyphenIndex + 2) + '.' + lastName.toLowerCase();;
+          } else {
+            // Set username to f.lastname where f is first letter of first name
+            username = firstName.toLowerCase().slice(0, 1) + '.' + lastName.toLowerCase().replace(/-|\s/g, '');
+          }
+          usernameElt.value = username;
+          
+          // Update email and passwords
+          usernameUpdate();
+        }
+      }
+
+      function usernameUpdate() {
+        let username = usernameElt.value;
+
+        // Set email to username@domain
+        emailElt.value = username + '@habitat-humanisme.org';
+
+        // Set initial password to username
+        pwd1Elt.value = pwd2Elt.value = username;
+      }
+
+      function capitalizeFirstLetter(string) {
+        let finalString,
+            hyphenIndex = string.indexOf('-');
 
         if (hyphenIndex > -1) {
-          // If first name is hyphenated (e.g. Jean-Michel), set username to jm.lastname
-          username = firstName.toLowerCase().slice(0, 1) + firstName.toLowerCase().slice(hyphenIndex + 1, hyphenIndex + 2) + '.' + lastName.toLowerCase();;
+          let string1 = string.slice(0, hyphenIndex),
+              string2 = string.slice(hyphenIndex + 1);
+          finalString = capitalizeFirstLetter(string1) + '-' + capitalizeFirstLetter(string2);
         } else {
-          // Set username to f.lastname where f is first letter of first name
-          username = firstName.toLowerCase().slice(0, 1) + '.' + lastName.toLowerCase().replace(/-|\s/g, '');
+          finalString = string.charAt(0).toUpperCase() + string.slice(1);
         }
-        usernameElt.value = username;
-        
-        // Update email and passwords
-        usernameUpdate();
-      }
-    }
 
-    function usernameUpdate() {
-      let username = usernameElt.value;
-
-      // Set email to username@domain
-      emailElt.value = username + '@habitat-humanisme.org';
-
-      // Set initial password to username
-      pwd1Elt.value = pwd2Elt.value = username;
-    }
-
-    function capitalizeFirstLetter(string) {
-      let finalString,
-          hyphenIndex = string.indexOf('-');
-
-      if (hyphenIndex > -1) {
-        let string1 = string.slice(0, hyphenIndex),
-            string2 = string.slice(hyphenIndex + 1);
-        finalString = capitalizeFirstLetter(string1) + '-' + capitalizeFirstLetter(string2);
-      } else {
-        finalString = string.charAt(0).toUpperCase() + string.slice(1);
+        return finalString;
       }
 
-      return finalString;
-    }
+
+      // Update username and email with first and last name changes
+      firstNameElt.addEventListener('change', namesUpdate);
+      lastNameElt.addEventListener('change', namesUpdate);
+      
+      // Update email with username changes
+      usernameElt.addEventListener('change', () => {
+        if (usernameElt.value) {
+          emailElt.value = usernameElt.value + '@habitat-humanisme.org';
+        }
+      });
 
 
-    // Update username and email with first and last name changes
-    firstNameElt.addEventListener("change", namesUpdate);
-    lastNameElt.addEventListener("change", namesUpdate);
-    
-    // Update email with username changes
-    usernameElt.addEventListener("change", () => {
-      if (usernameElt.value) {
-        emailElt.value = usernameElt.value + '@habitat-humanisme.org';
-      }
-    });
-  })();
+      // Display or not 'glaRole' checkbox with category value
+      displayGlaRole();
+    })();
   </script>
 {% endblock %}
