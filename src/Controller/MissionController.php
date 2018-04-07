@@ -105,72 +105,58 @@ class MissionController extends Controller
      */
     public function edit(Mission $mission, Request $request, FileUploader $fileUploader)
     {
-        // Closed mission can't be edited
-        if ($mission->getStatus() !== Mission::STATUS_CLOSED) {
-            
-            // Retrieve user and allow action only if user is admin, mission's gla or mission's volunteer
-            $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-            $user = $this->getUser();
+        // Retrieve user and allow action only if user is admin, mission's gla or mission's volunteer
+        $this->denyAccessUnlessGranted('simpleEdit', $mission);
+        
+        // Saving previous scan to avoid delete by edit with no changes
+        $previousFileName = $mission->getAttachment();
 
-            if($this->isGranted('ROLE_ADMIN') || 
-                ($this->isGranted('ROLE_GLA') && $mission->getGla() === $user->getName()) || 
-                ($this->isGranted('ROLE_VOLUNTEER') && $mission->getVolunteer() === $user->getName())
-            ) {
-                // Saving previous scan to avoid delete by edit with no changes
-                $previousFileName = $mission->getAttachment();
-
-                if ($previousFileName) {
-                    $mission->setAttachment(
-                        new File($this->getParameter('app_attachment_directory').'/'.$previousFileName)
-                    );
-                }
-
-                // Create form
-                $form = $this->createForm(MissionType::class, $mission);
-                $form->handleRequest($request);
-
-                if ($form->isSubmitted() && $form->isValid()) {
-                    
-                    // Update status
-                    $mission->updateStatus();
-
-                    // Manage attachment
-                    /** @var Symfony\Component\HttpFoundation\File\UploadedFile $file */
-                    $file = $mission->getAttachment();
-
-                    if ($file) {
-                        $fileName = $fileUploader->upload($file);
-
-                        $mission->setAttachment($fileName);
-                    } else if ($previousFileName) {
-                        $mission->setAttachment($previousFileName);
-                    }
-
-                    // Persist to DB
-                    $em = $this->getDoctrine()->getManager();
-
-                    $mission = $form->getData();
-
-                    $em->persist($mission);
-                    $em->flush();
-
-                    // Redirect to mission view
-                    return $this->redirectToRoute('app_mission_view', [
-                        'id' => $mission->getId()
-                    ]);
-                }
-
-                return $this->render('mission/edit.html.twig', [
-                    'form' => $form->createView(),
-                    'mission' => $mission,
-                    'attachmentUrl' => $previousFileName
-                ]);
-            } else {
-                throw $this->createAccessDeniedException('Une fiche mission ne peut être modifiée que par la ou le GLA qui l\'a créée ou par la ou le bénévole qui l\'a prise en charge.');
-            }
-        } else {
-            throw new Exception('Une mission fermée ne peut plus être modifiée.');
+        if ($previousFileName) {
+            $mission->setAttachment(
+                new File($this->getParameter('app_attachment_directory').'/'.$previousFileName)
+            );
         }
+
+        // Create form
+        $form = $this->createForm(MissionType::class, $mission);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            
+            // Update status
+            $mission->updateStatus();
+
+            // Manage attachment
+            /** @var Symfony\Component\HttpFoundation\File\UploadedFile $file */
+            $file = $mission->getAttachment();
+
+            if ($file) {
+                $fileName = $fileUploader->upload($file);
+
+                $mission->setAttachment($fileName);
+            } else if ($previousFileName) {
+                $mission->setAttachment($previousFileName);
+            }
+
+            // Persist to DB
+            $em = $this->getDoctrine()->getManager();
+
+            $mission = $form->getData();
+
+            $em->persist($mission);
+            $em->flush();
+
+            // Redirect to mission view
+            return $this->redirectToRoute('app_mission_view', [
+                'id' => $mission->getId()
+            ]);
+        }
+
+        return $this->render('mission/edit.html.twig', [
+            'form' => $form->createView(),
+            'mission' => $mission,
+            'attachmentUrl' => $previousFileName
+        ]);
     }
 
     /**
@@ -184,30 +170,25 @@ class MissionController extends Controller
      */
     public function delete(Mission $mission, FileUploader $fileUploader)
     {
-        // Retrieve user and allow action only if user is admin or mission's gla
-        $this->denyAccessUnlessGranted('ROLE_GLA');
-        $user = $this->getUser();
+        // Allow action only if user is admin or mission's gla
+        $this->denyAccessUnlessGranted('edit', $mission);
+        
+        // Delete attached file from server
+        $fileName = $mission->getAttachment();
+        $fileUploader->delete($fileName);
 
-        if($this->isGranted('ROLE_ADMIN') || $mission->getGla() === $user->getName()) {
-            // Delete attached file from server
-            $fileName = $mission->getAttachment();
-            $fileUploader->delete($fileName);
+        // Persist changes to DB
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($mission);
+        $em->flush();
 
-            // Persist changes to DB
-            $em = $this->getDoctrine()->getManager();
-            $em->remove($mission);
-            $em->flush();
+        // Set a "flash" success message
+        $this->addFlash(
+            'notice',
+            'La fiche mission a bien été supprimée.'
+        );
 
-            // Set a "flash" success message
-            $this->addFlash(
-                'notice',
-                'La fiche mission a bien été supprimée.'
-            );
-
-            return $this->redirectToRoute('app_mission_list');
-        } else {
-            throw $this->createAccessDeniedException('Une fiche mission ne peut être supprimée que par la ou le GLA qui l\'a créée.');
-        }
+        return $this->redirectToRoute('app_mission_list');
     }
 
 
@@ -291,34 +272,32 @@ class MissionController extends Controller
      */
     public function assign(Mission $mission)
     {
-        if ($mission->getStatus() === Mission::STATUS_DEFAULT) {
-            // Retrieve user and allow action only if user is a volunteer
-            $this->denyAccessUnlessGranted('ROLE_VOLUNTEER');
-            $user = $this->getUser();
+        // Allow action only if user is a volunteer and mission is not assigned
+        $this->denyAccessUnlessGranted('assign', $mission);
+        
+        // Retrieve user
+        $user = $this->getUser();
 
-            // Set volunteer, dateAssigned and status
-            $mission->setVolunteer($user->getName());
-            $mission->setDateAssigned(new \DateTime());
-            $mission->setStatus(Mission::STATUS_ASSIGNED);
+        // Set volunteer, dateAssigned and status
+        $mission->setVolunteer($user->getName());
+        $mission->setDateAssigned(new \DateTime());
+        $mission->setStatus(Mission::STATUS_ASSIGNED);
 
-            // Persist changes to DB
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($mission);
-            $em->flush();
+        // Persist changes to DB
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($mission);
+        $em->flush();
 
-            // Set a "flash" success message
-            $this->addFlash(
-                'notice',
-                'La mission vous a bien été attribuée.'
-            );
+        // Set a "flash" success message
+        $this->addFlash(
+            'notice',
+            'La mission vous a bien été attribuée.'
+        );
 
-            // Redirect to Mission view
-            return $this->redirectToRoute('app_mission_view', [
-                'id' => $mission->getId()
-            ]);
-        } else {
-            throw new Exception('Seule une mission ayant le statut "'. Mission::STATUS_DEFAULT . '" peut être prise en charge par un·e bénévole.');
-        }
+        // Redirect to Mission view
+        return $this->redirectToRoute('app_mission_view', [
+            'id' => $mission->getId()
+        ]);
     }
 
     /**
@@ -334,44 +313,39 @@ class MissionController extends Controller
      */
     public function close(Mission $mission)
     {
-        // Retrieve user and allow action only if user is admin or mission's gla
-        $this->denyAccessUnlessGranted('ROLE_GLA');
-        $user = $this->getUser();
+        // Allow action only if user is admin or mission's gla
+        $this->denyAccessUnlessGranted('edit', $mission);
 
-        if($this->isGranted('ROLE_ADMIN') || $mission->getGla() === $user->getName()) {
-            $status = $mission->getStatus();
+        $status = $mission->getStatus();
 
-            // Change status and set a "flash" success message
-            if ($status === Mission::STATUS_FINISHED) {
-                $mission->setStatus(Mission::STATUS_CLOSED);
+        // Change status and set a "flash" success message
+        if ($status === Mission::STATUS_FINISHED) {
+            $mission->setStatus(Mission::STATUS_CLOSED);
 
-                $this->addFlash(
-                    'notice',
-                    'La fiche mission a bien été fermée.'
-                );
-            } else if ($status === Mission::STATUS_CLOSED) {
-                $mission->setStatus(Mission::STATUS_FINISHED);
+            $this->addFlash(
+                'notice',
+                'La fiche mission a bien été fermée.'
+            );
+        } else if ($status === Mission::STATUS_CLOSED) {
+            $mission->setStatus(Mission::STATUS_FINISHED);
 
-                $this->addFlash(
-                    'notice',
-                    'La fiche mission a bien été ré-ouverte.'
-                );
-            } else {
-                throw new Exception('Une mission doit être terminée pour être fermée.');
-            }
-
-            // Persist changes to DB
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($mission);
-            $em->flush();
-
-            // Redirect to Mission view
-            return $this->redirectToRoute('app_mission_view', [
-                'id' => $mission->getId()
-            ]);
+            $this->addFlash(
+                'notice',
+                'La fiche mission a bien été ré-ouverte.'
+            );
         } else {
-            throw $this->createAccessDeniedException('Une fiche mission ne peut être fermée ou rouverte que par la ou le GLA qui l\'a créée.');
+            throw new Exception('Une mission doit être terminée pour être fermée.');
         }
+
+        // Persist changes to DB
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($mission);
+        $em->flush();
+
+        // Redirect to Mission view
+        return $this->redirectToRoute('app_mission_view', [
+            'id' => $mission->getId()
+        ]);
     }
 
     /**
@@ -387,35 +361,30 @@ class MissionController extends Controller
      */
     public function deleteAttachment(Mission $mission, FileUploader $fileUploader)
     { 
-        // Retrieve user and allow action only if user is admin or mission's gla
-        $this->denyAccessUnlessGranted('ROLE_GLA');
-        $user = $this->getUser();
+        // Allow action only if user is admin or mission's gla
+        $this->denyAccessUnlessGranted('edit', $mission);
 
-        if($this->isGranted('ROLE_ADMIN') || $mission->getGla() === $user->getName()) {
-            // Delete file from server
-            $fileName = $mission->getAttachment();
-            $fileUploader->delete($fileName);
+        // Delete file from server
+        $fileName = $mission->getAttachment();
+        $fileUploader->delete($fileName);
 
-            // Empty field in database
-            $em = $this->getDoctrine()->getManager();
-            
-            $mission->setAttachment(null);
+        // Empty field in database
+        $em = $this->getDoctrine()->getManager();
+        
+        $mission->setAttachment(null);
 
-            $em->persist($mission);
-            $em->flush();
+        $em->persist($mission);
+        $em->flush();
 
-            // Set a "flash" success message
-            $this->addFlash(
-                'notice',
-                'La pièce jointe a bien été supprimée.'
-            );
+        // Set a "flash" success message
+        $this->addFlash(
+            'notice',
+            'La pièce jointe a bien été supprimée.'
+        );
 
-            return $this->redirectToRoute('app_mission_view', [
-                    'id' => $mission->getId()
-            ]);
-        } else {
-            throw $this->createAccessDeniedException('La PJ d\'une fiche mission ne peut être supprimée que par la ou le GLA qui a créé la mission.');
-        }
+        return $this->redirectToRoute('app_mission_view', [
+                'id' => $mission->getId()
+        ]);
     }
 
     /**

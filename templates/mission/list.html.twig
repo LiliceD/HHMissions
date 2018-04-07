@@ -1,6 +1,11 @@
 {% extends 'layout-large.html.twig' %}
 
 
+{% block title %}
+  Fiches mission - {{ parent() }}
+{% endblock %}
+
+
 {% block header_h2 %}
   Liste des fiches mission
 {% endblock %}
@@ -52,15 +57,15 @@
           <td>{{ mission.status }}</td>
           {# view button #}
           <td>
-            <a href="{{ path('app_mission_view', {'id': mission.id}) }}" title="Voir la FM {{ mission.id }}" class="btn btn-sm btn-primary">
+            <a href="{{ path('app_mission_view', {'id': mission.id}) }}" class="btn btn-sm btn-primary">
               <i class="fas fa-eye"></i>
               Voir
             </a>
           </td>
           {# edit button only visible for admin or mission's gla #}
-          {% if is_granted('ROLE_ADMIN') or (is_granted('ROLE_GLA') and mission.gla == app.user.name) %}
+          {% if is_granted('simpleEdit', mission) %}
             <td>
-              <a href="{{ path('app_mission_edit', {'id': mission.id}) }}" title="Modifier la fiche mission" class="btn btn-sm btn-outline-primary">
+              <a href="{{ path('app_mission_edit', {'id': mission.id}) }}" class="btn btn-sm btn-outline-primary">
                 <i class="fas fa-edit"></i>
                 Modifier
               </a>
@@ -117,15 +122,15 @@
           <td>{{ mission.status }}</td>
           {# view button #}
           <td>
-            <a href="{{ path('app_mission_view', {'id': mission.id}) }}" title="Voir la FM" class="btn btn-sm btn-primary">
+            <a href="{{ path('app_mission_view', {'id': mission.id}) }}" class="btn btn-sm btn-primary">
               <i class="fas fa-eye"></i>
               Voir
             </a>
           </td>
-          {# edit button only visible for admin, or if mission is not closed and user is its gla or volunteer #}
-          {% if is_granted('ROLE_ADMIN') or (mission.status != constant('STATUS_CLOSED', mission) and ((is_granted('ROLE_GLA') and mission.gla == app.user.name) or (is_granted('ROLE_VOLUNTEER') and mission.volunteer == app.user.name))) %}
+          {# edit button only visible if mission is not closed and user is admin or mission's gla or volunteer #}
+          {% if mission.status != constant('STATUS_CLOSED', mission) and is_granted('simpleEdit', mission) %}
             <td>
-              <a href="{{ path('app_mission_edit', {'id': mission.id}) }}" title="Modifier la FM {{ mission.id }}" class="btn btn-sm btn-outline-primary">
+              <a href="{{ path('app_mission_edit', {'id': mission.id}) }}" class="btn btn-sm btn-outline-primary">
                 <i class="fas fa-edit"></i>
                 Modifier
               </a>

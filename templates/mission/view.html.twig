@@ -1,4 +1,5 @@
-{% extends 'layout-center.html.twig' %}
+{% extends 'mission/layout.html.twig' %}
+
 
 {% block header_h2 %}
   Fiche mission GLA-Bénévole n°{{ mission.id }}
@@ -8,7 +9,7 @@
 {% block card_body %}
   {# Modal to confirm mission assignment #}
   {# only visible for volunteer #}
-  {% if is_granted('ROLE_VOLUNTEER') %}
+  {% if is_granted('assign', mission) %}
     <div class="modal fade" id="assignModal" tabindex="-1" role="dialog" aria-labelledby="assignModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -46,7 +47,7 @@
         </div>
         {# Button to close / reopen a mission when finished #}
         {# only visible for admin or mission's GLA #}
-        {% if is_granted('ROLE_ADMIN') or (is_granted('ROLE_GLA') and mission.gla == app.user.name) %}
+        {% if is_granted('edit', mission) %}
           <div class="col-sm-auto">
             {% if mission.status == constant('STATUS_FINISHED', mission) %}
               <a href="{{ path('app_mission_close', {'id': mission.id}) }}" class="btn btn-sm btn-primary">
@@ -161,7 +162,7 @@
           Voir
         </a>
         {# delete attachment button only visible for admin or mission's gla #}
-        {% if is_granted('ROLE_ADMIN') or (is_granted('ROLE_GLA') and mission.gla == app.user.name) %}
+        {% if is_granted('edit', mission) %}
           <a href="{{ path('app_mission_attachment-delete', {'id': mission.id}) }}" class="btn btn-sm btn-link text-danger">
             <i class="fas fa-trash-alt"></i>
             Supprimer
@@ -188,7 +189,7 @@
     </a>
     <div>
       {# Assign button opening a modal, only visible for volunteers #}
-      {% if mission.status == constant('STATUS_DEFAULT', mission) and is_granted('ROLE_VOLUNTEER') %}
+      {% if is_granted('assign', mission) %}
         <td>
           <button class="btn btn-outline-success" data-toggle="modal" data-target="#assignModal">
             <i class="fas fa-check-square"></i>
@@ -197,7 +198,7 @@
         </td>
       {% endif %}
       {# edit button only visible for admin, or if mission is not closed and user is its gla or volunteer #}
-      {% if is_granted('ROLE_ADMIN') or (mission.status != constant('STATUS_CLOSED', mission) and ((is_granted('ROLE_GLA') and mission.gla == app.user.name) or (is_granted('ROLE_VOLUNTEER') and mission.volunteer == app.user.name))) %}
+      {% if is_granted('simpleEdit', mission) %}
         <a href="{{ path('app_mission_edit', {'id': mission.id}) }}" class="btn btn-outline-primary">
           <i class="fas fa-edit"></i>
           Modifier

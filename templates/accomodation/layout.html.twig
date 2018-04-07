@@ -1,6 +1,11 @@
 {% extends 'layout-center.html.twig' %}
 
 
+{% block title %}
+  Logements - {{ parent() }}
+{% endblock %}
+
+
 {% block card_body %}
   {{ form_start(form) }}
 

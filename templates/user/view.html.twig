@@ -1,9 +1,11 @@
-{% extends 'layout-center.html.twig' %}
+{% extends 'user/layout
+.html.twig' %}
 
 
 {% block header_h2 %}
   {{ user.name }}
 {% endblock %}
+
 
 {% block card_body %}
   <div class="mb-3">
@@ -18,7 +20,6 @@
     Catégorie : <span class="text-form-alike">{{ user.category }}{% if user.category == constant('CAT_VOLUNTEER', user) and user.isGla %} pouvant créer des fiches mission{% endif %}</span>
   </div>
 {% endblock %}
-
 
 {% block card_footer %}
   <div class="d-flex justify-content-between">
