@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM; // this use statement is needed for the annotations @ORM
 use Symfony\Component\Validator\Constraints as Assert; // this use statement is needed for the annotations @Assert
+use Symfony\Component\Validator\Context\ExecutionContextInterface; // to use Callback validation
 
 /**
  * @ORM\Table(name="missions")
@@ -25,18 +26,19 @@ class Mission
     private $id;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", length=25)
+     * @Assert\NotBlank()
      * @Assert\Choice(callback="getStatuses")
      */
     private $status;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Accomodation", inversedBy="missions")
-     * @ORM\JoinColumn(nullable=true)
+     * @ORM\JoinColumn()
      */
     private $accomodation;
 
-     /**
+    /**
      * @ORM\Column(type="string")
      * @Assert\NotBlank()
      */
@@ -49,7 +51,7 @@ class Mission
 
     /**
      * @ORM\Column(type="text")
-     * @Assert\NotBlank(message="Merci de remplir la description de la mission")
+     * @Assert\NotBlank(message="Veuillez remplir la description de la mission")
      */
     private $description;
 
@@ -65,16 +67,28 @@ class Mission
 
     /**
      * @ORM\Column(name="date_created", type="date")
+     * @Assert\NotBlank()
+     * @Assert\LessThanOrEqual("today", message="La date de demande ne peut pas être dans le futur.")
      */
     private $dateCreated;
 
     /**
      * @ORM\Column(name="date_assigned", type="date", nullable=true)
+     * @Assert\LessThanOrEqual("today", message="La date de prise en charge ne peut pas être dans le futur.")
+     * @Assert\Expression(
+     *     "value === null or value >= this.getDateCreated()",
+     *     message="La date de prise en charge doit être après la date de demande."
+     * )
      */
     private $dateAssigned;
 
     /**
      * @ORM\Column(name="date_finished", type="date", nullable=true)
+     * @Assert\LessThanOrEqual("today", message="La date de fin de mission ne peut pas être dans le futur.")
+     * @Assert\Expression(
+     *     "value === null or value >= this.getDateAssigned()",
+     *     message="La date de fin de mission doit être après la date de prise en charge."
+     * )
      */
     private $dateFinished;
 
@@ -85,6 +99,41 @@ class Mission
     private $attachment;
 
     
+    /**
+     * @Assert\Callback
+     */
+    public function validate(ExecutionContextInterface $context, $payload)
+    {
+        // A mission with a dateAssigned must have a volunteer
+        if ($this->getDateAssigned() && !$this->getVolunteer()) {
+            $context->buildViolation('Une mission avec une date de prise en charge doit avoir un·e bénévole.')
+                ->atPath('volunteer')
+                ->addViolation();
+        }
+
+        // ... and vice-versa
+        if (!$this->getDateAssigned() && $this->getVolunteer()) {
+            $context->buildViolation('Une mission avec un·e bénévole doit avoir une date de prise en charge.')
+                ->atPath('dateAssigned')
+                ->addViolation();
+        }
+
+        // A mission with a dateFinished must have conclusions
+        if ($this->getDateFinished() && !$this->getDateAssigned()) {
+            $context->buildViolation('Une mission doit être prise en charge avant d\'être terminée.')
+                ->atPath('dateAssigned')
+                ->addViolation();
+        }
+
+        // A mission with a dateFinished must have conclusions
+        if ($this->getDateFinished() && !$this->getConclusions()) {
+            $context->buildViolation('Une mission avec une date de fin doit avoir un retour.')
+                ->atPath('conclusions')
+                ->addViolation();
+        }
+    }
+
+
     /************** Methods *****************/
     
     // Callback for $status Choice
@@ -100,14 +149,12 @@ class Mission
 
     public function updateStatus()
     {
-        if ($this->dateFinished && $this->status !== Self::STATUS_FINISHED) {
+        if ($this->dateFinished) {
             $this->status = Self::STATUS_FINISHED;
-        }
-        else if ($this->dateAssigned && $this->status !== Self::STATUS_ASSIGNED) {
+        } else if ($this->dateAssigned) {
             $this->status = Self::STATUS_ASSIGNED;
-        }
-        else if ($this->status !== Self::STATUS_DEFAULT) {
-            $this->status = Self::STATUS_DEFAULT;  // Shouldn't happen
+        } else {
+            $this->status = Self::STATUS_DEFAULT; 
         }
     }
     

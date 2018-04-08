@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface; // to use Callback validation
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -30,12 +31,13 @@ class User implements UserInterface, \Serializable
     /**
      * @ORM\Column(type="string", length=25, unique=true)
      * @Assert\NotBlank()
+     * @Assert\Length(max=25)
      */
     private $username;
 
     /**
      * @Assert\NotBlank(groups={"Default", "change_password"})
-     * @Assert\Length(max=4096, groups={"Default", "change_password"})
+     * @Assert\Length(min=8, max=4096, groups={"Default", "change_password"})
      */
     private $plainPassword;
 
@@ -59,6 +61,7 @@ class User implements UserInterface, \Serializable
     /**
      * @ORM\Column(type="string", length=25)
      * @Assert\NotBlank(groups={"Default", "edit"})
+     * @Assert\Length(max=25)
      */
     private $name;
 
@@ -79,6 +82,19 @@ class User implements UserInterface, \Serializable
      */
     private $isVolunteer;
 
+
+    /**
+     * @Assert\Callback
+     */
+    public function validate(ExecutionContextInterface $context, $payload)
+    {
+        // Check if email is username@habitat-humanisme.org
+        if ($this->getEmail() !== $this->getUsername().'@habitat-humanisme.org') {
+            $context->buildViolation('L\'adresse email doit être égale à identifiant@habitat-humanisme.org.')
+                ->atPath('email')
+                ->addViolation();
+        }
+    }
 
     /************** Public methods *****************/
 

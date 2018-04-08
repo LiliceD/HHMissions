@@ -50,7 +50,6 @@ class MissionController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
             
             // Manage attachment
-            /** @var Symfony\Component\HttpFoundation\File\UploadedFile $file */
             $file = $mission->getAttachment();
 
             if ($file) {
@@ -127,7 +126,6 @@ class MissionController extends Controller
             $mission->updateStatus();
 
             // Manage attachment
-            /** @var Symfony\Component\HttpFoundation\File\UploadedFile $file */
             $file = $mission->getAttachment();
 
             if ($file) {

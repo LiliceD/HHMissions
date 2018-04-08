@@ -5,11 +5,16 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection; // mapping accomodation to missions
 use Doctrine\Common\Collections\Collection; // mapping accomodation to missions
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity; // to use @UniqueEntity validation
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Table(name="accomodations")
  * @ORM\Entity(repositoryClass="App\Repository\AccomodationRepository")
+ * @UniqueEntity(
+ *  fields={"street", "city"},
+ *  message="Cette adresse existe déjà."
+ * )
  */
 class Accomodation
 {
@@ -27,41 +32,46 @@ class Accomodation
     private $id;
 
     /**
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="string", nullable=true, length=25)
+     * @Assert\Length(max=25)
      */
     private $name;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", length=50)
      * @Assert\NotBlank()
+     * @Assert\Length(max=50)
      */
     private $street;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", length=5)
+     * @Assert\NotBlank()
      * @Assert\Length(
      *  min = 5,
      *  max = 5,
-     *  minMessage = "Le code postal doit avoir exactement 5 chiffres.",
-     *  maxMessage = "Le code postal doit avoir exactement 5 chiffres." 
+     *  minMessage = "Le code postal doit avoir 5 chiffres.",
+     *  maxMessage = "Le code postal doit avoir 5 chiffres." 
      * )
      */
     private $postalCode;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", length=25)
      * @Assert\NotBlank()
+     * @Assert\Length(max=25)
      */
     private $city;
 
     /**
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="string")
      * @Assert\Choice(callback="getOwnerTypes")
      */
     private $ownerType;
 
     /**
      * @ORM\Column(type="string", nullable=true)
+     * @Assert\Length(max=255)
      */
     private $access;
 

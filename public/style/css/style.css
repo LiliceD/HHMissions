@@ -1,7 +1,5 @@
-/* Overriding W3.CSS defaults */
-html, body, h1, h2, h3, h4, h5, h6 {
-  font-family: Arial, sans-serif;
-  color: #3a3a3a;
+.invalid-feedback {
+  display: block;
 }
 
 /* mission/list.html.twig */
