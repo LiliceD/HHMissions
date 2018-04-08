@@ -66,7 +66,7 @@ class UserAdminController extends Controller
                 'L\'utilisateur·trice a bien été créé·e.'
             );
 
-            return $this->redirectToRoute('app_mission_list');
+            return $this->redirectToRoute('app_user_list');
         }
 
         return $this->render(

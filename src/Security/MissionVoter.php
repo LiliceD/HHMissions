@@ -79,13 +79,13 @@ class MissionVoter extends Voter
         }
 
         // only the volunteer assigned to the mission can simple edit it
-        return $this->decisionManager->decide($token, array('ROLE_VOLUNTEER')) && $user->getName() === $mission->getVolunteer();
+        return $this->decisionManager->decide($token, array('ROLE_VOLUNTEER')) && $user === $mission->getVolunteer();
     }
 
     private function canEdit(Mission $mission, User $user, TokenInterface $token)
     {
         // only the GLA who created the mission can edit it
-        return $this->decisionManager->decide($token, array('ROLE_GLA')) && $user->getName() === $mission->getGla();
+        return $this->decisionManager->decide($token, array('ROLE_GLA')) && $user === $mission->getGla();
     }
 
     private function canAssign(Mission $mission, User $user, TokenInterface $token)

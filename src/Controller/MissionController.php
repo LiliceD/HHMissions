@@ -37,12 +37,6 @@ class MissionController extends Controller
     {
         $mission = new Mission();
 
-        // Set a default accomodation to $mission (error otherwise)
-        $accomodation = $this->getDoctrine()
-            ->getRepository(Accomodation::class)
-            ->findFirst();
-        $mission->setAccomodation($accomodation);
-
         // Create form
         $form = $this->createForm(MissionType::class, $mission);
         $form->handleRequest($request);
@@ -107,9 +101,10 @@ class MissionController extends Controller
         // Retrieve user and allow action only if user is admin, mission's gla or mission's volunteer
         $this->denyAccessUnlessGranted('simpleEdit', $mission);
         
-        // Saving previous scan to avoid delete by edit with no changes
+        // Save previous attachment file name to avoid delete by edit with no changes
         $previousFileName = $mission->getAttachment();
 
+        // Set file from file name
         if ($previousFileName) {
             $mission->setAttachment(
                 new File($this->getParameter('app_attachment_directory').'/'.$previousFileName)
@@ -277,7 +272,7 @@ class MissionController extends Controller
         $user = $this->getUser();
 
         // Set volunteer, dateAssigned and status
-        $mission->setVolunteer($user->getName());
+        $mission->setVolunteer($user);
         $mission->setDateAssigned(new \DateTime());
         $mission->setStatus(Mission::STATUS_ASSIGNED);
 

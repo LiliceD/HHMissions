@@ -13,21 +13,25 @@ class UserRepository extends ServiceEntityRepository
         parent::__construct($registry, User::class);
     }
 
-    public function findNameByCategory($category)
+    public function qbActiveByCategory($category)
     {
         $qb = $this->createQueryBuilder('u');
-        $qb->select('u.name');
         
+        // Select active users
+        $qb->select('u')
+           ->where('isActive = true');
+        
+        // Possibly add filter on isVolunteer/isGla
         switch ($category) {
-            case 'volunteer':
-                $qb->add('where', $qb->expr()->in('u.isVolunteer', 'true'));
             case 'gla':
-                $qb->add('where', $qb->expr()->in('u.isGla', 'true'));
+                $qb->where('u.isGla = true');
+                break;
+            case 'volunteer':
+                $qb->where('u.isVolunteer = true');
         }
-        
-        return $qb->orderBy('u.name', 'ASC')
-            ->getQuery()
-            ->getArrayResult()
-        ;
+
+        // Order alphabetically by name
+        // Return directly the query builder (for EntityType fields query_builder)
+        return $qb->orderBy('u.name', 'ASC');
     }
 }

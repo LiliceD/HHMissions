@@ -38,8 +38,8 @@
       <div class="d-flex">
         <div class="col-sm">
           {{ form_row(form.status, {'attr': {'readonly': 'true'}}) }}
-          {{ form_row(form.gla, {'attr': {'readonly': 'true'}}) }}
-          {{ form_row(form.volunteer, {'attr': {'autocomplete': 'off', 'placeholder': 'Saisir un nom'}}) }}
+          {{ form_row(form.gla, {'attr': {'disabled': 'true'}}) }}
+          {{ form_row(form.volunteer) }}
           <div class="dropdown">
             <div id ="volunteerSearchResults" class="dropdown-menu searchResults">
             </div>
@@ -55,7 +55,7 @@
       </div>
     </div>
 
-    {{ form_row(form.accomodation, {'attr': {'readonly': 'true'}}) }}
+    {{ form_row(form.accomodation, {'attr': {'disabled': 'true'}}) }}
     
     {# Owner type #}
     <div class="d-flex">
@@ -123,14 +123,13 @@
 {% block javascripts %}
   {{ parent() }}
 
-  <script src="{{ asset('js/ajax.js') }}"></script>
-  <script src="{{ asset('js/searchSuggestions.js') }}"></script>
-
   <script>
     (function() {
-      // Display suggestions of GLAs in a dropdown with user input
-      // arguments : user category, controller url
-      searchSuggestions('volunteer', "{{ path('app_user_suggestions') }}");
+      // Un-disable accomodation and GLA select to post data on form submit
+      document.querySelector('form').addEventListener('submit', () => {
+        document.getElementById('mission_accomodation').disabled = false;
+        document.getElementById('mission_gla').disabled = false;
+      });
     })();
   </script>
 {% endblock %}

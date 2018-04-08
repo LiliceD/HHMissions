@@ -13,17 +13,6 @@ class AccomodationRepository extends ServiceEntityRepository
         parent::__construct($registry, Accomodation::class);
     }
 
-    // Select first accomodation by alphabetical order on street
-    public function findFirst()
-    {
-        return $this->createQueryBuilder('a')
-            ->orderBy('a.street', 'ASC')
-            ->setMaxResults(1)
-            ->getQuery()
-            ->getOneOrNullResult();
-        ;
-    }
-
     /*
     public function findBySomething($value)
     {

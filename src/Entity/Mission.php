@@ -39,29 +39,42 @@ class Mission
     private $accomodation;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="missionsAsGla")
+     * @ORM\JoinColumn()
      * @Assert\NotBlank()
+     * @Assert\Expression(
+     *     "value.getIsGla()",
+     *     message="Cette personne n'est pas dans la catégorie GLA."
+     * )
      */
     private $gla;
 
     /**
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="missionsAsVolunteer")
+     * @ORM\JoinColumn(nullable=true)
+     * @Assert\Expression(
+     *     "!value or value.getIsVolunteer()",
+     *     message="Cette personne n'est pas dans la catégorie bénévole."
+     * )
      */
     private $volunteer;
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="string", length=3000)
      * @Assert\NotBlank(message="Veuillez remplir la description de la mission")
+     * @Assert\Length(max=3000)
      */
     private $description;
 
     /**
-     * @ORM\Column(type="text", nullable=true)
+     * @ORM\Column(type="string", nullable=true, length=1000)
+     * @Assert\Length(max=1000)
      */
     private $info;
 
     /**
-     * @ORM\Column(type="text", nullable=true)
+     * @ORM\Column(type="string", nullable=true, length=3000)
+     * @Assert\Length(max=3000)
      */
     private $conclusions;
 
@@ -76,7 +89,7 @@ class Mission
      * @ORM\Column(name="date_assigned", type="date", nullable=true)
      * @Assert\LessThanOrEqual("today", message="La date de prise en charge ne peut pas être dans le futur.")
      * @Assert\Expression(
-     *     "value === null or value >= this.getDateCreated()",
+     *     "!value or value >= this.getDateCreated()",
      *     message="La date de prise en charge doit être après la date de demande."
      * )
      */
@@ -86,7 +99,7 @@ class Mission
      * @ORM\Column(name="date_finished", type="date", nullable=true)
      * @Assert\LessThanOrEqual("today", message="La date de fin de mission ne peut pas être dans le futur.")
      * @Assert\Expression(
-     *     "value === null or value >= this.getDateAssigned()",
+     *     "!value or value >= this.getDateAssigned()",
      *     message="La date de fin de mission doit être après la date de prise en charge."
      * )
      */
@@ -181,7 +194,7 @@ class Mission
         $this->status = $status;
     }
 
-    public function getAccomodation(): Accomodation
+    public function getAccomodation(): ?Accomodation
     {
         return $this->accomodation;
     }
@@ -190,20 +203,20 @@ class Mission
         $this->accomodation = $accomodation;
     }
 
-    public function getGla()
+    public function getGla(): ?User
     {
         return $this->gla;
     }
-    public function setGla($gla)
+    public function setGla(User $gla)
     {
         $this->gla = $gla;
     }
 
-    public function getVolunteer()
+    public function getVolunteer(): ?User
     {
         return $this->volunteer;
     }
-    public function setVolunteer($volunteer)
+    public function setVolunteer(User $volunteer)
     {
         $this->volunteer = $volunteer;
     }

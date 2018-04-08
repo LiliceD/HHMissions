@@ -15,7 +15,7 @@
 ###< symfony/web-server-bundle ###
 
 ###> fileUploader ###
-/public/uploads/
+# /public/uploads/
 ###< fileUploader ###
 
 ###> phpUnit ###

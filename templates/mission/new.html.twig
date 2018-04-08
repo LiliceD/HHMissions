@@ -15,10 +15,10 @@
     {{ form_widget(form.volunteer, {'attr': {'hidden': 'true'}}) }}
 
     {# User role passed to JS through data attributes #}
-    <div id="appUserData" data-name="{{ app.user.name }}" data-is-gla="{{ is_granted('ROLE_GLA') ? true : false }}" class="row justify-content-between">
+    <div id="appUserData" data-user-id="{{ app.user.id }}" data-is-gla="{{ is_granted('ROLE_GLA') ? true : false }}" class="row justify-content-between">
       <div class="d-flex">
         <div class="col-sm">
-        {{ form_row(form.gla, {'attr': {'autocomplete': 'off'}}) }}
+        {{ form_row(form.gla) }}
         <div class="dropdown">
           <div id ="glaSearchResults" class="dropdown-menu searchResults">
           </div>
@@ -78,11 +78,10 @@
   {{ parent() }}
 
   <script src="{{ asset('js/ajax.js') }}"></script>
-  <script src="{{ asset('js/searchSuggestions.js') }}"></script>
 
   <script>
     (function() {
-      let name, isGla, isVolunteer;
+      let name, isGla;
 
       // Prepopulate fields "owner type" and "info" with selected accomodation info
       function getAccomodationInfo() {
@@ -100,11 +99,11 @@
       function setGla() {
         let appUserDataElt = document.getElementById('appUserData');
         if (appUserDataElt) {
-          name = appUserDataElt.getAttribute('data-name');
+          userId = appUserDataElt.getAttribute('data-user-id');
           isGla = appUserDataElt.getAttribute('data-is-gla');
         }
         if (isGla) {
-          document.getElementById('mission_gla').value = name;
+          document.getElementById('mission_gla').value = userId;
         }
       }
       
@@ -114,11 +113,6 @@
       // Prepopulate fields OwnerType and Mission's info with accomodation selection
       document.addEventListener('DOMContentLoaded', getAccomodationInfo);
       document.getElementById('mission_accomodation').addEventListener('change', getAccomodationInfo);
-
-
-      // Display suggestions of GLAs in a dropdown with user input
-      // arguments : user category, controller url
-      searchSuggestions('gla', "{{ path('app_user_suggestions') }}");
     })();
   </script>
 {% endblock %}

@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection; // mapping user to missions
+use Doctrine\Common\Collections\Collection; // mapping user to missions
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface; // to use Callback validation
@@ -37,7 +39,7 @@ class User implements UserInterface, \Serializable
 
     /**
      * @Assert\NotBlank(groups={"Default", "change_password"})
-     * @Assert\Length(min=8, max=4096, groups={"Default", "change_password"})
+     * @Assert\Length(min=6, max=4096, groups={"Default", "change_password"})
      */
     private $plainPassword;
 
@@ -81,6 +83,16 @@ class User implements UserInterface, \Serializable
      * @ORM\Column(name="is_volunteer", type="boolean")
      */
     private $isVolunteer;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Mission", mappedBy="gla")
+     */
+    private $missionsAsGla;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Mission", mappedBy="volunteer")
+     */
+    private $missionsAsVolunteer;
 
 
     /**
@@ -128,6 +140,8 @@ class User implements UserInterface, \Serializable
     public function __construct()
     {
         $this->isActive = true;
+        $this->missionsAsGla = new ArrayCollection();
+        $this->missionsAsVolunteer = new ArrayCollection();
     }
 
     public function __toString()
@@ -266,5 +280,22 @@ class User implements UserInterface, \Serializable
     public function getIsVolunteer()
     {
         return $this->isVolunteer;
+    }
+
+
+    /**
+     * @return Collection|Mission[]
+     */
+    public function getMissionsAsGla()
+    {
+        return $this->missionsAsGla;
+    }
+
+    /**
+     * @return Collection|Mission[]
+     */
+    public function getMissionsAsVolunteer()
+    {
+        return $this->missionsAsVolunteer;
     }
 }
