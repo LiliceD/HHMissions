@@ -26,15 +26,17 @@
 
   <table id="newMissions" class="table table-hover">
     <thead>
-      <tr class="w3-deep-orange">
+      <tr>
         <th scope="col">N°</th>
-        <th scope="col">Date demande</th>
+        <th scope="col">Demande</th>
         <th scope="col">Provenance GLA</th>
         <th scope="col">Adresse</th>
         <th scope="col">Description mission</th>
-        <th scope="col">Statut</th>
+        {# <th scope="col">Statut</th> #}
         <th></th>
-        <th></th>
+        {% if is_granted('ROLE_GLA') %}
+          <th></th>
+        {% endif %}
       </tr>
     </thead>
 
@@ -53,8 +55,8 @@
             <br>
             {{ mission.accomodation.postalCode }} {{ mission.accomodation.city }}
           </td>
-          <td><div class="text-ellipsis">{{ mission.description }}</div></td>
-          <td>{{ mission.status }}</td>
+          <td><div class="text-ellipsis" title="{{ mission.description }}">{{ mission.description }}</div></td>
+          {# <td>{{ mission.status }}</td> #}
           {# view button #}
           <td>
             <a href="{{ path('app_mission_view', {'id': mission.id}) }}" class="btn btn-sm btn-primary">
@@ -79,35 +81,37 @@
 
   <hr>
 
-  <h3>Missions en cours ou terminées :</h3>
+  <h3>Missions en cours :</h3>
 
   {# User role passed to JS through data attributes #}
   <div id="userData" data-name="{{ app.user.name }}" data-is-gla="{{ is_granted('ROLE_GLA') ? true : false }}" data-is-volunteer="{{ is_granted('ROLE_VOLUNTEER') ? 'true' : 'false' }}" class="d-flex align-items-center">
-    <input type="checkbox" id="myMissionsCheckbox" name="myMissionsCheckbox" class="mb-2" />
-    <label for="myMissionsCheckbox" class="mb-2 ml-2">Afficher uniquement mes missions</label>
+    <input type="checkbox" id="myAssignedMissions" name="myAssignedMissions" class="mb-2" />
+    <label for="myAssignedMissions" class="mb-2 ml-2">Afficher uniquement mes missions</label>
   </div>
 
 
-  <table id="otherMissions" class="table table-hover">
-
+  <table id="assignedMissions" class="table table-hover">
     <thead class="thead-light">
       <tr>
         <th scope="col">N°</th>
-        <th scope="col">Date demande</th>
+        <th scope="col">Demande</th>
+        <th scope="col">Prise en charge</th>
         <th scope="col">Provenance GLA</th>
         <th scope="col">Adresse</th>
         <th scope="col">Bénévole</th>
-        <th scope="col">Statut</th>
-        <th></th>
+        <th scope="col">Description</th>
+        {# <th scope="col">Statut</th>
+        <th></th> #}
         <th></th>
       </tr>
     </thead>
 
     <tbody>
-      {% for mission in otherMissions %}
-        <tr id="mission-{{ mission.id }}" class="{{ mission.status == constant('STATUS_CLOSED', mission) ? 'text-secondary' }}">
+      {% for mission in assignedMissions %}
+        <tr id="mission-{{ mission.id }}">
           <td>{{ mission.id }}</td>
           <th scope="row">{{ mission.dateCreated|date('d/m/y') }}</th>
+          <td>{{ mission.dateAssigned|date('d/m/y') }}</td>
           <td>{{ mission.gla }}</td>
           {# address #}
           <td>
@@ -119,6 +123,75 @@
             {{ mission.accomodation.postalCode }} {{ mission.accomodation.city }}
           </td>
           <td>{{ mission.volunteer }}</td>
+          <td><div class="text-ellipsis" title="{{ mission.description }}">{{ mission.description }}</div></td>
+          {# <td>{{ mission.status }}</td> #}
+          {# view button #}
+          <td>
+            <a href="{{ path('app_mission_view', {'id': mission.id}) }}" class="btn btn-sm btn-primary">
+              <i class="fas fa-eye"></i>
+              Voir
+            </a>
+          </td>
+          {# edit button only visible if user is admin or mission's gla or volunteer #}
+          {# {% if is_granted('simpleEdit', mission) %}
+            <td>
+              <a href="{{ path('app_mission_edit', {'id': mission.id}) }}" class="btn btn-sm btn-outline-primary">
+                <i class="fas fa-edit"></i>
+                Modifier
+              </a>
+            </td>
+          {% endif %} #}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <hr>
+
+  <h3>Missions terminées :</h3>
+
+  {# User role passed to JS through data attributes #}
+  <div class="d-flex align-items-center">
+    <input type="checkbox" id="myFinishedMissions" name="myFinishedMissions" class="mb-2" />
+    <label for="myFinishedMissions" class="mb-2 ml-2">Afficher uniquement mes missions</label>
+  </div>
+
+  <table id="finishedMissions" class="table table-hover">
+    <thead class="thead-light">
+      <tr>
+        <th scope="col">N°</th>
+        <th scope="col">Demande</th>
+        <th scope="col">Prise en charge</th>
+        <th scope="col">Fin de mission</th>
+        <th scope="col">Provenance GLA</th>
+        <th scope="col">Adresse</th>
+        <th scope="col">Bénévole</th>
+        <th scope="col">Description</th>
+        <th scope="col">Statut</th>
+        <th></th>
+        {# <th></th> #}
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for mission in finishedMissions %}
+        <tr id="mission-{{ mission.id }}" class="{{ mission.status == constant('STATUS_CLOSED', mission) ? 'text-secondary' }}">
+          <td>{{ mission.id }}</td>
+          <th scope="row">{{ mission.dateCreated|date('d/m/y') }}</th>
+          <td>{{ mission.dateAssigned|date('d/m/y') }}</td>
+          <td>{{ mission.dateFinished|date('d/m/y') }}</td>
+          <td>{{ mission.gla }}</td>
+          {# address #}
+          <td>
+            {% if mission.accomodation.name %}
+              {{ mission.accomodation.name }} - 
+            {% endif %}
+            {{ mission.accomodation.street }}
+            <br>
+            {{ mission.accomodation.postalCode }} {{ mission.accomodation.city }}
+          </td>
+          <td>{{ mission.volunteer }}</td>
+          <td><div class="text-ellipsis" title="{{ mission.description }}">{{ mission.description }}</div></td>
           <td>{{ mission.status }}</td>
           {# view button #}
           <td>
@@ -128,14 +201,14 @@
             </a>
           </td>
           {# edit button only visible if mission is not closed and user is admin or mission's gla or volunteer #}
-          {% if mission.status != constant('STATUS_CLOSED', mission) and is_granted('simpleEdit', mission) %}
+          {# {% if mission.status != constant('STATUS_CLOSED', mission) and is_granted('simpleEdit', mission) %}
             <td>
               <a href="{{ path('app_mission_edit', {'id': mission.id}) }}" class="btn btn-sm btn-outline-primary">
                 <i class="fas fa-edit"></i>
                 Modifier
               </a>
             </td>
-          {% endif %}
+          {% endif %} #}
         </tr>
       {% endfor %}
     </tbody>
@@ -193,7 +266,7 @@
 
 
       // Get user's name, isGla and isVolunteer from Twig
-      document.addEventListener('DOMContentLoaded', function() {
+      document.addEventListener('DOMContentLoaded', () => {
         let userDataElt = document.getElementById('userData');
         if (userDataElt) {
           name = userDataElt.getAttribute('data-name');
@@ -202,22 +275,44 @@
         }
       });
 
-      // If myMissionsCheckbox is checked, show only missions where user is gla and/or volunteer
-      document.getElementById('myMissionsCheckbox').addEventListener('change', function (e) {
-        let otherMissionsTable = document.getElementById('otherMissions'),
-            value = name.toUpperCase();
+      // If myXXXMissions is checked, show only missions where user is gla and/or volunteer
+      document.getElementById('myAssignedMissions').addEventListener('change', (e) => {
+        let assignedMissionsTable = document.getElementById('assignedMissions'),
+            filterValue = name.toUpperCase();
 
         if(e.target.checked) {
           let filters = [];
           if (isGla) {
-            filters.push([1, value]);
+            // Column GLA is index 2 in the array of td cells
+            filters.push([2, filterValue]);
           }
           if (isVolunteer) {
-            filters.push([3, value]);
+            // Column GLA is index 4 in the array of td cells
+            filters.push([4, filterValue]);
           }
-          filterTable(otherMissionsTable, filters);
+          filterTable(assignedMissionsTable, filters);
         } else {
-          unfilterTable(otherMissionsTable);
+          unfilterTable(assignedMissionsTable);
+        }
+      });
+
+      document.getElementById('myFinishedMissions').addEventListener('change', (e) => {
+        let finishedMissionsTable = document.getElementById('finishedMissions'),
+            filterValue = name.toUpperCase();
+
+        if(e.target.checked) {
+          let filters = [];
+          if (isGla) {
+            // Column GLA is index 3 in the array of td cells
+            filters.push([3, filterValue]);
+          }
+          if (isVolunteer) {
+            // Column GLA is index 5 in the array of td cells
+            filters.push([5, filterValue]);
+          }
+          filterTable(finishedMissionsTable, filters);
+        } else {
+          unfilterTable(finishedMissionsTable);
         }
       });
     })();

@@ -1,3 +1,4 @@
+/* validation alerts hidden by default in Bootstrap form theme */
 .invalid-feedback {
   display: block;
 }
@@ -9,7 +10,8 @@ h3 {
 
 .text-ellipsis {
   width: 250px;
-  white-space: nowrap;
+  height: 48px;
+  white-space: pre-line;
   overflow: hidden;
   text-overflow: ellipsis;
 }

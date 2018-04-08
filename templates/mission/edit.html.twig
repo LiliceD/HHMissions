@@ -39,18 +39,28 @@
         <div class="col-sm">
           {{ form_row(form.status, {'attr': {'readonly': 'true'}}) }}
           {{ form_row(form.gla, {'attr': {'disabled': 'true'}}) }}
-          {{ form_row(form.volunteer) }}
-          <div class="dropdown">
-            <div id ="volunteerSearchResults" class="dropdown-menu searchResults">
-            </div>
-          </div>
+          {# Volunteer is only editable by Admin #}
+          {% if is_granted('ROLE_ADMIN') %}
+            {{ form_row(form.volunteer) }}
+          {% else %}
+            {{ form_row(form.volunteer, {'attr': {'disabled': 'true'}}) }}
+          {% endif %}
         </div>
       </div>
       <div class="d-flex">
         <div class="col-sm">
           {{ form_row(form.dateCreated, {'attr': {'readonly': 'true'}}) }}
-          {{ form_row(form.dateAssigned) }}
-          {{ form_row(form.dateFinished) }}
+          {# Date of assignment is only editable by Admin #}
+          {% if is_granted('ROLE_ADMIN') %}
+            {{ form_row(form.dateAssigned) }}
+          {% else %}
+            {{ form_row(form.dateAssigned, {'attr': {'disabled': 'true'}}) }}
+          {% endif %}
+          {% if is_granted('ROLE_VOLUNTEER') %}
+            {{ form_row(form.dateFinished) }}
+          {% else %}
+            {{ form_row(form.dateFinished, {'attr': {'disabled': 'true'}}) }}
+          {% endif %}
         </div>
       </div>
     </div>
@@ -67,9 +77,15 @@
 
     <br>
 
-    {{ form_row(form.description) }}
-
-    {{ form_row(form.info) }}
+    {# Description and info #}
+    {# only editable by admin or mission's GLA #}
+    {% if is_granted('edit', mission) %}
+      {{ form_row(form.description) }}
+      {{ form_row(form.info) }}
+    {% else %}
+      {{ form_row(form.description, {'attr': {'readonly': 'true'}}) }}
+      {{ form_row(form.info, {'attr': {'readonly': 'true'}}) }}
+    {% endif %}
 
     {# Attachment #}
     {# only visible for admin or mission's GLA #}
@@ -95,6 +111,13 @@
     <br>
     
     {{ form_row(form.conclusions) }}
+    {# Show reminder to fill in dateFinished to the volunteer assigned when conclusions is filled #}
+    {% if is_granted('simpleEdit', mission) %}
+      <div id="conclusionsAlert" class="alert alert-warning">
+        <a href="#" class="close" data-dismiss="alert" aria-label="Fermer">&times;</a>
+        Si vous avez terminé la mission n'oubliez pas de renseigner une <a href="#mission_dateFinished">date de fin de mission</a>
+      </div>
+    {% endif %}
 
     <br>
 
@@ -125,10 +148,26 @@
 
   <script>
     (function() {
-      // Un-disable accomodation and GLA select to post data on form submit
+      // Show / hide alert if conclusions has / not text
+      function showConclusionsAlert() {
+        let conclusionsAlertElt = document.getElementById('conclusionsAlert');
+
+        if (document.getElementById('mission_conclusions').value) {
+          conclusionsAlertElt.classList.remove('d-none');
+        } else {
+          conclusionsAlertElt.classList.add('d-none');
+        }
+      }
+
+      // Check if alert must be visible on page load and when conclusions value change
+      document.addEventListener('DOMContentLoaded', showConclusionsAlert);
+      document.getElementById('mission_conclusions').addEventListener('change', showConclusionsAlert);
+
+      // Un-disable accomodation, GLA and volunteer select to post data on form submit
       document.querySelector('form').addEventListener('submit', () => {
         document.getElementById('mission_accomodation').disabled = false;
         document.getElementById('mission_gla').disabled = false;
+        document.getElementById('mission_volunteer').disabled = false;
       });
     })();
   </script>

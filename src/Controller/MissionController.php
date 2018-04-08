@@ -206,20 +206,21 @@ class MissionController extends Controller
     {    
         $repository = $this->getDoctrine()->getRepository(Mission::class);
 
+        // Missions not assigned yet
         $newMissions = $repository->findByStatus([Mission::STATUS_DEFAULT], 'DESC');
-        
-        $nonNewStatuses = array_values(Mission::getStatuses()); // Array of possible statuses
-        array_shift($nonNewStatuses);
-        $otherMissions = $repository->findByStatus($nonNewStatuses, 'DESC');
+        // Missions assigned but not finished
+        $assignedMissions = $repository->findByStatus([Mission::STATUS_ASSIGNED], 'DESC');
+        // Missions finished (incl. closed)
+        $finishedMissions = $repository->findByStatus([Mission::STATUS_FINISHED, Mission::STATUS_CLOSED], 'DESC');
 
-        if (!$newMissions && !$otherMissions) {
+        if (!$newMissions && !$assignedMissions && !$finishedMissions) {
             throw $this->createNotFoundException('Aucune fiche mission trouvée.');
-
         }
 
         return $this->render('mission/list.html.twig', [
             'newMissions' => $newMissions,
-            'otherMissions' => $otherMissions
+            'assignedMissions' => $assignedMissions,
+            'finishedMissions' => $finishedMissions,
         ]);
     }
 

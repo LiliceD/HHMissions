@@ -24,16 +24,16 @@ class MissionType extends AbstractType
         $builder
             ->add('status', null, ['label' => 'Statut :'])
             ->add('dateCreated', DateType::class, [
-                'label' => 'Date demande :',
+                'label' => 'Date de demande :',
                 'widget' => 'single_text',
             ])
             ->add('dateAssigned', DateType::class, [
-                'label' => 'Date prise en charge :',
+                'label' => 'Date de prise en charge :',
                 'widget' => 'single_text',
                 'required' => false
             ])
             ->add('dateFinished', DateType::class, [
-                'label' => 'Date fin de mission :',
+                'label' => 'Date de fin de mission :',
                 'widget' => 'single_text',
                 'required' => false
             ])
