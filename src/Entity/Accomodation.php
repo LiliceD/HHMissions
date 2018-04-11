@@ -24,6 +24,9 @@ class Accomodation
     const OWNER_PRIVATE_BUILDING = "Privé - Immeuble";
     const OWNER_PRIVATE_DIFFUSE = "Privé - Logement isolé";
 
+    // Address of file "06 DOSSIER IMMEUBLES" on Sharepoint (SP)
+    const ACCOMODATION_SP_FOLDER = "https://habitatethumanisme.sharepoint.com/sites/homehh-associations/hh69/Commun/POLE%20LOGEMENT%20INDIVIDUEL/BEN%20GLA/06%20DOSSIER%20%20IMMEUBLES";
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue

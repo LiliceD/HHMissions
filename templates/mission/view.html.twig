@@ -126,11 +126,15 @@
     <div class="col-sm-auto">
       Propriétaire :
     </div>
-    <div class="col-sm-auto text-form-alike font-weight-normal">
-      {% if mission.accomodation.ownerType %}
-        {{ mission.accomodation.ownerType }}
-      {% endif %}
+    <div class="col-sm-auto mr-auto text-form-alike font-weight-normal">
+      {{ mission.accomodation.ownerType ? : "" }}
     </div>
+    <div class="col-sm-auto">
+    <a href="{{ constant('ACCOMODATION_SP_FOLDER', mission.accomodation) }}" target="_blank" class="btn btn-sm btn-outline-secondary mt-3 mt-sm-0">
+      <i class="fas fa-external-link-alt"></i>
+      Dossier Immeubles
+    </a>
+  </div>
   </div>
 
   <br>
