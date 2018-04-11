@@ -15,11 +15,33 @@ class MissionRepository extends ServiceEntityRepository
 
     public function findByStatus($value, $order)
     {
-        $qb = $this->createQueryBuilder('m');
+        $qb = $this->createQueryBuilder('m')
+            ->innerJoin('m.accomodation', 'a')
+            ->addSelect('a')
+            ->innerJoin('m.gla', 'g')
+            ->addSelect('g')
+            ->leftJoin('m.volunteer', 'v')
+            ->addSelect('v')
+        ;
+        
         return $qb->add('where', $qb->expr()->in('m.status', ':value'))
             ->orderBy('m.id', $order)
             ->setParameter('value', $value)
             // ->setMaxResults(10)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    public function findAllJoined()
+    {
+        return $this->createQueryBuilder('m')
+            ->innerJoin('m.accomodation', 'a')
+            ->addSelect('a')
+            ->innerJoin('m.gla', 'g')
+            ->addSelect('g')
+            ->leftJoin('m.volunteer', 'v')
+            ->addSelect('v')
             ->getQuery()
             ->getResult()
         ;

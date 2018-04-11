@@ -207,11 +207,32 @@ class MissionController extends Controller
         $repository = $this->getDoctrine()->getRepository(Mission::class);
 
         // Missions not assigned yet
-        $newMissions = $repository->findByStatus([Mission::STATUS_DEFAULT], 'DESC');
-        // Missions assigned but not finished
-        $assignedMissions = $repository->findByStatus([Mission::STATUS_ASSIGNED], 'DESC');
-        // Missions finished (incl. closed)
-        $finishedMissions = $repository->findByStatus([Mission::STATUS_FINISHED, Mission::STATUS_CLOSED], 'DESC');
+        // $newMissions = $repository->findByStatus([Mission::STATUS_DEFAULT], 'DESC');
+        // // Missions assigned but not finished
+        // $assignedMissions = $repository->findByStatus([Mission::STATUS_ASSIGNED], 'DESC');
+        // // Missions finished (incl. closed)
+        // $finishedMissions = $repository->findByStatus([Mission::STATUS_FINISHED, Mission::STATUS_CLOSED], 'DESC');
+
+        // Retrieve all missions
+        $missions = $repository->findAllJoined();
+        
+        // Split missions based on their status
+        $newMissions = [];
+        $assignedMissions = [];
+        $finishedMissions = [];
+
+        foreach($missions as $mission) {
+            switch ($mission->getStatus()) {
+                case Mission::STATUS_DEFAULT:
+                    array_push($newMissions, $mission);
+                    break;
+                case Mission::STATUS_ASSIGNED:
+                    array_push($assignedMissions, $mission);
+                    break;
+                default:
+                    array_push($finishedMissions, $mission);
+            }
+        }
 
         if (!$newMissions && !$assignedMissions && !$finishedMissions) {
             throw $this->createNotFoundException('Aucune fiche mission trouvée.');
