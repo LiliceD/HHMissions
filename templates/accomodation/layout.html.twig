@@ -67,7 +67,7 @@
       document.getElementById("accomodation_postalCode").addEventListener("change", function (e) {
         const input = e.target.value; 
         if (input.match(/^6900\d$/)) {
-          document.getElementById("accomodation_city").value = "LYON " + input[input.length - 1]; 
+          document.getElementById("accomodation_city").value = "LYON"; 
         }
       });
     })();

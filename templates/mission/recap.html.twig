@@ -51,8 +51,8 @@
               {{ mission.dateCreated|date('d/m/y') }}
             </th>
             <td>{{ mission.gla }}</td>
-            <td>{{ mission.dateAssigned|date('d/m/y') }}</td>
-            <td>{{ mission.dateFinished|date('d/m/y') }}</td>
+            <td>{{ mission.dateAssigned ? mission.dateAssigned|date('d/m/Y') : '-' }}</td>
+            <td>{{ mission.dateFinished ? mission.dateFinished|date('d/m/Y') : '-' }}</td>
             <td>
               {% if mission.accomodation.name %}
                 {{ mission.accomodation.name }} - 

@@ -152,7 +152,7 @@
       function showConclusionsAlert() {
         let conclusionsAlertElt = document.getElementById('conclusionsAlert');
 
-        if (document.getElementById('mission_conclusions').value) {
+        if (document.getElementById('mission_conclusions').value && !document.getElementById('mission_dateFinished').value) {
           conclusionsAlertElt.classList.remove('d-none');
         } else {
           conclusionsAlertElt.classList.add('d-none');
@@ -162,6 +162,7 @@
       // Check if alert must be visible on page load and when conclusions value change
       document.addEventListener('DOMContentLoaded', showConclusionsAlert);
       document.getElementById('mission_conclusions').addEventListener('change', showConclusionsAlert);
+      document.getElementById('mission_dateFinished').addEventListener('change', showConclusionsAlert);
 
       // Un-disable accomodation, GLA and volunteer select to post data on form submit
       document.querySelector('form').addEventListener('submit', () => {

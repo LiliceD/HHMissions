@@ -197,8 +197,8 @@
           </button>
         </td>
       {% endif %}
-      {# edit button only visible for admin, or if mission is not closed and user is its gla or volunteer #}
-      {% if is_granted('simpleEdit', mission) %}
+      {# edit button only visible if mission is not closed and if user is admin, mission's gla or mission's volunteer #}
+      {% if mission.status != constant('STATUS_CLOSED', mission) and is_granted('simpleEdit', mission) %}
         <a href="{{ path('app_mission_edit', {'id': mission.id}) }}" class="btn btn-outline-primary">
           <i class="fas fa-edit"></i>
           Modifier

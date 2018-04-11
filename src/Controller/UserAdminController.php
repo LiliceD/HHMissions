@@ -46,14 +46,9 @@ class UserAdminController extends Controller
 
             // Set roles
             $category = $form->get('category')->getData();
-            $roles = [$category];
+            $hasGlaRole = $form->get('glaRole')->getData();
 
-            if ($category === 'ROLE_VOLUNTEER' && $form->get('glaRole')->getData()) {
-                // Add 'ROLE_GLA' to volunteers allowed to create missions
-                array_push($roles, 'ROLE_GLA');
-            }
-
-            $user->setRoles($roles);
+            $user->setRolesFromCategory($category, $hasGlaRole);
 
             // Persist to DB
             $em = $this->getDoctrine()->getManager();
@@ -113,14 +108,9 @@ class UserAdminController extends Controller
 
             // Set roles
             $category = $form->get('category')->getData();
-            $roles = [$category];
+            $hasGlaRole = $form->get('glaRole')->getData();
 
-            if ($category === 'ROLE_VOLUNTEER' && $form->get('glaRole')->getData()) {
-                // Add 'ROLE_GLA' to volunteers allowed to create missions
-                array_push($roles, 'ROLE_GLA');
-            }
-
-            $user->setRoles($roles);
+            $user->setRolesFromCategory($category, $hasGlaRole);
 
             // Persist changes to DB
             $em = $this->getDoctrine()->getManager();

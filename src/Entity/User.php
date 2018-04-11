@@ -136,6 +136,18 @@ class User implements UserInterface, \Serializable
         return $category;
     }
 
+    public function setRolesFromCategory($category, $hasGlaRole = false)
+    {
+        $roles = [$category];
+
+        if ($category === 'ROLE_VOLUNTEER' && $hasGlaRole) {
+            // Add 'ROLE_GLA' to volunteers allowed to create missions
+            array_push($roles, 'ROLE_GLA');
+        }
+
+        $this->setRoles($roles);
+    }
+
 
     public function __construct()
     {
