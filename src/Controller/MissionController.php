@@ -11,6 +11,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security; // for @Security 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Config\Definition\Exception\Exception; // to throw new Exception()
 use Symfony\Component\HttpFoundation\File\File; // for new File() in edit
+use Symfony\Component\HttpFoundation\JsonResponse; // app_mission_filter
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -464,6 +465,82 @@ class MissionController extends Controller
                 'Content-Disposition' => sprintf('attachment; filename="%s"', $filename),
             ]
         );
+    }
+
+
+//  █████╗      ██╗ █████╗ ██╗  ██╗
+// ██╔══██╗     ██║██╔══██╗╚██╗██╔╝
+// ███████║     ██║███████║ ╚███╔╝ 
+// ██╔══██║██   ██║██╔══██║ ██╔██╗ 
+// ██║  ██║╚█████╔╝██║  ██║██╔╝ ██╗
+// ╚═╝  ╚═╝ ╚════╝ ╚═╝  ╚═╝╚═╝  ╚═╝
+
+
+    /**
+     * @Route(
+     *  "/filter",
+     *  name="app_mission_filter",
+     * )
+     */
+    public function filter(Request $request)
+    {
+        // Get filters from request parameters
+        $glaIds = $request->request->get('glaIds');
+        $volunteerIds = $request->request->get('volunteerIds');
+        $accomodationIds = $request->request->get('accomodationIds');
+
+        // Create array of filters
+        $filters = [];
+
+        if ($glaIds) {
+            $glaFilter = ['field' => 'g.id', 'value' => $glaIds];
+            array_push($filters, $glaFilter);
+        }
+        
+        if ($volunteerIds) {
+            $volunteerFilter = ['field' => 'v.id', 'value' => $volunteerIds];
+            array_push($filters, $volunteerFilter);
+        }
+        
+        if ($accomodationIds) {
+            $accomodationFilter = ['field' => 'a.id', 'value' => $accomodationIds];
+            array_push($filters, $accomodationFilter);
+        }
+
+        // Add filter on status (can't manage to send it with JavaScript)
+        $statuses = [Mission::STATUS_FINISHED, Mission::STATUS_CLOSED];
+        $statusFilter = ['field' => 'm.status', 'value' => $statuses];
+        array_push($filters, $statusFilter);
+        
+        // Retrieve Missions matching filters
+        $missions = $this->getDoctrine()
+            ->getRepository(Mission::class)
+            ->findByFiltersJoined($filters)
+        ;
+
+        // Convert Missions to JSON
+        $missionsJson = [];
+
+        foreach ($missions as $mission) {
+            $missionJson = [
+                'id' => $mission->getId(),
+                'status' => $mission->getStatus(),
+                'glaId' => $mission->getGla()->getId(),
+                'glaName' => $mission->getGla()->getName(),
+                'volunteerId' => $mission->getVolunteer() ? $mission->getVolunteer()->getId() : null,
+                'volunteerName' => $mission->getVolunteer() ? $mission->getVolunteer()->getName() : null,
+                'accomodationId' => $mission->getAccomodation()->getId(),
+                'accomodationName' => $mission->getAccomodation()->getName(),
+                'accomodationStreet' => $mission->getAccomodation()->getStreet(),
+                'accomodationPostalCode' => $mission->getAccomodation()->getPostalCode(),
+                'accomodationCity' => $mission->getAccomodation()->getCity(),
+            ];
+
+            array_push($missionsJson, $missionJson);
+        }
+
+        // Return JSON response
+        return new JsonResponse($missionsJson);
     }
 
 

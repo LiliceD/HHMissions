@@ -47,6 +47,27 @@ class MissionRepository extends ServiceEntityRepository
         ;
     }
 
+    public function findByFiltersJoined($filters)
+    {
+        $qb = $this->createQueryBuilder('m')
+            ->innerJoin('m.accomodation', 'a')
+            ->addSelect('a')
+            ->innerJoin('m.gla', 'g')
+            ->addSelect('g')
+            ->leftJoin('m.volunteer', 'v')
+            ->addSelect('v')
+        ;
+
+        foreach($filters as $key => $filter) {
+            $qb->andWhere($qb->expr()->in($filter['field'], '?'.$key))
+                ->setParameter($key, $filter['value']);
+        }
+
+        return $qb->getQuery()
+            ->getResult()
+        ;
+    }
+
     // public function findOneByIdJoinedToAccomodation($missionId)
     // {
     //     return $this->createQueryBuilder('m')

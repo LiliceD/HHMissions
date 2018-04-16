@@ -50,7 +50,8 @@
             {# address #}
             <td>
               {% if mission.accomodation.name %}
-                {{ mission.accomodation.name }} - 
+                {{ mission.accomodation.name }}
+                <br>
               {% endif %}
               {{ mission.accomodation.street }}
               <br>
@@ -119,7 +120,8 @@
             {# address #}
             <td>
               {% if mission.accomodation.name %}
-                {{ mission.accomodation.name }} - 
+                {{ mission.accomodation.name }}
+                <br>
               {% endif %}
               {{ mission.accomodation.street }}
               <br>
@@ -227,7 +229,8 @@
           {# address #}
           <td>
             {% if mission.accomodation.name %}
-              {{ mission.accomodation.name }} - 
+              {{ mission.accomodation.name }}
+              <br>
             {% endif %}
             {{ mission.accomodation.street }}
             <br>
@@ -261,6 +264,8 @@
 
 {% block javascripts %}
   {{ parent() }}
+
+  <script src="{{ asset('js/ajax.js') }}"></script>
 
   <script>
     (function() {
@@ -348,9 +353,38 @@
         myMissions(e.target, finishedMissionsTable);
       });
 
+
+      function getCheckedValues(options) {
+        let result = [];
+
+        for (var i=0, iLen=options.length; i<iLen; i++) {
+          option = options[i];
+
+          if (option.checked) {
+            result.push(option.value);
+          }
+        }
+
+        return result;
+      }
+
       document.getElementById('searchSubmitButton').addEventListener('click', (e) => {
         e.preventDefault();
-        console.log('coucou !');
+
+        // Get array of checked elements
+        let glaOptions = document.getElementsByName('mission_search[gla][]'),
+            volunteerOptions = document.getElementsByName('mission_search[volunteer][]'),
+            accomodationOptions = document.getElementsByName('mission_search[accomodation][]');
+
+        let glaIds = getCheckedValues(glaOptions),
+            volunteerIds = getCheckedValues(volunteerOptions),
+            accomodationIds = getCheckedValues(accomodationOptions);
+
+        ajaxPost("{{ path('app_mission_filter') }}", {'glaIds': glaIds, 'volunteerIds': volunteerIds, 'accomodationIds': accomodationIds}, function(JSONResponse) {
+            let data = JSON.parse(JSONResponse);
+
+            console.log(data);
+        });
       })
     })();
   </script>
