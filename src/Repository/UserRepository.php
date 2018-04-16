@@ -19,7 +19,8 @@ class UserRepository extends ServiceEntityRepository
         
         // Select active users
         $qb->select('u')
-           ->where('isActive = true');
+           ->where('isActive = true')
+        ;
         
         // Possibly add filter on isVolunteer/isGla
         switch ($category) {
@@ -31,7 +32,28 @@ class UserRepository extends ServiceEntityRepository
         }
 
         // Order alphabetically by name
-        // Return directly the query builder (for EntityType fields query_builder)
+        // Return directly the query builder (for EntityType fields query_builder in MissionType)
+        return $qb->orderBy('u.name', 'ASC');
+    }
+
+    public function qbAllByCategory($category)
+    {
+        $qb = $this->createQueryBuilder('u');
+        
+        // Select all users
+        $qb->select('u');
+        
+        // Possibly add filter on isVolunteer/isGla
+        switch ($category) {
+            case 'gla':
+                $qb->where('u.isGla = true');
+                break;
+            case 'volunteer':
+                $qb->where('u.isVolunteer = true');
+        }
+
+        // Order alphabetically by name
+        // Return directly the query builder (for EntityType fields query_builder in MissionSearchType)
         return $qb->orderBy('u.name', 'ASC');
     }
 }

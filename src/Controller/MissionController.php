@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Accomodation;
 use App\Entity\Mission;
 use App\Form\MissionType;
+use App\Form\MissionSearchType;
 use App\Service\FileUploader; // to use FileUploader service in edit
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security; // for @Security annotations
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -238,10 +239,13 @@ class MissionController extends Controller
             throw $this->createNotFoundException('Aucune fiche mission trouvée.');
         }
 
+        $searchForm = $this->createForm(MissionSearchType::class);
+
         return $this->render('mission/list.html.twig', [
             'newMissions' => $newMissions,
             'assignedMissions' => $assignedMissions,
             'finishedMissions' => $finishedMissions,
+            'form' => $searchForm->createView(),
         ]);
     }
 

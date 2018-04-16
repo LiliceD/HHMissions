@@ -194,12 +194,10 @@
     <div>
       {# Assign button opening a modal, only visible for volunteers #}
       {% if is_granted('assign', mission) %}
-        <td>
-          <button class="btn btn-outline-success" data-toggle="modal" data-target="#assignModal">
-            <i class="fas fa-check-square"></i>
-            Prendre en charge
-          </button>
-        </td>
+        <button class="btn btn-outline-success" data-toggle="modal" data-target="#assignModal">
+          <i class="fas fa-check-square"></i>
+          Prendre en charge
+        </button>
       {% endif %}
       {# edit button only visible if mission is not closed and if user is admin, mission's gla or mission's volunteer #}
       {% if mission.status != constant('STATUS_CLOSED', mission) and is_granted('simpleEdit', mission) %}

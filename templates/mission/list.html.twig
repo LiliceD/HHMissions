@@ -162,18 +162,55 @@
     <label for="myFinishedMissions" class="mb-2 ml-2">Afficher uniquement mes missions</label>
   </div>
 
+  {{ form_start(form) }}
+    <div class="d-flex align-items-center my-3">
+      <div class="mr-4">
+        Filtres :
+      </div>
+
+      <div class="dropdown mr-2">
+        <button class="btn btn-light dropdown-toggle" type="button" id="dropdownGlaButton" data-toggle="dropdown" data-flip="false" aria-haspopup="true" aria-expanded="false">
+          Provenance GLA
+        </button>
+        <div class="dropdown-menu px-3 mb-3" aria-labelledby="dropdownGlaButton">
+          {{ form_widget(form.gla) }}
+        </div>
+      </div>
+
+      <div class="dropdown mr-2">
+        <button class="btn btn-light dropdown-toggle" type="button" id="dropdownVolunteerButton" data-toggle="dropdown" data-flip="false" aria-haspopup="true" aria-expanded="false">
+          Bénévole
+        </button>
+        <div class="dropdown-menu px-3 mb-3" aria-labelledby="dropdownVolunteerButton">
+          {{ form_widget(form.volunteer) }}
+        </div>
+      </div>
+
+      <div class="dropdown mr-4">
+        <button class="btn btn-light dropdown-toggle" type="button" id="dropdownAccomodationButton" data-toggle="dropdown" data-flip="false" aria-haspopup="true" aria-expanded="false">
+          Adresse d'intervention
+        </button>
+        <div class="dropdown-menu px-3 mb-3" aria-labelledby="dropdownAccomodationButton">
+          {{ form_widget(form.accomodation) }}
+        </div>
+      </div>
+
+      <input type="submit" class="btn btn-sm btn-primary" id="searchSubmitButton" value="Rechercher" />
+    </div>
+  {{ form_end(form) }}
+
   <table id="finishedMissions" class="table table-hover">
     <thead class="thead-light">
       <tr>
         <th scope="col">N°</th>
         <th scope="col">Demande</th>
-        <th scope="col">Prise en charge</th>
+        {# <th scope="col">Prise en charge</th> #}
         <th scope="col">Fin de mission</th>
         <th scope="col">Provenance GLA</th>
         <th scope="col">Adresse</th>
         <th scope="col">Bénévole</th>
         <th scope="col">Description</th>
-        <th scope="col">Statut</th>
+        {# <th scope="col">Statut</th> #}
         <th></th>
         {# <th></th> #}
       </tr>
@@ -184,7 +221,7 @@
         <tr id="mission-{{ mission.id }}" class="{{ mission.status == constant('STATUS_CLOSED', mission) ? 'text-secondary' }}">
           <td>{{ mission.id }}</td>
           <th scope="row">{{ mission.dateCreated|date('d/m/y') }}</th>
-          <td>{{ mission.dateAssigned|date('d/m/y') }}</td>
+          {# <td>{{ mission.dateAssigned|date('d/m/y') }}</td> #}
           <td>{{ mission.dateFinished|date('d/m/y') }}</td>
           <td>{{ mission.gla }}</td>
           {# address #}
@@ -198,7 +235,7 @@
           </td>
           <td>{{ mission.volunteer }}</td>
           <td><div class="text-ellipsis" title="{{ mission.description }}">{{ mission.description }}</div></td>
-          <td>{{ mission.status }}</td>
+          {# <td>{{ mission.status }}</td> #}
           {# view button #}
           <td>
             <a href="{{ path('app_mission_view', {'id': mission.id}) }}" class="btn btn-sm btn-primary">
@@ -227,7 +264,9 @@
 
   <script>
     (function() {
-      let name, isGla, isVolunteer;
+      let name, isGla, isVolunteer,
+          assignedMissionsTable = document.getElementById('assignedMissions'),
+          finishedMissionsTable = document.getElementById('finishedMissions');
 
 
       // Filter table based on array of filters as array of arrays [td_index, value]
@@ -270,6 +309,25 @@
         }
       }
 
+      function myMissions(checkbox, table) {
+        let filterValue = name.toUpperCase();
+
+        if(checkbox.checked) {
+          let filters = [];
+          if (isGla) {
+            // Column GLA is index 2 in the array of td cells
+            filters.push([2, filterValue]);
+          }
+          if (isVolunteer) {
+            // Column GLA is index 4 in the array of td cells
+            filters.push([4, filterValue]);
+          }
+          filterTable(table, filters);
+        } else {
+          unfilterTable(table);
+        }
+      }
+
 
       // Get user's name, isGla and isVolunteer from Twig
       document.addEventListener('DOMContentLoaded', () => {
@@ -283,44 +341,17 @@
 
       // If myXXXMissions is checked, show only missions where user is gla and/or volunteer
       document.getElementById('myAssignedMissions').addEventListener('change', (e) => {
-        let assignedMissionsTable = document.getElementById('assignedMissions'),
-            filterValue = name.toUpperCase();
-
-        if(e.target.checked) {
-          let filters = [];
-          if (isGla) {
-            // Column GLA is index 2 in the array of td cells
-            filters.push([2, filterValue]);
-          }
-          if (isVolunteer) {
-            // Column GLA is index 4 in the array of td cells
-            filters.push([4, filterValue]);
-          }
-          filterTable(assignedMissionsTable, filters);
-        } else {
-          unfilterTable(assignedMissionsTable);
-        }
+        myMissions(e.target, assignedMissionsTable);
       });
 
       document.getElementById('myFinishedMissions').addEventListener('change', (e) => {
-        let finishedMissionsTable = document.getElementById('finishedMissions'),
-            filterValue = name.toUpperCase();
-
-        if(e.target.checked) {
-          let filters = [];
-          if (isGla) {
-            // Column GLA is index 3 in the array of td cells
-            filters.push([3, filterValue]);
-          }
-          if (isVolunteer) {
-            // Column GLA is index 5 in the array of td cells
-            filters.push([5, filterValue]);
-          }
-          filterTable(finishedMissionsTable, filters);
-        } else {
-          unfilterTable(finishedMissionsTable);
-        }
+        myMissions(e.target, finishedMissionsTable);
       });
+
+      document.getElementById('searchSubmitButton').addEventListener('click', (e) => {
+        e.preventDefault();
+        console.log('coucou !');
+      })
     })();
   </script>
 {% endblock %}

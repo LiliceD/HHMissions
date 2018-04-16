@@ -8,9 +8,8 @@ use App\Entity\User;
 use Doctrine\ORM\EntityRepository; // for 'address' query builder
 use Symfony\Bridge\Doctrine\Form\Type\EntityType; // for 'address' drop-down
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType; // for 'gla' drop-down;
 use Symfony\Component\Form\Extension\Core\Type\DateType; // for 'date created/assigned/finished' fields
-use Symfony\Component\Form\Extension\Core\Type\FileType; // for 'Scan PDF'
+use Symfony\Component\Form\Extension\Core\Type\FileType; // for 'attachment'
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -50,13 +49,13 @@ class MissionType extends AbstractType
             ->add('volunteer', EntityType::class, [
                 // Dropdown from User table, isVolunteer = true, isActive = true
                 'class' => User::class,
-                // 'query_builder' => function (EntityRepository $er) {
-                //     return $er->qbActiveByCategory('volunteer');
-                // },
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->qbActiveByCategory('volunteer');
+                },
                 'choice_label' => 'name',
                 'label' => 'Bénévole :',
                 'placeholder' => '-',
-                'required' => false
+                'required' => false,
             ])
             ->add('accomodation', EntityType::class, [
                 // Dropdown from Accomodation table
