@@ -4,9 +4,9 @@
 }
 
 /* adjust dropdown menu width to fit text length */
-.dropdown-menu {
+.dropdown-select {
   white-space: nowrap;
-  overflow: scroll;
+  overflow-y: scroll;
   max-height: 400px;
 }
 

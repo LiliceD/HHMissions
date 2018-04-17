@@ -57,6 +57,9 @@ class MissionSearchType extends AbstractType
                 'multiple' => true,
                 'expanded' => true
             ])
+            ->add('description', null, [
+                'label' => 'Description :',
+            ])
         ;
     }
 }

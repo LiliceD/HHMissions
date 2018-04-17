@@ -22,7 +22,7 @@
 
 
 {% block content %}
-  <h3>Missions en attente :</h3>
+  <h3>Missions en attente <span class="badge badge-pill badge-danger">{{ newMissions|length }}</span></h3>
 
   {% if newMissions %}
     <table id="newMissions" class="table table-hover">
@@ -33,7 +33,6 @@
           <th scope="col">Provenance GLA</th>
           <th scope="col">Adresse</th>
           <th scope="col">Description mission</th>
-          {# <th scope="col">Statut</th> #}
           <th></th>
           {% if is_granted('ROLE_GLA') %}
             <th></th>
@@ -58,7 +57,6 @@
               {{ mission.accomodation.postalCode }} {{ mission.accomodation.city }}
             </td>
             <td><div class="text-ellipsis" title="{{ mission.description }}">{{ mission.description }}</div></td>
-            {# <td>{{ mission.status }}</td> #}
             {# view button #}
             <td>
               <a href="{{ path('app_mission_view', {'id': mission.id}) }}" class="btn btn-sm btn-primary">
@@ -84,11 +82,11 @@
   {% endif %}
   <hr>
 
-  <h3>Missions en cours :</h3>
+  <h3>Missions en cours <span class="badge badge-pill badge-danger">{{ assignedMissions|length }}</span></h3>
 
   {% if assignedMissions %}
     {# User role passed to JS through data attributes #}
-    <div id="userData" data-name="{{ app.user.name }}" data-is-gla="{{ is_granted('ROLE_GLA') ? true : false }}" data-is-volunteer="{{ is_granted('ROLE_VOLUNTEER') ? 'true' : 'false' }}" class="d-flex align-items-center">
+    <div id="userData" data-user-id="{{ app.user.id }}" data-name="{{ app.user.name }}" data-is-gla="{{ is_granted('ROLE_GLA') ? true : false }}" data-is-volunteer="{{ is_granted('ROLE_VOLUNTEER') ? 'true' : 'false' }}" class="d-flex align-items-center">
       <input type="checkbox" id="myAssignedMissions" name="myAssignedMissions" class="mb-2" />
       <label for="myAssignedMissions" class="mb-2 ml-2">Afficher uniquement mes missions</label>
     </div>
@@ -104,8 +102,6 @@
           <th scope="col">Adresse</th>
           <th scope="col">Bénévole</th>
           <th scope="col">Description</th>
-          {# <th scope="col">Statut</th>
-          <th></th> #}
           <th></th>
         </tr>
       </thead>
@@ -116,7 +112,7 @@
             <td>{{ mission.id }}</td>
             <th scope="row">{{ mission.dateCreated|date('d/m/y') }}</th>
             <td>{{ mission.dateAssigned|date('d/m/y') }}</td>
-            <td>{{ mission.gla }}</td>
+            <td class="gla gla-{{ mission.gla.id }}">{{ mission.gla }}</td>
             {# address #}
             <td>
               {% if mission.accomodation.name %}
@@ -127,9 +123,8 @@
               <br>
               {{ mission.accomodation.postalCode }} {{ mission.accomodation.city }}
             </td>
-            <td>{{ mission.volunteer }}</td>
+            <td class="volunteer volunteer-{{ mission.volunteer.id }}">{{ mission.volunteer }}</td>
             <td><div class="text-ellipsis" title="{{ mission.description }}">{{ mission.description }}</div></td>
-            {# <td>{{ mission.status }}</td> #}
             {# view button #}
             <td>
               <a href="{{ path('app_mission_view', {'id': mission.id}) }}" class="btn btn-sm btn-primary">
@@ -137,15 +132,6 @@
                 Voir
               </a>
             </td>
-            {# edit button only visible if user is admin or mission's gla or volunteer #}
-            {# {% if is_granted('simpleEdit', mission) %}
-              <td>
-                <a href="{{ path('app_mission_edit', {'id': mission.id}) }}" class="btn btn-sm btn-outline-primary">
-                  <i class="fas fa-edit"></i>
-                  Modifier
-                </a>
-              </td>
-            {% endif %} #}
           </tr>
         {% endfor %}
       </tbody>
@@ -156,78 +142,80 @@
 
   <hr>
 
-  <h3>Missions terminées :</h3>
+  <h3>Missions terminées <span id="finishedMissionsBadge" class="badge badge-pill badge-danger"></span></h3>
 
-  {# User role passed to JS through data attributes #}
-  <div class="d-flex align-items-center">
-    <input type="checkbox" id="myFinishedMissions" name="myFinishedMissions" class="mb-2" />
+  {# Search form #}
+  {{ form_start(form) }}
+  <div class="d-flex align-items-center my-3">
+    <div class="mr-4">
+      <strong>Filtrer :</strong>
+    </div>
+
+    <div class="dropdown mr-2">
+      <button class="btn btn-light dropdown-toggle" type="button" id="dropdownGlaButton" data-toggle="dropdown" data-flip="false" aria-haspopup="true" aria-expanded="false">
+        Provenance GLA
+      </button>
+      <div class="dropdown-menu dropdown-select px-3 mb-3" aria-labelledby="dropdownGlaButton">
+        {{ form_widget(form.gla) }}
+      </div>
+    </div>
+
+    <div class="dropdown mr-2">
+      <button class="btn btn-light dropdown-toggle" type="button" id="dropdownVolunteerButton" data-toggle="dropdown" data-flip="false" aria-haspopup="true" aria-expanded="false">
+        Bénévole
+      </button>
+      <div class="dropdown-menu dropdown-select px-3 mb-3" aria-labelledby="dropdownVolunteerButton">
+        {{ form_widget(form.volunteer) }}
+      </div>
+    </div>
+
+    <div class="dropdown mr-2">
+      <button class="btn btn-light dropdown-toggle" type="button" id="dropdownAccomodationButton" data-toggle="dropdown" data-flip="false" aria-haspopup="true" aria-expanded="false">
+        Adresse d'intervention
+      </button>
+      <div class="dropdown-menu dropdown-select px-3 mb-3" aria-labelledby="dropdownAccomodationButton">
+        {{ form_widget(form.accomodation) }}
+      </div>
+    </div>
+    
+    <div>
+      {{ form_widget(form.description, {'attr': {'placeholder': 'Description'}}) }}
+    </div>
+    
+    <input type="submit" class="btn btn-sm btn-outline-primary ml-4 mr-1" id="searchSubmitBtn" value="Rechercher" />
+    <button class="btn btn-sm btn-outline-secondary" id="searchResetBtn">Réinitialiser</button>
+  </div>
+  {{ form_end(form) }}
+
+  {# Checkbox #}
+  <div class="d-flex align-items-center my-3">
+    <input type="checkbox" id="myFinishedMissions" name="myFinishedMissions" class="mb-1" />
     <label for="myFinishedMissions" class="mb-2 ml-2">Afficher uniquement mes missions</label>
   </div>
-
-  {{ form_start(form) }}
-    <div class="d-flex align-items-center my-3">
-      <div class="mr-4">
-        Filtres :
-      </div>
-
-      <div class="dropdown mr-2">
-        <button class="btn btn-light dropdown-toggle" type="button" id="dropdownGlaButton" data-toggle="dropdown" data-flip="false" aria-haspopup="true" aria-expanded="false">
-          Provenance GLA
-        </button>
-        <div class="dropdown-menu px-3 mb-3" aria-labelledby="dropdownGlaButton">
-          {{ form_widget(form.gla) }}
-        </div>
-      </div>
-
-      <div class="dropdown mr-2">
-        <button class="btn btn-light dropdown-toggle" type="button" id="dropdownVolunteerButton" data-toggle="dropdown" data-flip="false" aria-haspopup="true" aria-expanded="false">
-          Bénévole
-        </button>
-        <div class="dropdown-menu px-3 mb-3" aria-labelledby="dropdownVolunteerButton">
-          {{ form_widget(form.volunteer) }}
-        </div>
-      </div>
-
-      <div class="dropdown mr-4">
-        <button class="btn btn-light dropdown-toggle" type="button" id="dropdownAccomodationButton" data-toggle="dropdown" data-flip="false" aria-haspopup="true" aria-expanded="false">
-          Adresse d'intervention
-        </button>
-        <div class="dropdown-menu px-3 mb-3" aria-labelledby="dropdownAccomodationButton">
-          {{ form_widget(form.accomodation) }}
-        </div>
-      </div>
-
-      <input type="submit" class="btn btn-sm btn-primary" id="searchSubmitButton" value="Rechercher" />
-    </div>
-  {{ form_end(form) }}
 
   <table id="finishedMissions" class="table table-hover">
     <thead class="thead-light">
       <tr>
         <th scope="col">N°</th>
         <th scope="col">Demande</th>
-        {# <th scope="col">Prise en charge</th> #}
         <th scope="col">Fin de mission</th>
         <th scope="col">Provenance GLA</th>
         <th scope="col">Adresse</th>
         <th scope="col">Bénévole</th>
         <th scope="col">Description</th>
-        {# <th scope="col">Statut</th> #}
         <th></th>
-        {# <th></th> #}
       </tr>
     </thead>
 
     <tbody>
-      {% for mission in finishedMissions %}
+      {# {% for mission in finishedMissions %}
         <tr id="mission-{{ mission.id }}" class="{{ mission.status == constant('STATUS_CLOSED', mission) ? 'text-secondary' }}">
           <td>{{ mission.id }}</td>
           <th scope="row">{{ mission.dateCreated|date('d/m/y') }}</th>
-          {# <td>{{ mission.dateAssigned|date('d/m/y') }}</td> #}
           <td>{{ mission.dateFinished|date('d/m/y') }}</td>
           <td>{{ mission.gla }}</td>
           {# address #}
-          <td>
+          {# <td>
             {% if mission.accomodation.name %}
               {{ mission.accomodation.name }}
               <br>
@@ -238,25 +226,15 @@
           </td>
           <td>{{ mission.volunteer }}</td>
           <td><div class="text-ellipsis" title="{{ mission.description }}">{{ mission.description }}</div></td>
-          {# <td>{{ mission.status }}</td> #}
           {# view button #}
-          <td>
+          {# <td>
             <a href="{{ path('app_mission_view', {'id': mission.id}) }}" class="btn btn-sm btn-primary">
               <i class="fas fa-eye"></i>
               Voir
             </a>
           </td>
-          {# edit button only visible if mission is not closed and user is admin or mission's gla or volunteer #}
-          {# {% if mission.status != constant('STATUS_CLOSED', mission) and is_granted('simpleEdit', mission) %}
-            <td>
-              <a href="{{ path('app_mission_edit', {'id': mission.id}) }}" class="btn btn-sm btn-outline-primary">
-                <i class="fas fa-edit"></i>
-                Modifier
-              </a>
-            </td>
-          {% endif %} #}
         </tr>
-      {% endfor %}
+      {% endfor %} #}
     </tbody>
   </table>
 {% endblock %}
@@ -266,12 +244,11 @@
   {{ parent() }}
 
   <script src="{{ asset('js/ajax.js') }}"></script>
-
+ 
   <script>
     (function() {
-      let name, isGla, isVolunteer,
-          assignedMissionsTable = document.getElementById('assignedMissions'),
-          finishedMissionsTable = document.getElementById('finishedMissions');
+      let name, isGla, isVolunteer;
+          
 
 
       // Filter table based on array of filters as array of arrays [td_index, value]
@@ -283,7 +260,7 @@
           filter[1] = filter[1].toUpperCase();
         });
 
-        // Loop through all table rows, and hide those who don't match the search query
+        // Loop through all table rows, and hide those that don't match the search query
         for (let i = 0, c = tr.length; i < c; i++) {
           td = tr[i].getElementsByTagName("td");
 
@@ -315,21 +292,45 @@
       }
 
       function myMissions(checkbox, table) {
-        let filterValue = name.toUpperCase();
+        // let filterValue = name.toUpperCase();
 
-        if(checkbox.checked) {
-          let filters = [];
-          if (isGla) {
-            // Column GLA is index 2 in the array of td cells
-            filters.push([2, filterValue]);
+        // if(checkbox.checked) {
+        //   let filters = [];
+        //   if (isGla) {
+        //     // Column GLA is index 2 in the array of td cells
+        //     filters.push([2, filterValue]);
+        //   }
+        //   if (isVolunteer) {
+        //     // Column GLA is index 4 in the array of td cells
+        //     filters.push([4, filterValue]);
+        //   }
+        //   filterTable(table, filters);
+        // } else {
+        //   unfilterTable(table);
+        // }
+
+
+        // Retrieve table's rows
+        let trs = table.getElementsByTagName("tr");
+
+        // Loop through table rows (starts at i=1 because i=0 is thead)
+        for (let i = 1, c = trs.length; i < c; i++) {
+          // If checkbox is checked, show only user's missions
+          if (checkbox.checked) {
+            // Get cells Gla and Volunteer
+            tdGla = trs[i].querySelector('.gla');
+            tdVol = trs[i].querySelector('.volunteer');
+
+            // If Gla or Volunteer Id is user id (info in element's class) show row, hide it otherwise
+            if (tdGla.classList.contains('gla-' + userId) || tdVol.classList.contains('volunteer-' + userId)) {
+              trs[i].style.display = '';
+            } else {
+              trs[i].style.display = 'none';
+            }
+          } else {
+            // If checkbox is unchecked, show all rows
+            trs[i].style.display = '';
           }
-          if (isVolunteer) {
-            // Column GLA is index 4 in the array of td cells
-            filters.push([4, filterValue]);
-          }
-          filterTable(table, filters);
-        } else {
-          unfilterTable(table);
         }
       }
 
@@ -341,51 +342,193 @@
           name = userDataElt.getAttribute('data-name');
           isGla = userDataElt.getAttribute('data-is-gla');
           isVolunteer = userDataElt.getAttribute('data-is-volunteer');
+          userId = userDataElt.getAttribute('data-user-id');
         }
       });
+
+      
+
+      
+
+
+      let userId,
+          assignedMissionsTable = document.getElementById('assignedMissions'),
+          finishedMissionsTable = document.getElementById('finishedMissions'),
+          glaOptions = document.getElementsByName('mission_search[gla][]'),
+          volunteerOptions = document.getElementsByName('mission_search[volunteer][]'),
+          accomodationOptions = document.getElementsByName('mission_search[accomodation][]'),
+          descriptionInput = document.getElementById('mission_search_description'),
+          glaIds, volunteerIds, accomodationIds, descriptionSearch;
+
+
+      // Fill finished missions table on load
+      document.addEventListener('DOMContentLoaded', fillFinishedMissionsTable);
+
+      // Filter finished missions table on search form submit
+      document.getElementById('searchSubmitBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        fillFinishedMissionsTable();
+      });
+
+      // Reset finished missions table on reset button click
+      document.getElementById('searchResetBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+
+        // Uncheck GLA options
+        for (let i=0, iLen=glaOptions.length; i<iLen; i++) {
+          glaOptions[i].checked = false;
+        }
+
+        // Uncheck Volunteer options
+        for (let i=0, iLen=volunteerOptions.length; i<iLen; i++) {
+          volunteerOptions[i].checked = false;
+        }
+
+        // Uncheck accomodation options
+        for (let i=0, iLen=accomodationOptions.length; i<iLen; i++) {
+          accomodationOptions[i].checked = false;
+        }
+
+        // Reset description input
+        descriptionInput.value = '';
+
+        // Reset table
+        fillFinishedMissionsTable();
+      });
+
 
       // If myXXXMissions is checked, show only missions where user is gla and/or volunteer
       document.getElementById('myAssignedMissions').addEventListener('change', (e) => {
         myMissions(e.target, assignedMissionsTable);
       });
-
+      // Show only user's finished missions on checkbox check
       document.getElementById('myFinishedMissions').addEventListener('change', (e) => {
         myMissions(e.target, finishedMissionsTable);
       });
 
 
-      function getCheckedValues(options) {
-        let result = [];
+      // Retrieve filters from search form, get matching missions from backend, fill in table, update number of finished missions and uncheck 'myMissions' checkbox
+      function fillFinishedMissionsTable() {
+        // Get array of checked elements
+        glaIds = getCheckedValues(glaOptions);
+        volunteerIds = getCheckedValues(volunteerOptions);
+        accomodationIds = getCheckedValues(accomodationOptions);
+        descriptionSearch = descriptionInput.value.trim();
 
-        for (var i=0, iLen=options.length; i<iLen; i++) {
+        // Send filters to controller
+        ajaxPost("{{ path('app_mission_filter') }}", {'glaIds': glaIds, 'volunteerIds': volunteerIds, 'accomodationIds': accomodationIds, 'descriptionSearch': descriptionSearch}, function(JSONResponse) {
+            // Retrieve missions matching filters
+            let missions = JSON.parse(JSONResponse);
+            
+            // Empty table body
+            let tbody = document.querySelector('#finishedMissions tbody');
+                tbody.innerHTML = '';
+
+            // Fill table body with missions and count number of missions finished but not closed
+            let counter = 0;
+
+            missions.forEach( mission => {
+              tbody.appendChild(createMissionRow(mission));
+
+              if (mission.status === "{{ constant('App\\Entity\\Mission::STATUS_FINISHED') }}") {
+                counter++;
+              }
+            });
+
+            // Update badge with number of missions finished but not closed
+            document.getElementById('finishedMissionsBadge').innerHTML = counter;
+
+            // Uncheck 'myMissions' checkbox
+            document.getElementById('myFinishedMissions').checked = false;
+        });
+      }
+
+      // From array of checkbox input returns array of checked input only
+      function getCheckedValues(options) {
+        let checkedOptions = [];
+
+        for (let i=0, iLen=options.length; i<iLen; i++) {
           option = options[i];
 
           if (option.checked) {
-            result.push(option.value);
+            checkedOptions.push(option.value);
           }
         }
 
-        return result;
+        return checkedOptions;
       }
 
-      document.getElementById('searchSubmitButton').addEventListener('click', (e) => {
-        e.preventDefault();
+      // Return tr element with mission details, ready to append to table body
+      function createMissionRow(mission) {
+        // Row
+        let tr = document.createElement('tr');
+            tr.id = 'mission-' + mission.id;
 
-        // Get array of checked elements
-        let glaOptions = document.getElementsByName('mission_search[gla][]'),
-            volunteerOptions = document.getElementsByName('mission_search[volunteer][]'),
-            accomodationOptions = document.getElementsByName('mission_search[accomodation][]');
+        // Closed missions are greyed
+        if (mission.status === "{{ constant('App\\Entity\\Mission::STATUS_CLOSED') }}") {
+          tr.className = 'text-secondary';
+        }
 
-        let glaIds = getCheckedValues(glaOptions),
-            volunteerIds = getCheckedValues(volunteerOptions),
-            accomodationIds = getCheckedValues(accomodationOptions);
+        // Cells
+        let tdId = document.createElement('td');
+            tdId.innerHTML = mission.id;
 
-        ajaxPost("{{ path('app_mission_filter') }}", {'glaIds': glaIds, 'volunteerIds': volunteerIds, 'accomodationIds': accomodationIds}, function(JSONResponse) {
-            let data = JSON.parse(JSONResponse);
+        let thDC = document.createElement('th');
+            thDC.scope = 'row';
+            thDC.innerHTML = mission.dateCreated;
 
-            console.log(data);
-        });
-      })
+        let tdDF = document.createElement('td');
+            tdDF.innerHTML = mission.dateFinished;
+
+        let tdGla = document.createElement('td');
+            tdGla.className = 'gla gla-' + mission.glaId;
+            tdGla.innerHTML = mission.glaName;
+
+        // Address
+        let tdAcc = document.createElement('td');
+
+        if (mission.accomodationName) {
+          tdAcc.innerHTML = mission.accomodationName + '<br>'; 
+        }
+          tdAcc.innerHTML += mission.accomodationStreet + '<br>';
+          tdAcc.innerHTML += mission.accomodationPostalCode + ' ' + mission.accomodationCity;
+
+        let tdVol = document.createElement('td');
+            tdVol.className = 'volunteer volunteer-' + mission.volunteerId;
+            tdVol.innerHTML = mission.volunteerName;
+
+        // Description
+        let tdDesc = document.createElement('td'),
+            divDesc = document.createElement('div');
+
+        divDesc.className = 'text-ellipsis';
+        divDesc.title = mission.description;
+        divDesc.innerHTML = mission.description;
+
+        tdDesc.appendChild(divDesc);
+
+        // Button to view mission
+        let tdView = document.createElement('td'),
+            aView = document.createElement('a');
+
+        aView.href = mission.url;
+        aView.className = 'btn btn-sm btn-primary';
+        aView.innerHTML = '<i class="fas fa-eye"></i> Voir'
+
+        tdView.appendChild(aView);
+
+        // Append cells to row
+        tr.appendChild(tdId);
+        tr.appendChild(thDC);
+        tr.appendChild(tdDF);
+        tr.appendChild(tdGla);
+        tr.appendChild(tdAcc);
+        tr.appendChild(tdVol);
+        tr.appendChild(tdDesc);
+        tr.appendChild(tdView);
+
+        return tr;
+      }
     })();
   </script>
 {% endblock %}

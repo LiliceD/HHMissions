@@ -252,6 +252,12 @@ class Mission
     {
         return $this->dateCreated;
     }
+
+    public function getFormattedDateCreated()
+    {
+        return $this->dateCreated->format('d/m/y');
+    }
+
     public function setDateCreated($dateCreated)
     {
         $this->dateCreated = $dateCreated;
@@ -261,6 +267,12 @@ class Mission
     {
         return $this->dateAssigned;
     }
+
+    public function getFormattedDateAssigned()
+    {
+        return $this->dateAssigned->format('d/m/y');
+    }
+
     public function setDateAssigned($dateAssigned)
     {
         $this->dateAssigned = $dateAssigned;
@@ -270,6 +282,12 @@ class Mission
     {
         return $this->dateFinished;
     }
+
+    public function getFormattedDateFinished()
+    {
+        return $this->dateFinished->format('d/m/y');
+    }
+
     public function setDateFinished($dateFinished)
     {
         $this->dateFinished = $dateFinished;

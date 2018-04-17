@@ -13,7 +13,7 @@ class MissionRepository extends ServiceEntityRepository
         parent::__construct($registry, Mission::class);
     }
 
-    public function findByStatus($value, $order)
+    public function findByStatusJoined($value, $order)
     {
         $qb = $this->createQueryBuilder('m')
             ->innerJoin('m.accomodation', 'a')
@@ -59,11 +59,17 @@ class MissionRepository extends ServiceEntityRepository
         ;
 
         foreach($filters as $key => $filter) {
-            $qb->andWhere($qb->expr()->in($filter['field'], '?'.$key))
-                ->setParameter($key, $filter['value']);
+            if ($filter['field'] === 'm.description') {
+                $qb->andWhere($qb->expr()->like($filter['field'], '?'.$key))
+                    ->setParameter($key, $filter['value']);
+            } else {
+                $qb->andWhere($qb->expr()->in($filter['field'], '?'.$key))
+                    ->setParameter($key, $filter['value']);
+            }
         }
 
-        return $qb->getQuery()
+        return $qb->orderBy('m.status', 'DESC')
+            ->getQuery()
             ->getResult()
         ;
     }

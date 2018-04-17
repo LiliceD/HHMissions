@@ -215,13 +215,13 @@ class MissionController extends Controller
         // // Missions finished (incl. closed)
         // $finishedMissions = $repository->findByStatus([Mission::STATUS_FINISHED, Mission::STATUS_CLOSED], 'DESC');
 
-        // Retrieve all missions
-        $missions = $repository->findAllJoined();
+        // Retrieve missions not finished
+        $missions = $repository->findByStatusJoined([Mission::STATUS_DEFAULT, Mission::STATUS_ASSIGNED], 'DESC');
         
         // Split missions based on their status
         $newMissions = [];
         $assignedMissions = [];
-        $finishedMissions = [];
+        // $finishedMissions = [];
 
         foreach($missions as $mission) {
             switch ($mission->getStatus()) {
@@ -230,22 +230,22 @@ class MissionController extends Controller
                     break;
                 case Mission::STATUS_ASSIGNED:
                     array_push($assignedMissions, $mission);
-                    break;
-                default:
-                    array_push($finishedMissions, $mission);
+                    // break;
+                // default:
+                //     array_push($finishedMissions, $mission);
             }
         }
 
-        if (!$newMissions && !$assignedMissions && !$finishedMissions) {
-            throw $this->createNotFoundException('Aucune fiche mission trouvée.');
-        }
+        // if (!$newMissions && !$assignedMissions && !$finishedMissions) {
+        //     throw $this->createNotFoundException('Aucune fiche mission trouvée.');
+        // }
 
         $searchForm = $this->createForm(MissionSearchType::class);
 
         return $this->render('mission/list.html.twig', [
             'newMissions' => $newMissions,
             'assignedMissions' => $assignedMissions,
-            'finishedMissions' => $finishedMissions,
+            // 'finishedMissions' => $finishedMissions,
             'form' => $searchForm->createView(),
         ]);
     }
@@ -488,6 +488,7 @@ class MissionController extends Controller
         $glaIds = $request->request->get('glaIds');
         $volunteerIds = $request->request->get('volunteerIds');
         $accomodationIds = $request->request->get('accomodationIds');
+        $descriptionSearch = $request->request->get('descriptionSearch');
 
         // Create array of filters
         $filters = [];
@@ -507,6 +508,12 @@ class MissionController extends Controller
             array_push($filters, $accomodationFilter);
         }
 
+        if ($descriptionSearch) {
+            // Query will search for missions'whose description *contains* $descriptionSearch
+            $descriptionFilter = ['field' => 'm.description', 'value' => '%'.$descriptionSearch.'%'];
+            array_push($filters, $descriptionFilter);
+        }
+
         // Add filter on status (can't manage to send it with JavaScript)
         $statuses = [Mission::STATUS_FINISHED, Mission::STATUS_CLOSED];
         $statusFilter = ['field' => 'm.status', 'value' => $statuses];
@@ -523,12 +530,21 @@ class MissionController extends Controller
 
         foreach ($missions as $mission) {
             $missionJson = [
+                // Path to mission view
+                'url' => $this->generateUrl('app_mission_view', ['id' => $mission->getId()]),
+                // Mission properties
                 'id' => $mission->getId(),
                 'status' => $mission->getStatus(),
+                'dateCreated' => $mission->getFormattedDateCreated(),
+                'dateFinished' => $mission->getDateFinished() ? $mission->getFormattedDateFinished() : null,
+                'description' => $mission->getDescription(),
+                // Gla
                 'glaId' => $mission->getGla()->getId(),
                 'glaName' => $mission->getGla()->getName(),
+                // Volunteer
                 'volunteerId' => $mission->getVolunteer() ? $mission->getVolunteer()->getId() : null,
                 'volunteerName' => $mission->getVolunteer() ? $mission->getVolunteer()->getName() : null,
+                // Accomodation
                 'accomodationId' => $mission->getAccomodation()->getId(),
                 'accomodationName' => $mission->getAccomodation()->getName(),
                 'accomodationStreet' => $mission->getAccomodation()->getStreet(),
@@ -560,7 +576,7 @@ class MissionController extends Controller
         $repository = $this->getDoctrine()->getRepository(Mission::class);
 
         // Get all missions with status not "Fermée" ordered by ASC id
-        $missions = $repository->findByStatus($nonClosedStatuses, 'ASC');
+        $missions = $repository->findByStatusJoined($nonClosedStatuses, 'ASC');
 
         return $missions;
     }
