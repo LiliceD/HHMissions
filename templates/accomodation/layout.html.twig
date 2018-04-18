@@ -55,16 +55,19 @@
       }
 
 
-      // Remove accent and capitalize address and city
-      document.getElementById("accomodation_street").addEventListener("input", function (e) {
+      // Remove accent and capitalize name, address and city
+      document.getElementById("accomodation_name").addEventListener("input", (e) => {
         e.target.value = standardizeInput(e.target.value);
       });
-      document.getElementById("accomodation_city").addEventListener("input", function (e) {
+      document.getElementById("accomodation_street").addEventListener("input", (e) => {
+        e.target.value = standardizeInput(e.target.value);
+      });
+      document.getElementById("accomodation_city").addEventListener("input", (e) => {
         e.target.value = standardizeInput(e.target.value);
       });
 
       // Replace with city name dynamic population
-      document.getElementById("accomodation_postalCode").addEventListener("change", function (e) {
+      document.getElementById("accomodation_postalCode").addEventListener("change", (e) => {
         const input = e.target.value; 
         if (input.match(/^6900\d$/)) {
           document.getElementById("accomodation_city").value = "LYON"; 

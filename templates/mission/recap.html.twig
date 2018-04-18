@@ -26,16 +26,16 @@
 
       <thead class="thead-light">
         <tr>
-          <th scope="col" class="table-recap-id">#</th>
-          <th scope="col" class="table-recap-date">Date demande</th>
-          <th scope="col" class="table-recap-date">Provenance GLA</th>
-          <th scope="col" class="table-recap-date">Date prise en charge</th>
-          <th scope="col" class="table-recap-date">Date fin mission</th>
-          <th scope="col" class="table-recap-address">Adresse</th>
-          <th scope="col" class="table-recap-description">Description mission</th>
-          <th scope="col" class="table-recap-date">Bénévole</th>
-          <th scope="col" class="table-recap-description">Retour mission et conclusions</th>
-          <th scope="col" class="table-recap-statut">Statut</th>
+          <th scope="col" class="table-recap-id"># <i class="fas fa-sort"></i></th>
+          <th scope="col" class="table-recap-date">Date demande <i class="fas fa-sort"></i></th>
+          <th scope="col" class="table-recap-date">Provenance GLA <i class="fas fa-sort"></i></th>
+          <th scope="col" class="table-recap-date">Date prise en charge <i class="fas fa-sort"></i></th>
+          <th scope="col" class="table-recap-date">Date fin mission <i class="fas fa-sort"></i></th>
+          <th scope="col" class="table-recap-address">Adresse <i class="fas fa-sort"></i></th>
+          <th scope="col" class="table-recap-description">Description mission <i class="fas fa-sort"></i></th>
+          <th scope="col" class="table-recap-date">Bénévole <i class="fas fa-sort"></i></th>
+          <th scope="col" class="table-recap-description">Retour mission et conclusions <i class="fas fa-sort"></i></th>
+          <th scope="col" class="table-recap-statut">Statut <i class="fas fa-sort"></i></th>
         </tr>
       </thead>
 
@@ -47,12 +47,10 @@
                 {{ mission.id }}
               </a>
             </td>
-            <th scope="row">
-              {{ mission.dateCreated|date('d/m/y') }}
-            </th>
+            <td><strong>{{ mission.dateCreated|date('d/m/y') }}</strong></td>
             <td>{{ mission.gla }}</td>
-            <td>{{ mission.dateAssigned ? mission.dateAssigned|date('d/m/Y') : '-' }}</td>
-            <td>{{ mission.dateFinished ? mission.dateFinished|date('d/m/Y') : '-' }}</td>
+            <td>{{ mission.dateAssigned ? mission.dateAssigned|date('d/m/y') : '-' }}</td>
+            <td>{{ mission.dateFinished ? mission.dateFinished|date('d/m/y') : '-' }}</td>
             <td>
               {% if mission.accomodation.name %}
                 {{ mission.accomodation.name }} - 
@@ -71,4 +69,24 @@
 
     </table>
   </div>
+{% endblock %}
+
+
+{% block javascripts %}
+  {{ parent() }}
+
+  <script src="{{ asset('js/sortTable.js') }}"></script>
+ 
+  <script>
+    (function() {
+      // Add table sorting on clicking on one of its header
+      tableHeadRows = document.querySelectorAll('th');
+      
+      for(let i = 0, c = tableHeadRows.length; i < c; i++) {
+        tableHeadRows[i].addEventListener('click', () => {
+          sortTable(document.querySelector('table'), i);
+        });
+      }
+    })();
+  </script>
 {% endblock %}

@@ -26,13 +26,13 @@
 
   {% if newMissions %}
     <table id="newMissions" class="table table-hover">
-      <thead>
+      <thead class="thead-light">
         <tr>
-          <th scope="col">N°</th>
-          <th scope="col">Demande</th>
-          <th scope="col">Provenance GLA</th>
-          <th scope="col">Adresse</th>
-          <th scope="col">Description mission</th>
+          <th scope="col">N° <i class="fas fa-sort"></i></th>
+          <th scope="col">Demande <i class="fas fa-sort"></i></th>
+          <th scope="col">Provenance GLA <i class="fas fa-sort"></i></th>
+          <th scope="col">Adresse <i class="fas fa-sort"></i></th>
+          <th scope="col">Description mission <i class="fas fa-sort"></i></th>
           <th></th>
           {% if is_granted('ROLE_GLA') %}
             <th></th>
@@ -44,7 +44,7 @@
         {% for mission in newMissions %}
           <tr id="mission-{{ mission.id }}">
             <td>{{ mission.id }}</td>
-            <th scope="row">{{ mission.dateCreated|date('d/m/y') }}</th>
+            <td data-is-date="true">{{ mission.dateCreated|date('d/m/y') }}</td>
             <td>{{ mission.gla }}</td>
             {# address #}
             <td>
@@ -95,13 +95,13 @@
     <table id="assignedMissions" class="table table-hover">
       <thead class="thead-light">
         <tr>
-          <th scope="col">N°</th>
-          <th scope="col">Demande</th>
-          <th scope="col">Prise en charge</th>
-          <th scope="col">Provenance GLA</th>
-          <th scope="col">Adresse</th>
-          <th scope="col">Bénévole</th>
-          <th scope="col">Description</th>
+          <th scope="col">N° <i class="fas fa-sort"></i></th>
+          <th scope="col">Demande <i class="fas fa-sort"></i></th>
+          <th scope="col">Prise en charge <i class="fas fa-sort"></i></th>
+          <th scope="col">Provenance GLA <i class="fas fa-sort"></i></th>
+          <th scope="col">Adresse <i class="fas fa-sort"></i></th>
+          <th scope="col">Bénévole <i class="fas fa-sort"></i></th>
+          <th scope="col">Description <i class="fas fa-sort"></i></th>
           <th></th>
         </tr>
       </thead>
@@ -110,8 +110,8 @@
         {% for mission in assignedMissions %}
           <tr id="mission-{{ mission.id }}">
             <td>{{ mission.id }}</td>
-            <th scope="row">{{ mission.dateCreated|date('d/m/y') }}</th>
-            <td>{{ mission.dateAssigned|date('d/m/y') }}</td>
+            <td data-is-date="true">{{ mission.dateCreated|date('d/m/y') }}</td>
+            <td data-is-date="true">{{ mission.dateAssigned|date('d/m/y') }}</td>
             <td class="gla gla-{{ mission.gla.id }}">{{ mission.gla }}</td>
             {# address #}
             <td>
@@ -147,10 +147,7 @@
   {# Search form #}
   {{ form_start(form) }}
   <div class="row justify-content-center">
-    <div class="col-11 card">
-      <h6 class="card-title ml-2 my-2">
-        Filtres :
-      </h6>
+    <div class="col-11 card bg-light py-3">
       <div class="d-flex justify-content-between my-1">
         {# Filter GLA #}
         <div class="dropdown mr-2">
@@ -217,7 +214,7 @@
         </div>
       </div>
 
-      <div class="d-flex justify-content-end my-2">
+      <div class="d-flex justify-content-end mt-2">
         {# Form buttons #}
         <input type="submit" class="btn btn-sm btn-outline-primary mr-2" id="searchSubmitBtn" value="Rechercher" />
         <button class="btn btn-sm btn-outline-secondary" id="searchResetBtn">Réinitialiser</button>
@@ -235,45 +232,20 @@
   <table id="finishedMissions" class="table table-hover">
     <thead class="thead-light">
       <tr>
-        <th scope="col">N°</th>
-        <th scope="col">Demande</th>
-        <th scope="col">Fin de mission</th>
-        <th scope="col">Provenance GLA</th>
-        <th scope="col">Adresse</th>
-        <th scope="col">Bénévole</th>
-        <th scope="col">Description</th>
+        <th scope="col">N° <i class="fas fa-sort"></i></th>
+        <th scope="col">Demande <i class="fas fa-sort"></i></th>
+        <th scope="col">Fin de mission <i class="fas fa-sort"></i></th>
+        <th scope="col">Provenance GLA <i class="fas fa-sort"></i></th>
+        <th scope="col">Adresse <i class="fas fa-sort"></i></th>
+        <th scope="col">Bénévole <i class="fas fa-sort"></i></th>
+        <th scope="col">Description <i class="fas fa-sort"></i></th>
         <th></th>
       </tr>
     </thead>
 
     <tbody>
-      {# {% for mission in finishedMissions %}
-        <tr id="mission-{{ mission.id }}" class="{{ mission.status == constant('STATUS_CLOSED', mission) ? 'text-secondary' }}">
-          <td>{{ mission.id }}</td>
-          <th scope="row">{{ mission.dateCreated|date('d/m/y') }}</th>
-          <td>{{ mission.dateFinished|date('d/m/y') }}</td>
-          <td>{{ mission.gla }}</td>
-          {# address #}
-          {# <td>
-            {% if mission.accomodation.name %}
-              {{ mission.accomodation.name }}
-              <br>
-            {% endif %}
-            {{ mission.accomodation.street }}
-            <br>
-            {{ mission.accomodation.postalCode }} {{ mission.accomodation.city }}
-          </td>
-          <td>{{ mission.volunteer }}</td>
-          <td><div class="text-ellipsis" title="{{ mission.description }}">{{ mission.description }}</div></td>
-          {# view button #}
-          {# <td>
-            <a href="{{ path('app_mission_view', {'id': mission.id}) }}" class="btn btn-sm btn-primary">
-              <i class="fas fa-eye"></i>
-              Voir
-            </a>
-          </td>
-        </tr>
-      {% endfor %} #}
+      {# Filled by JavaScript #}
+      {# id, dateCreated, dateFinished, gla, accomodation, volunteer, button to view #}
     </tbody>
   </table>
 {% endblock %}
@@ -283,114 +255,12 @@
   {{ parent() }}
 
   <script src="{{ asset('js/ajax.js') }}"></script>
+  <script src="{{ asset('js/sortTable.js') }}"></script>
  
   <script>
     (function() {
-      let name, isGla, isVolunteer;
-          
-
-
-      // Filter table based on array of filters as array of arrays [td_index, value]
-      function filterTable(table, filters) {
-        let tr = table.getElementsByTagName("tr");
-
-        // Case unsensitive filter
-        filters.forEach(filter => {
-          filter[1] = filter[1].toUpperCase();
-        });
-
-        // Loop through all table rows, and hide those that don't match the search query
-        for (let i = 0, c = tr.length; i < c; i++) {
-          td = tr[i].getElementsByTagName("td");
-
-          // For each row, loop through filters elements until there is a match. If no match, hide row
-          for (let j = 0, filtersLength = filters.length; j < filters.length; j++) {
-            let filterIndex = filters[j][0],
-                filterValue = filters[j][1],
-                cell = td[filterIndex];
-
-            if (cell) {
-              if (cell.innerHTML.toUpperCase() === filterValue) {
-                tr[i].style.display = "";
-                break;
-              } else if (j === filtersLength - 1) {
-                tr[i].style.display = "none";
-              }
-            }
-          }
-        }
-      }
-
-      // Show all table rows
-      function unfilterTable(table) {
-        let tr = table.getElementsByTagName("tr");
-
-        for (let i = 0, c = tr.length; i < c; i++) {
-          tr[i].style.display = "";
-        }
-      }
-
-      function myMissions(checkbox, table) {
-        // let filterValue = name.toUpperCase();
-
-        // if(checkbox.checked) {
-        //   let filters = [];
-        //   if (isGla) {
-        //     // Column GLA is index 2 in the array of td cells
-        //     filters.push([2, filterValue]);
-        //   }
-        //   if (isVolunteer) {
-        //     // Column GLA is index 4 in the array of td cells
-        //     filters.push([4, filterValue]);
-        //   }
-        //   filterTable(table, filters);
-        // } else {
-        //   unfilterTable(table);
-        // }
-
-
-        // Retrieve table's rows
-        let trs = table.getElementsByTagName("tr");
-
-        // Loop through table rows (starts at i=1 because i=0 is thead)
-        for (let i = 1, c = trs.length; i < c; i++) {
-          // If checkbox is checked, show only user's missions
-          if (checkbox.checked) {
-            // Get cells Gla and Volunteer
-            tdGla = trs[i].querySelector('.gla');
-            tdVol = trs[i].querySelector('.volunteer');
-
-            // If Gla or Volunteer Id is user id (info in element's class) show row, hide it otherwise
-            if (tdGla.classList.contains('gla-' + userId) || tdVol.classList.contains('volunteer-' + userId)) {
-              trs[i].style.display = '';
-            } else {
-              trs[i].style.display = 'none';
-            }
-          } else {
-            // If checkbox is unchecked, show all rows
-            trs[i].style.display = '';
-          }
-        }
-      }
-
-
-      // Get user's name, isGla and isVolunteer from Twig
-      document.addEventListener('DOMContentLoaded', () => {
-        let userDataElt = document.getElementById('userData');
-        if (userDataElt) {
-          name = userDataElt.getAttribute('data-name');
-          isGla = userDataElt.getAttribute('data-is-gla');
-          isVolunteer = userDataElt.getAttribute('data-is-volunteer');
-          userId = userDataElt.getAttribute('data-user-id');
-        }
-      });
-
-      
-
-      
-
-
       let userId,
+          newMissionsTable = document.getElementById('newMissions'),
           assignedMissionsTable = document.getElementById('assignedMissions'),
           finishedMissionsTable = document.getElementById('finishedMissions'),
           glaOptions = document.getElementsByName('mission_search[gla][]'),
@@ -405,8 +275,18 @@
           dateCreatedMin, dateCreatedMax, dateFinishedMin, dateFinishedMax;
 
 
-      // Fill finished missions table on load
-      document.addEventListener('DOMContentLoaded', fillFinishedMissionsTable);
+      document.addEventListener('DOMContentLoaded', () => {
+        // Get user's id from Twig
+        let userDataElt = document.getElementById('userData');
+        
+        if (userDataElt) {
+          userId = userDataElt.getAttribute('data-user-id');
+        }
+
+        // Fill finished missions table on load
+        fillFinishedMissionsTable();
+      });
+      
 
       // Show number of Gla options selected
       document.getElementById('mission_search_gla').addEventListener('change', () => {
@@ -422,6 +302,7 @@
       document.getElementById('mission_search_accomodation').addEventListener('change', () => {
         document.getElementById('searchAccomodationNb').innerHTML = getCheckedValues(accomodationOptions).length ? getCheckedValues(accomodationOptions).length : '';
       });
+
 
       // Filter finished missions table on search form submit
       document.getElementById('searchSubmitBtn').addEventListener('click', (e) => {
@@ -451,7 +332,7 @@
         // Reset description input
         descriptionInput.value = '';
 
-        // Reset date fields
+        // Reset date inputs
         dateCreatedMinInput.value = '';
         dateCreatedMaxInput.value = '';
         dateFinishedMinInput.value = '';
@@ -471,6 +352,31 @@
         myMissions(e.target, finishedMissionsTable);
       });
 
+
+      // Add table sorting on clicking on one of its header
+      newMissionsHeadRows = document.querySelectorAll('#newMissions > thead > tr > th');
+      
+      for(let i = 0, c = newMissionsHeadRows.length - 1; i < c; i++) {
+        newMissionsHeadRows[i].addEventListener('click', () => {
+          sortTable(newMissions, i);
+        });
+      }
+
+      assignedMissionsHeadRows = document.querySelectorAll('#assignedMissions > thead > tr > th');
+      
+      for(let i = 0, c = assignedMissionsHeadRows.length - 1; i < c; i++) {
+        assignedMissionsHeadRows[i].addEventListener('click', () => {
+          sortTable(assignedMissions, i);
+        });
+      }
+
+      finishedMissionsHeadRows = document.querySelectorAll('#finishedMissions > thead > tr > th');
+      
+      for(let i = 0, c = finishedMissionsHeadRows.length - 1; i < c; i++) {
+        finishedMissionsHeadRows[i].addEventListener('click', () => {
+          sortTable(finishedMissions, i);
+        });
+      }
 
       // Retrieve filters from search form, get matching missions from backend, fill in table, update number of finished missions and uncheck 'myMissions' checkbox
       function fillFinishedMissionsTable() {
@@ -542,12 +448,14 @@
         let tdId = document.createElement('td');
             tdId.innerHTML = mission.id;
 
-        let thDC = document.createElement('th');
-            thDC.scope = 'row';
-            thDC.innerHTML = mission.dateCreated;
+        let tdDC = document.createElement('td');
+            tdDC.scope = 'row';
+            tdDC.innerHTML = mission.dateCreated;
+            tdDC.setAttribute('data-is-date', 'true');
 
         let tdDF = document.createElement('td');
             tdDF.innerHTML = mission.dateFinished;
+            tdDF.setAttribute('data-is-date', 'true');
 
         let tdGla = document.createElement('td');
             tdGla.className = 'gla gla-' + mission.glaId;
@@ -588,7 +496,7 @@
 
         // Append cells to row
         tr.appendChild(tdId);
-        tr.appendChild(thDC);
+        tr.appendChild(tdDC);
         tr.appendChild(tdDF);
         tr.appendChild(tdGla);
         tr.appendChild(tdAcc);
@@ -597,6 +505,32 @@
         tr.appendChild(tdView);
 
         return tr;
+      }
+
+
+      function myMissions(checkbox, table) {
+        // Retrieve table's rows
+        let rows = table.getElementsByTagName('tr');
+
+        // Loop through table rows (starts at i=1 because i=0 is thead)
+        for (let i = 1, c = rows.length; i < c; i++) {
+          // If checkbox is checked, show only user's missions
+          if (checkbox.checked) {
+            // Get cells Gla and Volunteer
+            tdGla = rows[i].querySelector('.gla');
+            tdVol = rows[i].querySelector('.volunteer');
+
+            // If Gla or Volunteer Id is user id (info in element's class) show row, hide it otherwise
+            if (tdGla.classList.contains('gla-' + userId) || tdVol.classList.contains('volunteer-' + userId)) {
+              rows[i].style.display = '';
+            } else {
+              rows[i].style.display = 'none';
+            }
+          } else {
+            // If checkbox is unchecked, show all rows
+            rows[i].style.display = '';
+          }
+        }
       }
     })();
   </script>

@@ -3,6 +3,10 @@
   display: block;
 }
 
+/* clicking on th sorts table (mission/list, mission/recap, accomodation/list, user/list) */
+th:hover {
+  cursor: pointer;
+}
 
 /* mission/list.html.twig */
 h3 {

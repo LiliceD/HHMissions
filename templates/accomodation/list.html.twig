@@ -28,11 +28,11 @@
 
     <thead class="thead-light">
       <tr>
-        <th scope="col">Adresse</th>
-        <th scope="col">C.P.</th>
-        <th scope="col">Ville</th>
-        <th scope="col">Propriétaire</th>
-        <th scope="col">Accès</th>
+        <th scope="col">Adresse <i class="fas fa-sort"></i></th>
+        <th scope="col">C.P. <i class="fas fa-sort"></i></th>
+        <th scope="col">Ville <i class="fas fa-sort"></i></th>
+        <th scope="col">Propriétaire <i class="fas fa-sort"></i></th>
+        <th scope="col">Accès <i class="fas fa-sort"></i></th>
         {# edit button only visible for gla and admin #}
         {% if is_granted('ROLE_GLA') %}
           <th></th>
@@ -67,4 +67,24 @@
       {% endfor %}
     </tbody>
   </table>
+{% endblock %}
+
+
+{% block javascripts %}
+  {{ parent() }}
+
+  <script src="{{ asset('js/sortTable.js') }}"></script>
+ 
+  <script>
+    (function() {
+      // Add table sorting on clicking on one of its header
+      tableHeadRows = document.querySelectorAll('th');
+      
+      for(let i = 0, c = tableHeadRows.length - 1; i < c; i++) {
+        tableHeadRows[i].addEventListener('click', () => {
+          sortTable(document.querySelector('table'), i);
+        });
+      }
+    })();
+  </script>
 {% endblock %}

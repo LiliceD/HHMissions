@@ -26,9 +26,9 @@
 
     <thead class="thead-light">
       <tr>
-        <th scope="col">Nom</th>
-        <th scope="col">Identifiant</th>
-        <th scope="col">Catégorie</th>
+        <th scope="col">Nom <i class="fas fa-sort"></i></th>
+        <th scope="col">Identifiant <i class="fas fa-sort"></i></th>
+        <th scope="col">Catégorie <i class="fas fa-sort"></i></th>
         <th></th>
         <th></th>
       </tr>
@@ -58,4 +58,24 @@
       {% endfor %}
     </tbody>
   </table>
+{% endblock %}
+
+
+{% block javascripts %}
+  {{ parent() }}
+
+  <script src="{{ asset('js/sortTable.js') }}"></script>
+ 
+  <script>
+    (function() {
+      // Add table sorting on clicking on one of its header
+      tableHeadRows = document.querySelectorAll('th');
+      
+      for(let i = 0, c = tableHeadRows.length - 2; i < c; i++) {
+        tableHeadRows[i].addEventListener('click', () => {
+          sortTable(document.querySelector('table'), i);
+        });
+      }
+    })();
+  </script>
 {% endblock %}
