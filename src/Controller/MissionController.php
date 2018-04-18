@@ -484,6 +484,8 @@ class MissionController extends Controller
      */
     public function filter(Request $request)
     {
+        // Get request referer
+        $referer = $request->headers->get('referer');
         // Get filters from request parameters
         $glaIds = $request->request->get('glaIds');
         $volunteerIds = $request->request->get('volunteerIds');
@@ -529,9 +531,20 @@ class MissionController extends Controller
         }
 
         // Add filter on status (can't manage to send it with JavaScript)
-        $statuses = [Mission::STATUS_FINISHED, Mission::STATUS_CLOSED];
-        $statusFilter = ['field' => 'm.status', 'value' => $statuses];
-        array_push($filters, $statusFilter);
+        if (preg_match('/\/missions$/', $referer)) {
+            // From missions list : only finished and closed
+            $statuses = [Mission::STATUS_FINISHED, Mission::STATUS_CLOSED];
+
+            $statusFilter = ['field' => 'm.status', 'value' => $statuses];
+            array_push($filters, $statusFilter);
+        } else if (preg_match('/\/recap$/', $referer)) {
+            // From mission recap : all but closed
+            $statuses = array_values(Mission::getStatuses()); // Array of all statuses
+            array_pop($statuses); // Remove STATUS_CLOSED
+
+            $statusFilter = ['field' => 'm.status', 'value' => $statuses];
+            array_push($filters, $statusFilter);
+        }
         
         // Retrieve Missions matching filters
         $missions = $this->getDoctrine()
