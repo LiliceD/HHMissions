@@ -489,6 +489,10 @@ class MissionController extends Controller
         $volunteerIds = $request->request->get('volunteerIds');
         $accomodationIds = $request->request->get('accomodationIds');
         $descriptionSearch = $request->request->get('descriptionSearch');
+        $dateCreatedMin = $request->request->get('dateCreatedMin');
+        $dateCreatedMax = $request->request->get('dateCreatedMax');
+        $dateFinishedMin = $request->request->get('dateFinishedMin');
+        $dateFinishedMax = $request->request->get('dateFinishedMax');
 
         // Create array of filters
         $filters = [];
@@ -512,6 +516,16 @@ class MissionController extends Controller
             // Query will search for missions'whose description *contains* $descriptionSearch
             $descriptionFilter = ['field' => 'm.description', 'value' => '%'.$descriptionSearch.'%'];
             array_push($filters, $descriptionFilter);
+        }
+
+        if ($dateCreatedMin || $dateCreatedMax) {
+            $dateCreatedFilter = ['field' => 'm.dateCreated', 'value' => ['min' => $dateCreatedMin, 'max' => $dateCreatedMax]];
+            array_push($filters, $dateCreatedFilter);
+        }
+
+        if ($dateFinishedMin || $dateFinishedMax) {
+            $dateFinishedFilter = ['field' => 'm.dateFinished', 'value' => ['min' => $dateFinishedMin, 'max' => $dateFinishedMax]];
+            array_push($filters, $dateFinishedFilter);
         }
 
         // Add filter on status (can't manage to send it with JavaScript)

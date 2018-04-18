@@ -60,14 +60,29 @@ class MissionRepository extends ServiceEntityRepository
 
         foreach($filters as $key => $filter) {
             if ($filter['field'] === 'm.description') {
+            // For 'description' : search if it contains the value
                 $qb->andWhere($qb->expr()->like($filter['field'], '?'.$key))
                     ->setParameter($key, $filter['value']);
+            } else if (in_array($filter['field'], ['m.dateCreated', 'm.dateFinished'])) {
+            // For dates : search if it is greater than / lower than or between value(s)
+                if (!$filter['value']['min']) {
+                    $qb->andWhere($qb->expr()->lte($filter['field'], ':max'))
+                        ->setParameter('max', $filter['value']['max']);
+                } else if (!$filter['value']['max']) {
+                    $qb->andWhere($qb->expr()->gte($filter['field'], ':min'))
+                        ->setParameter('min', $filter['value']['min']);
+                } else {
+                    $qb->andWhere($qb->expr()->between($filter['field'], ':min', ':max'))
+                        ->setParameters(['min' => $filter['value']['min'], 'max' => $filter['value']['max']]);
+                }
             } else {
+            // For other fields : search if it is equal to value
                 $qb->andWhere($qb->expr()->in($filter['field'], '?'.$key))
                     ->setParameter($key, $filter['value']);
             }
         }
 
+        // Sort closed missions in last
         return $qb->orderBy('m.status', 'DESC')
             ->getQuery()
             ->getResult()

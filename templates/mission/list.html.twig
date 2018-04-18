@@ -146,49 +146,88 @@
 
   {# Search form #}
   {{ form_start(form) }}
-  <div class="d-flex align-items-center my-3">
-    <div class="mr-4">
-      <strong>Filtrer :</strong>
-    </div>
+  <div class="row justify-content-center">
+    <div class="col-11 card">
+      <h6 class="card-title ml-2 my-2">
+        Filtres :
+      </h6>
+      <div class="d-flex justify-content-between my-1">
+        {# Filter GLA #}
+        <div class="dropdown mr-2">
+          <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="dropdownGlaButton" data-toggle="dropdown" data-flip="false" aria-haspopup="true" aria-expanded="false">
+            Provenance GLA
+            <span id="searchGlaNb" class="badge badge-secondary"></span>
+          </button>
+          <div class="dropdown-menu dropdown-select px-3 mb-3" aria-labelledby="dropdownGlaButton">
+            {{ form_widget(form.gla) }}
+          </div>
+        </div>
 
-    <div class="dropdown mr-2">
-      <button class="btn btn-light dropdown-toggle" type="button" id="dropdownGlaButton" data-toggle="dropdown" data-flip="false" aria-haspopup="true" aria-expanded="false">
-        Provenance GLA
-      </button>
-      <div class="dropdown-menu dropdown-select px-3 mb-3" aria-labelledby="dropdownGlaButton">
-        {{ form_widget(form.gla) }}
+        {# Filter Volunteer #}
+        <div class="dropdown mr-2">
+          <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="dropdownVolunteerButton" data-toggle="dropdown" data-flip="false" aria-haspopup="true" aria-expanded="false">
+            Bénévole
+            <span id="searchVolunteerNb" class="badge badge-secondary"></span>
+          </button>
+          <div class="dropdown-menu dropdown-select px-3 mb-3" aria-labelledby="dropdownVolunteerButton">
+            {{ form_widget(form.volunteer) }}
+          </div>
+        </div>
+
+        {# Filter Accomodation #}
+        <div class="dropdown mr-2">
+          <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="dropdownAccomodationButton" data-toggle="dropdown" data-flip="false" aria-haspopup="true" aria-expanded="false">
+            Adresse d'intervention
+            <span id="searchAccomodationNb" class="badge badge-secondary"></span>
+          </button>
+          <div class="dropdown-menu dropdown-select px-3 mb-3" aria-labelledby="dropdownAccomodationButton">
+            {{ form_widget(form.accomodation) }}
+          </div>
+        </div>
+        
+        {# Search description #}
+        <div class="input-group-sm w-50" >
+          {{ form_widget(form.description, {'attr': {'placeholder': 'Description'}}) }}
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-between my-1 ml-2">
+        {# Filter date created #}
+        <div class="d-flex align-items-center">
+          <small>Date demande entre le</small>
+          <div class="input-group-sm input-date mx-2">
+            {{ form_widget(form.dateCreatedMin) }}
+          </div>
+          <small>et le</small>
+          <div class="input-group-sm input-date mx-2">
+            {{ form_widget(form.dateCreatedMax) }}
+          </div>
+        </div>
+
+        {# Filter date finished #}
+        <div class="d-flex align-items-center">
+          <small>Fin de mission entre le</small>
+          <div class="input-group-sm input-date mx-2">
+            {{ form_widget(form.dateFinishedMin) }}
+          </div>
+          <small>et le</small>
+          <div class="input-group-sm input-date ml-2">
+            {{ form_widget(form.dateFinishedMax) }}
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-end my-2">
+        {# Form buttons #}
+        <input type="submit" class="btn btn-sm btn-outline-primary mr-2" id="searchSubmitBtn" value="Rechercher" />
+        <button class="btn btn-sm btn-outline-secondary" id="searchResetBtn">Réinitialiser</button>
       </div>
     </div>
-
-    <div class="dropdown mr-2">
-      <button class="btn btn-light dropdown-toggle" type="button" id="dropdownVolunteerButton" data-toggle="dropdown" data-flip="false" aria-haspopup="true" aria-expanded="false">
-        Bénévole
-      </button>
-      <div class="dropdown-menu dropdown-select px-3 mb-3" aria-labelledby="dropdownVolunteerButton">
-        {{ form_widget(form.volunteer) }}
-      </div>
-    </div>
-
-    <div class="dropdown mr-2">
-      <button class="btn btn-light dropdown-toggle" type="button" id="dropdownAccomodationButton" data-toggle="dropdown" data-flip="false" aria-haspopup="true" aria-expanded="false">
-        Adresse d'intervention
-      </button>
-      <div class="dropdown-menu dropdown-select px-3 mb-3" aria-labelledby="dropdownAccomodationButton">
-        {{ form_widget(form.accomodation) }}
-      </div>
-    </div>
-    
-    <div>
-      {{ form_widget(form.description, {'attr': {'placeholder': 'Description'}}) }}
-    </div>
-    
-    <input type="submit" class="btn btn-sm btn-outline-primary ml-4 mr-1" id="searchSubmitBtn" value="Rechercher" />
-    <button class="btn btn-sm btn-outline-secondary" id="searchResetBtn">Réinitialiser</button>
   </div>
   {{ form_end(form) }}
 
   {# Checkbox #}
-  <div class="d-flex align-items-center my-3">
+  <div class="d-flex align-items-center mt-2">
     <input type="checkbox" id="myFinishedMissions" name="myFinishedMissions" class="mb-1" />
     <label for="myFinishedMissions" class="mb-2 ml-2">Afficher uniquement mes missions</label>
   </div>
@@ -358,11 +397,31 @@
           volunteerOptions = document.getElementsByName('mission_search[volunteer][]'),
           accomodationOptions = document.getElementsByName('mission_search[accomodation][]'),
           descriptionInput = document.getElementById('mission_search_description'),
-          glaIds, volunteerIds, accomodationIds, descriptionSearch;
+          dateCreatedMinInput = document.getElementById('mission_search_dateCreatedMin'),
+          dateCreatedMaxInput = document.getElementById('mission_search_dateCreatedMax'),
+          dateFinishedMinInput = document.getElementById('mission_search_dateFinishedMin'),
+          dateFinishedMaxInput = document.getElementById('mission_search_dateFinishedMax'),
+          glaIds, volunteerIds, accomodationIds, descriptionSearch,
+          dateCreatedMin, dateCreatedMax, dateFinishedMin, dateFinishedMax;
 
 
       // Fill finished missions table on load
       document.addEventListener('DOMContentLoaded', fillFinishedMissionsTable);
+
+      // Show number of Gla options selected
+      document.getElementById('mission_search_gla').addEventListener('change', () => {
+        document.getElementById('searchGlaNb').innerHTML = getCheckedValues(glaOptions).length ? getCheckedValues(glaOptions).length : '';
+      });
+
+      // Show number of Volunteer options selected
+      document.getElementById('mission_search_volunteer').addEventListener('change', () => {
+        document.getElementById('searchVolunteerNb').innerHTML = getCheckedValues(volunteerOptions).length ? getCheckedValues(volunteerOptions).length : '';
+      });
+
+      // Show number of Accomodation options selected
+      document.getElementById('mission_search_accomodation').addEventListener('change', () => {
+        document.getElementById('searchAccomodationNb').innerHTML = getCheckedValues(accomodationOptions).length ? getCheckedValues(accomodationOptions).length : '';
+      });
 
       // Filter finished missions table on search form submit
       document.getElementById('searchSubmitBtn').addEventListener('click', (e) => {
@@ -392,6 +451,12 @@
         // Reset description input
         descriptionInput.value = '';
 
+        // Reset date fields
+        dateCreatedMinInput.value = '';
+        dateCreatedMaxInput.value = '';
+        dateFinishedMinInput.value = '';
+        dateFinishedMaxInput.value = '';
+
         // Reset table
         fillFinishedMissionsTable();
       });
@@ -414,9 +479,13 @@
         volunteerIds = getCheckedValues(volunteerOptions);
         accomodationIds = getCheckedValues(accomodationOptions);
         descriptionSearch = descriptionInput.value.trim();
+        dateCreatedMin = dateCreatedMinInput.value;
+        dateCreatedMax = dateCreatedMaxInput.value;
+        dateFinishedMin = dateFinishedMinInput.value;
+        dateFinishedMax = dateFinishedMaxInput.value;
 
         // Send filters to controller
-        ajaxPost("{{ path('app_mission_filter') }}", {'glaIds': glaIds, 'volunteerIds': volunteerIds, 'accomodationIds': accomodationIds, 'descriptionSearch': descriptionSearch}, function(JSONResponse) {
+        ajaxPost("{{ path('app_mission_filter') }}", {'glaIds': glaIds, 'volunteerIds': volunteerIds, 'accomodationIds': accomodationIds, 'descriptionSearch': descriptionSearch, 'dateCreatedMin': dateCreatedMin, 'dateCreatedMax': dateCreatedMax, 'dateFinishedMin': dateFinishedMin, 'dateFinishedMax': dateFinishedMax}, function(JSONResponse) {
             // Retrieve missions matching filters
             let missions = JSON.parse(JSONResponse);
             

@@ -7,6 +7,7 @@ use App\Entity\User;
 use Doctrine\ORM\EntityRepository; // for 'address' query builder
 use Symfony\Bridge\Doctrine\Form\Type\EntityType; // for 'address' drop-down
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
@@ -24,9 +25,7 @@ class MissionSearchType extends AbstractType
                     return $er->qbAllByCategory('gla');
                 },
                 'choice_label' => 'name',
-                'label' => 'Provenance GLA :',
                 'required' => false,
-                'placeholder' => false,
                 'multiple' => true,
                 'expanded' => true
             ])
@@ -37,9 +36,7 @@ class MissionSearchType extends AbstractType
                     return $er->qbAllByCategory('volunteer');
                 },
                 'choice_label' => 'name',
-                'label' => 'Bénévole :',
                 'required' => false,
-                'placeholder' => false,
                 'multiple' => true,
                 'expanded' => true           
             ])
@@ -51,14 +48,24 @@ class MissionSearchType extends AbstractType
                         ->orderBy('a.street', 'ASC');
                 },
                 'choice_label' => 'address',
-                'label' => 'Adresse d\'intervention :',
                 'required' => false,
-                'placeholder' => false,
                 'multiple' => true,
                 'expanded' => true
             ])
             ->add('description', null, [
-                'label' => 'Description :',
+                'required' => false,
+            ])
+            ->add('dateCreatedMin', DateType::class, [
+                'widget' => 'single_text',
+            ])
+            ->add('dateCreatedMax', DateType::class, [
+                'widget' => 'single_text',
+            ])
+            ->add('dateFinishedMin', DateType::class, [
+                'widget' => 'single_text',
+            ])
+            ->add('dateFinishedMax', DateType::class, [
+                'widget' => 'single_text',
             ])
         ;
     }
