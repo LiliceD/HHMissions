@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block header_button %}
-  <a href="{{ path('app_mission_recap_pdf-export') }}" class="btn btn-primary">
+  <a id="exportBtn" href="{{ path('app_mission_recap_pdf-export') }}" class="btn btn-primary" download>
     <i class="fas fa-download"></i>
     Exporter au format PDF
   </a>
@@ -94,6 +94,7 @@
           dateCreatedMaxInput = document.getElementById('mission_search_dateCreatedMax'),
           dateCreatedMin, dateCreatedMax;
 
+
       // Add table sorting on clicking on one of its header
       tableHeadRows = document.querySelectorAll('th');
       
@@ -102,6 +103,7 @@
           sortTable(table, i);
         });
       }
+
 
       // Fill recap missions table on load
       document.addEventListener('DOMContentLoaded', () => {
@@ -126,15 +128,17 @@
         fillRecapMissionsTable();
       });
 
-      // Retrieve filters from search form, get matching missions from backend, fill in table and update number of missions
+
+      // Retrieve filters from search form, get matching missions from backend, fill in table, update number of missions and update link to pdf export
       function fillRecapMissionsTable() {
         dateCreatedMin = dateCreatedMinInput.value;
         dateCreatedMax = dateCreatedMaxInput.value;
 
         // Send filters to controller
-        ajaxPost("{{ path('app_mission_filter') }}", {'dateCreatedMin': dateCreatedMin, 'dateCreatedMax': dateCreatedMax}, function(JSONResponse) {
+        ajaxPost("{{ path('app_mission_filter') }}", {'dateCreatedMin': dateCreatedMin, 'dateCreatedMax': dateCreatedMax}, JSONResponse => {
             // Retrieve missions matching filters
-            let missions = JSON.parse(JSONResponse);
+            let data = JSON.parse(JSONResponse),
+                missions = data.missions;
             
             // Empty table body
             let tbody = document.querySelector('tbody');
@@ -148,8 +152,8 @@
             // Update badge with number of missions
             document.getElementById('recapMissionsBadge').innerHTML = missions.length;
 
-            // Sort by dateCreated
-            sortTable(table, 1);
+            // Update link to pdf export
+            document.getElementById('exportBtn').href = data.recap.url;
         });
       }
 

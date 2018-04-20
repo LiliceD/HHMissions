@@ -188,7 +188,7 @@
         </div>
       </div>
 
-      <div class="d-flex justify-content-between my-1 ml-2">
+      <div class="d-flex justify-content-between my-1">
         {# Filter date created #}
         <div class="d-flex align-items-center">
           <small>Date demande entre le</small>
@@ -239,6 +239,7 @@
         <th scope="col">Adresse <i class="fas fa-sort"></i></th>
         <th scope="col">Bénévole <i class="fas fa-sort"></i></th>
         <th scope="col">Description <i class="fas fa-sort"></i></th>
+        <th class="d-none"></th>
         <th></th>
       </tr>
     </thead>
@@ -338,6 +339,11 @@
         dateFinishedMinInput.value = '';
         dateFinishedMaxInput.value = '';
 
+        // Reset form badges
+        document.getElementById('searchGlaNb').innerHTML = '';
+        document.getElementById('searchVolunteerNb').innerHTML = '';
+        document.getElementById('searchAccomodationNb').innerHTML = '';
+
         // Reset table
         fillFinishedMissionsTable();
       });
@@ -358,7 +364,7 @@
       
       for(let i = 0, c = newMissionsHeadRows.length - 1; i < c; i++) {
         newMissionsHeadRows[i].addEventListener('click', () => {
-          sortTable(newMissions, i);
+          sortTable(newMissionsTable, i);
         });
       }
 
@@ -366,7 +372,7 @@
       
       for(let i = 0, c = assignedMissionsHeadRows.length - 1; i < c; i++) {
         assignedMissionsHeadRows[i].addEventListener('click', () => {
-          sortTable(assignedMissions, i);
+          sortTable(assignedMissionsTable, i);
         });
       }
 
@@ -374,11 +380,11 @@
       
       for(let i = 0, c = finishedMissionsHeadRows.length - 1; i < c; i++) {
         finishedMissionsHeadRows[i].addEventListener('click', () => {
-          sortTable(finishedMissions, i);
+          sortTable(finishedMissionsTable, i);
         });
       }
 
-      // Retrieve filters from search form, get matching missions from backend, fill in table, update number of finished missions and uncheck 'myMissions' checkbox
+      // Retrieve filters from search form, get matching missions from backend, fill in table, update number of finished missions, uncheck 'myMissions' checkbox and sort table by status
       function fillFinishedMissionsTable() {
         // Get array of checked elements
         glaIds = getCheckedValues(glaOptions);
@@ -391,27 +397,37 @@
         dateFinishedMax = dateFinishedMaxInput.value;
 
         // Send filters to controller
-        ajaxPost("{{ path('app_mission_filter') }}", {'glaIds': glaIds, 'volunteerIds': volunteerIds, 'accomodationIds': accomodationIds, 'descriptionSearch': descriptionSearch, 'dateCreatedMin': dateCreatedMin, 'dateCreatedMax': dateCreatedMax, 'dateFinishedMin': dateFinishedMin, 'dateFinishedMax': dateFinishedMax}, function(JSONResponse) {
+        ajaxPost("{{ path('app_mission_filter') }}", {'glaIds': glaIds, 'volunteerIds': volunteerIds, 'accomodationIds': accomodationIds, 'descriptionSearch': descriptionSearch, 'dateCreatedMin': dateCreatedMin, 'dateCreatedMax': dateCreatedMax, 'dateFinishedMin': dateFinishedMin, 'dateFinishedMax': dateFinishedMax}, JSONResponse => {
             // Retrieve missions matching filters
-            let missions = JSON.parse(JSONResponse);
+            let data = JSON.parse(JSONResponse),
+                missions = data.missions;
             
             // Empty table body
             let tbody = document.querySelector('#finishedMissions tbody');
                 tbody.innerHTML = '';
 
-            // Fill table body with missions and count number of missions finished but not closed
-            let counter = 0;
+            // Split missions by status
+            let finishedMissions = [], closedMissions = [];
 
             missions.forEach( mission => {
-              tbody.appendChild(createMissionRow(mission));
-
               if (mission.status === "{{ constant('App\\Entity\\Mission::STATUS_FINISHED') }}") {
-                counter++;
+                finishedMissions.push(mission);
+              } else {
+                closedMissions.push(mission);
               }
             });
 
+            // Add missions to table
+            finishedMissions.forEach( mission => {
+              tbody.appendChild(createMissionRow(mission));
+            });
+
+            closedMissions.forEach( mission => {
+              tbody.appendChild(createMissionRow(mission));
+            });
+
             // Update badge with number of missions finished but not closed
-            document.getElementById('finishedMissionsBadge').innerHTML = counter;
+            document.getElementById('finishedMissionsBadge').innerHTML = finishedMissions.length;
 
             // Uncheck 'myMissions' checkbox
             document.getElementById('myFinishedMissions').checked = false;
@@ -484,6 +500,11 @@
 
         tdDesc.appendChild(divDesc);
 
+        // Hidden status
+        let tdStat = document.createElement('td');
+            tdStat.className = 'd-none';
+            tdStat.innerHTML = mission.status;
+
         // Button to view mission
         let tdView = document.createElement('td'),
             aView = document.createElement('a');
@@ -502,6 +523,7 @@
         tr.appendChild(tdAcc);
         tr.appendChild(tdVol);
         tr.appendChild(tdDesc);
+        tr.appendChild(tdStat);
         tr.appendChild(tdView);
 
         return tr;

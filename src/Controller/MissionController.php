@@ -441,13 +441,36 @@ class MissionController extends Controller
      * Export recap of opened missions to PDF
      * 
      * @Route(
-     *  "/recap/pdf",
+     *  "/recap/pdf/{dateMin}/{dateMax}",
      *  name="app_mission_recap_pdf-export"
      * )
      */
-    public function recapPdfExport()
+    public function recapPdfExport($dateMin = '', $dateMax = '')
     {
-        $missions = $this->getNonClosedMissions();
+        // Get filters from request parameters
+        // $dateCreatedMin = $request->request->get('dateMin');
+        // $dateCreatedMax = $request->request->get('dateMax');
+
+        // Create array of filters
+        $filters = [];
+
+        if ($dateMin || $dateMax) {
+            $dateCreatedFilter = ['field' => 'm.dateCreated', 'value' => ['min' => $dateMin, 'max' => $dateMax]];
+            array_push($filters, $dateCreatedFilter);
+        }
+
+        // Add filter on status (can't manage to send it with JavaScript)
+        $statuses = array_values(Mission::getStatuses()); // Array of all statuses
+        array_pop($statuses); // Remove STATUS_CLOSED
+
+        $statusFilter = ['field' => 'm.status', 'value' => $statuses];
+        array_push($filters, $statusFilter);
+
+        // Retrieve Missions matching filters
+        $missions = $this->getDoctrine()
+            ->getRepository(Mission::class)
+            ->findByFiltersJoined($filters)
+        ;
 
         $html = $this->renderView('pdf/mission-recap.html.twig', [
             'missions' => $missions
@@ -531,13 +554,15 @@ class MissionController extends Controller
             array_push($filters, $dateFinishedFilter);
         }
 
-        // Add filter on status (can't manage to send it with JavaScript)
+        // Add filter on status (can't manage to send it with JavaScript) and order
         if (preg_match('/\/missions$/', $referer)) {
             // From missions list : only finished and closed
             $statuses = [Mission::STATUS_FINISHED, Mission::STATUS_CLOSED];
 
             $statusFilter = ['field' => 'm.status', 'value' => $statuses];
             array_push($filters, $statusFilter);
+
+            $order = 'DESC';
         } else if (preg_match('/\/recap$/', $referer)) {
             // From mission recap : all but closed
             $statuses = array_values(Mission::getStatuses()); // Array of all statuses
@@ -545,12 +570,14 @@ class MissionController extends Controller
 
             $statusFilter = ['field' => 'm.status', 'value' => $statuses];
             array_push($filters, $statusFilter);
+
+            $order = 'ASC';
         }
         
         // Retrieve Missions matching filters
         $missions = $this->getDoctrine()
             ->getRepository(Mission::class)
-            ->findByFiltersJoined($filters)
+            ->findByFiltersJoined($filters, $order)
         ;
 
         // Convert Missions to JSON
@@ -585,8 +612,17 @@ class MissionController extends Controller
             array_push($missionsJson, $missionJson);
         }
 
+        // Convert path to mission recap pdf export to JSON
+        $recapJson = ['url' => $this->generateUrl('app_mission_recap_pdf-export', [
+            'dateMin' => $dateCreatedMin,
+            'dateMax'=> $dateCreatedMax
+        ])];
+
+        // Combine recap and missions
+        $data = ['missions' => $missionsJson, 'recap' => $recapJson]; 
+
         // Return JSON response
-        return new JsonResponse($missionsJson);
+        return new JsonResponse($data);
     }
 
 

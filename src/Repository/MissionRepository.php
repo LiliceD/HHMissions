@@ -47,7 +47,7 @@ class MissionRepository extends ServiceEntityRepository
         ;
     }
 
-    public function findByFiltersJoined($filters)
+    public function findByFiltersJoined($filters, $order)
     {
         $qb = $this->createQueryBuilder('m')
             ->innerJoin('m.accomodation', 'a')
@@ -82,8 +82,8 @@ class MissionRepository extends ServiceEntityRepository
             }
         }
 
-        // Sort closed missions in last
-        return $qb->orderBy('m.status', 'DESC')
+        // Sort and return missions
+        return $qb->orderBy('m.id', $order)
             ->getQuery()
             ->getResult()
         ;
