@@ -245,7 +245,7 @@
 
     <tbody>
       {# Filled by JavaScript #}
-      {# id, dateCreated, dateFinished, gla, accomodation, volunteer, button to view #}
+      {# id, dateCreated, dateFinished, gla, accomodation, volunteer, description, button to view #}
     </tbody>
   </table>
 {% endblock %}
@@ -254,9 +254,9 @@
 {% block javascripts %}
   {{ parent() }}
 
-  <script src="{{ asset('js/ajax.js') }}"></script>
   <script src="{{ asset('js/sortTable.js') }}"></script>
- 
+  <script src="{{ asset('js/ajax.js') }}"></script>
+
   <script>
     (function() {
       let userId,

@@ -7,7 +7,7 @@
 
 
 {% block header_h2 %}
-  Récapitulatif des fiches mission ouvertes <span class="badge badge-pill badge-danger">{{ missions|length }}</span>
+  Récapitulatif des fiches mission ouvertes <span id="recapMissionsBadge" class="badge badge-pill badge-danger"></span>
 {% endblock %}
 
 {% block header_button %}
@@ -73,33 +73,9 @@
       </thead>
 
       <tbody>
-        {% for mission in missions %}
-          <tr>
-            <td>
-              <a href="{{ path('app_mission_view', {'id': mission.id}) }}" title="Voir la FM">
-                {{ mission.id }}
-              </a>
-            </td>
-            <td><strong>{{ mission.dateCreated|date('d/m/y') }}</strong></td>
-            <td>{{ mission.gla }}</td>
-            <td>{{ mission.dateAssigned ? mission.dateAssigned|date('d/m/y') : '-' }}</td>
-            <td>{{ mission.dateFinished ? mission.dateFinished|date('d/m/y') : '-' }}</td>
-            <td>
-              {% if mission.accomodation.name %}
-                {{ mission.accomodation.name }} - 
-              {% endif %}
-              {{ mission.accomodation.street }}
-              <br>
-              {{ mission.accomodation.postalCode }} {{ mission.accomodation.city }}
-            </td>
-            <td>{{ mission.description|nl2br }}</td>
-            <td>{{ mission.volunteer }}</td>
-            <td>{{ mission.conclusions|nl2br }}</td>
-            <td>{{ mission.status }}</td>
-          </tr>
-        {% endfor %}
+        {# Filled by JavaScript #}
+        {# id, dateCreated, GLA, dateAssigned, dateFinished, accomodation, description, volunteer, conclusions, status #}
       </tbody>
-
     </table>
   </div>
 {% endblock %}
@@ -109,16 +85,142 @@
   {{ parent() }}
 
   <script src="{{ asset('js/sortTable.js') }}"></script>
+  <script src="{{ asset('js/ajax.js') }}"></script>
  
   <script>
     (function() {
+      let table = document.querySelector('table'),
+          dateCreatedMinInput = document.getElementById('mission_search_dateCreatedMin'),
+          dateCreatedMaxInput = document.getElementById('mission_search_dateCreatedMax'),
+          dateCreatedMin, dateCreatedMax;
+
       // Add table sorting on clicking on one of its header
       tableHeadRows = document.querySelectorAll('th');
       
       for(let i = 0, c = tableHeadRows.length; i < c; i++) {
         tableHeadRows[i].addEventListener('click', () => {
-          sortTable(document.querySelector('table'), i);
+          sortTable(table, i);
         });
+      }
+
+      // Fill recap missions table on load
+      document.addEventListener('DOMContentLoaded', () => {
+        fillRecapMissionsTable();
+      });
+
+      // Filter recap missions table on search form submit
+      document.getElementById('searchSubmitBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        fillRecapMissionsTable();
+      });
+
+      // Reset recap missions table on reset button click
+      document.getElementById('searchResetBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+
+        // Reset date inputs
+        dateCreatedMinInput.value = '';
+        dateCreatedMaxInput.value = '';
+
+        // Reset table
+        fillRecapMissionsTable();
+      });
+
+      // Retrieve filters from search form, get matching missions from backend, fill in table and update number of missions
+      function fillRecapMissionsTable() {
+        dateCreatedMin = dateCreatedMinInput.value;
+        dateCreatedMax = dateCreatedMaxInput.value;
+
+        // Send filters to controller
+        ajaxPost("{{ path('app_mission_filter') }}", {'dateCreatedMin': dateCreatedMin, 'dateCreatedMax': dateCreatedMax}, function(JSONResponse) {
+            // Retrieve missions matching filters
+            let missions = JSON.parse(JSONResponse);
+            
+            // Empty table body
+            let tbody = document.querySelector('tbody');
+                tbody.innerHTML = '';
+
+            // Fill table body with missions
+            missions.forEach( mission => {
+              tbody.appendChild(createMissionRow(mission));
+            });
+
+            // Update badge with number of missions
+            document.getElementById('recapMissionsBadge').innerHTML = missions.length;
+
+            // Sort by dateCreated
+            sortTable(table, 1);
+        });
+      }
+
+      // Return tr element with mission details, ready to append to table body
+      function createMissionRow(mission) {
+        // Row
+        let tr = document.createElement('tr');
+
+        // Cells
+        let tdId = document.createElement('td'),
+            aId = document.createElement('a');
+
+        aId.href = mission.url;
+        aId.title = 'Voir la FM';
+        aId.innerHTML = mission.id
+
+        tdId.appendChild(aId);
+
+        let tdDC = document.createElement('td'),
+            strongDC = document.createElement('strong');
+
+        strongDC.innerHTML = mission.dateCreated;
+
+        tdDC.appendChild(strongDC);
+        tdDC.setAttribute('data-is-date', 'true');
+
+        let tdGla = document.createElement('td');
+            tdGla.innerHTML = mission.glaName;
+
+        let tdDA = document.createElement('td');
+            tdDA.innerHTML = mission.dateAssigned ? mission.dateAssigned : '-';
+            tdDA.setAttribute('data-is-date', 'true');
+
+        let tdDF = document.createElement('td');
+            tdDF.innerHTML = mission.dateFinished ? mission.dateFinished : '-';
+            tdDF.setAttribute('data-is-date', 'true');
+
+        // Address
+        let tdAcc = document.createElement('td');
+
+        if (mission.accomodationName) {
+          tdAcc.innerHTML = mission.accomodationName + '<br>'; 
+        }
+          tdAcc.innerHTML += mission.accomodationStreet + '<br>';
+          tdAcc.innerHTML += mission.accomodationPostalCode + ' ' + mission.accomodationCity;
+
+        let tdDesc = document.createElement('td');
+            tdDesc.innerHTML = mission.description;
+
+        let tdVol = document.createElement('td');
+            tdVol.innerHTML = mission.volunteerName;
+
+        let tdConcl = document.createElement('td');
+            tdConcl.innerHTML = mission.conclusions;
+
+        let tdStat = document.createElement('td');
+            tdStat.innerHTML = mission.status;
+        
+        // Append cells to row
+        tr.appendChild(tdId);
+        tr.appendChild(tdDC);
+        tr.appendChild(tdGla);
+        tr.appendChild(tdDA);
+        tr.appendChild(tdDF);
+        tr.appendChild(tdAcc);
+        tr.appendChild(tdDesc);
+        tr.appendChild(tdVol);
+        tr.appendChild(tdConcl);
+        tr.appendChild(tdStat);
+
+        return tr;
       }
     })();
   </script>
