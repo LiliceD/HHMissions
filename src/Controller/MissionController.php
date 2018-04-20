@@ -263,10 +263,15 @@ class MissionController extends Controller
      */
     public function recap($page = 1)
     {    
+        // Retrieve non closed missions
         $missions = $this->getNonClosedMissions();
 
+        // Create search form
+        $searchForm = $this->createForm(MissionSearchType::class);
+
         return $this->render('mission/recap.html.twig', [
-            'missions' => $missions
+            'missions' => $missions,
+            'form' => $searchForm->createView(),
         ]);
     }
 
