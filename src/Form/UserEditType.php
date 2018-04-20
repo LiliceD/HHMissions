@@ -6,7 +6,6 @@ use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType; // for "glaRole"
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType; // for 'category'
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -21,13 +20,6 @@ class UserEditType extends AbstractType
             ->add('name', TextType::class, ['label' => 'Prénom NOM :'])
             ->add('username', TextType::class, ['label' => 'Identifiant :'])
             ->add('email', EmailType::class, ['label' => 'Email :'])
-            // Checkbox is displayed or not / checked or not by javascripts
-            ->add('glaRole', CheckboxType::class, [
-                'label' => 'Autoriser ce·tte bénévole à créer des fiches mission',
-                'data' => false,
-                'required' => false,
-                'mapped' => false
-            ])
         ;
 
         $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {

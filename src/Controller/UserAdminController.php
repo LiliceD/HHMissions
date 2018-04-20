@@ -46,9 +46,7 @@ class UserAdminController extends Controller
 
             // Set roles
             $category = $form->get('category')->getData();
-            $hasGlaRole = $form->get('glaRole')->getData();
-
-            $user->setRolesFromCategory($category, $hasGlaRole);
+            $user->setRolesFromCategory($category);
 
             // Persist to DB
             $em = $this->getDoctrine()->getManager();
@@ -108,9 +106,7 @@ class UserAdminController extends Controller
 
             // Set roles
             $category = $form->get('category')->getData();
-            $hasGlaRole = $form->get('glaRole')->getData();
-
-            $user->setRolesFromCategory($category, $hasGlaRole);
+            $user->setRolesFromCategory($category);
 
             // Persist changes to DB
             $em = $this->getDoctrine()->getManager();
@@ -151,7 +147,7 @@ class UserAdminController extends Controller
             'L\'utilisateur·trice a bien été supprimé·e.'
         );
 
-        return $this->redirectToRoute('app_mission_list');
+        return $this->redirectToRoute('app_user_list');
     }
 
 

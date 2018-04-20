@@ -39,7 +39,7 @@
         <tr id="user-{{ user.id }}">
           <td>{{ user.name }}</td>
           <td>{{ user.username }}</td>
-          <td>{{ user.category }}{% if user.category == constant('CAT_VOLUNTEER', user) and user.isGla %} ++{% endif %}</td>
+          <td>{{ user.category }}</td>
           {# view button #}
           <td>
             <a href="{{ path('app_user_view', {'id': user.id}) }}" class="btn btn-xs btn-primary">
