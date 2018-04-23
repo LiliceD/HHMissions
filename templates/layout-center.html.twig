@@ -28,10 +28,6 @@
         <div>
 
           {% block header_button %}
-            <button id="backButton" class="btn btn-outline-secondary">
-              <i class="fas fa-chevron-left"></i>
-              Retour
-            </button>
           {% endblock %}
 
         </div>
@@ -55,17 +51,4 @@
     </div> {# div card #}
   </div> {# div container #}
 
-{% endblock %}
-
-
-{% block javascripts %}
-  {{ parent() }}
-
-  <script>
-    (function() {
-      document.getElementById('backButton').addEventListener('click', () => {
-        window.history.back();
-      });
-    })();
-  </script>
 {% endblock %}
