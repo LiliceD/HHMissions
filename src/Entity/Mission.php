@@ -43,8 +43,8 @@ class Mission
      * @ORM\JoinColumn()
      * @Assert\NotBlank()
      * @Assert\Expression(
-     *     "value.getIsGla()",
-     *     message="Cette personne n'est pas dans la catégorie GLA."
+     *     "value.isGla() and value.isActive()",
+     *     message="Cette personne n'est pas dans la catégorie des GLA actifs."
      * )
      */
     private $gla;
@@ -53,8 +53,8 @@ class Mission
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="missionsAsVolunteer")
      * @ORM\JoinColumn(nullable=true)
      * @Assert\Expression(
-     *     "!value or value.getIsVolunteer()",
-     *     message="Cette personne n'est pas dans la catégorie bénévole."
+     *     "!value or (value.isVolunteer() and value.isActive())",
+     *     message="Cette personne n'est pas dans la catégorie des bénévoles actifs."
      * )
      */
     private $volunteer;

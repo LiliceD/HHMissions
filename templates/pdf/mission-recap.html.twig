@@ -1,5 +1,6 @@
 {% extends 'base.html.twig' %}
 
+
 {% block stylesheets %}
   <style>
     .pdf-content {
@@ -61,11 +62,12 @@
   </style>
 {% endblock %}
 
+
 {% block nav %}
 {% endblock %}
 
-{% block body %}
 
+{% block body %}
   <div class="pdf-content">
     <strong>Récapitulatif des fiches mission en cours au {{ "now"|date('d/m/Y') }}</strong>
 
@@ -73,7 +75,6 @@
     <br>
 
     <table>
-
       <thead>
         <tr>
           <th scope="col" class="table-recap-id center">#</th>
@@ -90,7 +91,6 @@
       </thead>
 
       <tbody>
-
         {% for mission in missions %}
           <tr>
             <td class="center">{{ mission.id }}</td>
@@ -112,14 +112,11 @@
             <td class="center">{{ mission.status }}</td>
           </tr>
         {% endfor %}
-
       </tbody>
-
     </table>
-
   </div>
-
 {% endblock %}
+
 
 {% block javascripts %}
 {% endblock %}

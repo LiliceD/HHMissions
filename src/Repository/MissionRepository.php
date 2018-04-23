@@ -27,7 +27,6 @@ class MissionRepository extends ServiceEntityRepository
         return $qb->add('where', $qb->expr()->in('m.status', ':value'))
             ->orderBy('m.id', 'DESC')
             ->setParameter('value', $value)
-            // ->setMaxResults(10)
             ->getQuery()
             ->getResult()
         ;

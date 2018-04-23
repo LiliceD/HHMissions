@@ -42,15 +42,11 @@
       </div>
     </div>
     
-    {% if is_granted('ROLE_ADMIN') %}
-      <div class="form-row align-items-end">
-        <div class="form-group col-sm-4">
-          {{ form_row(form.category) }}
-        </div>
+    <div class="form-row align-items-end">
+      <div class="form-group col-sm-4">
+        {{ form_row(form.category) }}
       </div>
-    {% else %}
-      {{ form_widget(form.category, {'attr': {'hidden': 'true'}}) }}
-    {% endif %}
+    </div>
 
     <br>
 

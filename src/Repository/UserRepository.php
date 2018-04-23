@@ -19,16 +19,16 @@ class UserRepository extends ServiceEntityRepository
         
         // Select active users
         $qb->select('u')
-           ->where('isActive = true')
+           ->where('active = true')
         ;
         
-        // Possibly add filter on isVolunteer/isGla
+        // Possibly add filter on volunteer/gla
         switch ($category) {
             case 'gla':
-                $qb->where('u.isGla = true');
+                $qb->where('u.gla = true');
                 break;
             case 'volunteer':
-                $qb->where('u.isVolunteer = true');
+                $qb->where('u.volunteer = true');
         }
 
         // Order alphabetically by name
@@ -43,13 +43,13 @@ class UserRepository extends ServiceEntityRepository
         // Select all users
         $qb->select('u');
         
-        // Possibly add filter on isVolunteer/isGla
+        // Possibly add filter on volunteer/gla
         switch ($category) {
             case 'gla':
-                $qb->where('u.isGla = true');
+                $qb->where('u.gla = true');
                 break;
             case 'volunteer':
-                $qb->where('u.isVolunteer = true');
+                $qb->where('u.volunteer = true');
         }
 
         // Order alphabetically by name

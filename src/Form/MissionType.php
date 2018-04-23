@@ -40,7 +40,7 @@ class MissionType extends AbstractType
                 'required' => false
             ])
             ->add('gla', EntityType::class, [
-                // Dropdown from User table, isGla = true, isActive = true
+                // Dropdown from User table, gla = true, active = true
                 'class' => User::class,
                 'query_builder' => function (EntityRepository $er) {
                     return $er->qbActiveByCategory('gla');
@@ -50,7 +50,7 @@ class MissionType extends AbstractType
                 'placeholder' => false
             ])
             ->add('volunteer', EntityType::class, [
-                // Dropdown from User table, isVolunteer = true, isActive = true
+                // Dropdown from User table, volunteer = true, active = true
                 'class' => User::class,
                 'query_builder' => function (EntityRepository $er) {
                     return $er->qbActiveByCategory('volunteer');

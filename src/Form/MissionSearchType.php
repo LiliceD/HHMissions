@@ -19,7 +19,7 @@ class MissionSearchType extends AbstractType
     {
         $builder
             ->add('gla', EntityType::class, [
-                // Multiple choice dropdown from User table, isGla = true
+                // Multiple choice dropdown from User table, gla = true
                 'class' => User::class,
                 'query_builder' => function (EntityRepository $er) {
                     return $er->qbAllByCategory('gla');
@@ -30,7 +30,7 @@ class MissionSearchType extends AbstractType
                 'expanded' => true
             ])
             ->add('volunteer', EntityType::class, [
-                // Multiple choice dropdown from User table, isVolunteer = true
+                // Multiple choice dropdown from User table, volunteer = true
                 'class' => User::class,
                 'query_builder' => function (EntityRepository $er) {
                     return $er->qbAllByCategory('volunteer');

@@ -15,7 +15,7 @@
     {{ form_widget(form.volunteer, {'attr': {'hidden': 'true'}}) }}
 
     {# User role passed to JS through data attributes #}
-    <div id="appUserData" data-user-id="{{ app.user.id }}" data-is-gla="{{ is_granted('ROLE_GLA') ? true : false }}" class="row justify-content-between">
+    <div id="appUserData" data-user-id="{{ app.user.id }}" class="row justify-content-between">
       <div class="d-flex">
         <div class="col-sm">
         {{ form_row(form.gla) }}
@@ -77,7 +77,25 @@
 
   <script>
     (function() {
-      let name, isGla;
+      // Prepopulate field GLA with user's name
+      document.addEventListener('DOMContentLoaded', setGla);
+
+      // Prepopulate fields OwnerType and Mission's info with accomodation selection
+      document.addEventListener('DOMContentLoaded', getAccomodationInfo);
+      document.getElementById('mission_accomodation').addEventListener('change', getAccomodationInfo);
+
+
+      // Get user's id from Twig and prepopulate field "Provenance GLA"
+      function setGla() {
+        let appUserDataElt = document.getElementById('appUserData'),
+            userId;
+
+        if (appUserDataElt) {
+          userId = appUserDataElt.getAttribute('data-user-id');
+          
+          document.getElementById('mission_gla').value = userId;
+        }
+      }
 
       // Prepopulate fields "owner type" and "info" with selected accomodation info
       function getAccomodationInfo() {
@@ -90,25 +108,6 @@
           document.getElementById('mission_info').value = data.access;
         });
       }
-
-      // Get user's name and isGla from Twig and prepopulate field "Provenance GLA"
-      function setGla() {
-        let appUserDataElt = document.getElementById('appUserData');
-        if (appUserDataElt) {
-          userId = appUserDataElt.getAttribute('data-user-id');
-          isGla = appUserDataElt.getAttribute('data-is-gla');
-        }
-        if (isGla) {
-          document.getElementById('mission_gla').value = userId;
-        }
-      }
-      
-      // Prepopulate field GLA with user's name
-      document.addEventListener('DOMContentLoaded', setGla);
-
-      // Prepopulate fields OwnerType and Mission's info with accomodation selection
-      document.addEventListener('DOMContentLoaded', getAccomodationInfo);
-      document.getElementById('mission_accomodation').addEventListener('change', getAccomodationInfo);
     })();
   </script>
 {% endblock %}

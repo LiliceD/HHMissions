@@ -70,19 +70,19 @@ class User implements UserInterface, \Serializable
     /**
      * @ORM\Column(name="is_active", type="boolean")
      */
-    private $isActive;
+    private $active;
 
     /**
      * Adds (or not) user to suggestions of gla in 'new mission' form
      * @ORM\Column(name="is_gla", type="boolean")
      */
-    private $isGla;
+    private $gla;
 
     /**
      * Adds (or not) user to suggestions of volunteer in 'edit mission' form
      * @ORM\Column(name="is_volunteer", type="boolean")
      */
-    private $isVolunteer;
+    private $volunteer;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Mission", mappedBy="gla")
@@ -136,14 +136,9 @@ class User implements UserInterface, \Serializable
         return $category;
     }
 
-    public function setRolesFromCategory($category, $hasGlaRole = false)
+    public function setRolesFromCategory($category)
     {
         $roles = [$category];
-
-        if ($category === 'ROLE_VOLUNTEER' && $hasGlaRole) {
-            // Add 'ROLE_GLA' to volunteers allowed to create missions
-            array_push($roles, 'ROLE_GLA');
-        }
 
         $this->setRoles($roles);
     }
@@ -151,7 +146,7 @@ class User implements UserInterface, \Serializable
 
     public function __construct()
     {
-        $this->isActive = true;
+        $this->active = true;
         $this->missionsAsGla = new ArrayCollection();
         $this->missionsAsVolunteer = new ArrayCollection();
     }
@@ -199,14 +194,14 @@ class User implements UserInterface, \Serializable
 
     /********** Private functions *************/
 
-    private function setIsGlaIsVolunteer()
+    private function setGlaVolunteer()
     {
         $roles = $this->getRoles();
         
         // ROLE_GLA (resp. ROLE_VOLUNTEER) is only in Gla list (resp. Volunteer list)
         // ROLE_ADMIN is in both lists
-        $this->isGla = in_array('ROLE_ADMIN', $roles) || in_array('ROLE_GLA', $roles);
-        $this->isVolunteer = in_array('ROLE_ADMIN', $roles) || in_array('ROLE_VOLUNTEER', $roles);
+        $this->gla = in_array('ROLE_ADMIN', $roles) || in_array('ROLE_GLA', $roles);
+        $this->volunteer = in_array('ROLE_ADMIN', $roles) || in_array('ROLE_VOLUNTEER', $roles);
     }
 
 
@@ -269,7 +264,7 @@ class User implements UserInterface, \Serializable
     public function setRoles($roles)
     {
         $this->roles = $roles;
-        $this->setIsGlaIsVolunteer();
+        $this->setGlaVolunteer();
     }
 
 
@@ -284,14 +279,25 @@ class User implements UserInterface, \Serializable
     }
 
 
-    public function getIsGla()
+    public function isActive()
     {
-        return $this->isGla;
+        return $this->active;
     }
 
-    public function getIsVolunteer()
+    public function setActive($active)
     {
-        return $this->isVolunteer;
+        $this->active = $active;
+    }
+
+
+    public function isGla()
+    {
+        return $this->gla;
+    }
+
+    public function isVolunteer()
+    {
+        return $this->volunteer;
     }
 
 

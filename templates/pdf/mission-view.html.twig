@@ -1,5 +1,6 @@
 {% extends 'base.html.twig' %}
 
+
 {% block stylesheets %}
   <style>
     .pdf-content {
@@ -77,19 +78,18 @@
   </style>
 {% endblock %}
 
+
 {% block nav %}
 {% endblock %}
 
+
 {% block body %}
-
   <div class="pdf-content">
-
     <h2>Fiche mission : GLA - Bénévole</h2>
 
     <hr>
     
     <div>
-
       {# id + GLA + volunteer #}
       <div class="inline-block width-sm">
         <div class="cell label">
@@ -139,7 +139,6 @@
           </div>
         </div>
       </div>
-
     </div>
 
     <hr>
@@ -183,10 +182,9 @@
         {{ mission.conclusions|nl2br }}
       </div>
     </div>
-
   </div>
-
 {% endblock %}
+
 
 {% block javascripts %}
 {% endblock %}
