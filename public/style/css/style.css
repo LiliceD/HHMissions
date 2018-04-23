@@ -31,6 +31,11 @@ h3 {
   width: 140px;
 }
 
+/* also used in user/list.html.twig */
+.bg-inactive {
+  background-color: rgba(108, 117, 125, 0.25);
+}
+
 
 /* mission/add.html.twig + mission/edit.html.twig */
 #mission_description, #mission_conclusions {

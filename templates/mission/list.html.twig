@@ -457,8 +457,7 @@
 
         // Closed missions are greyed
         if (mission.status === "{{ constant('App\\Entity\\Mission::STATUS_CLOSED') }}") {
-          tr.className = 'text-secondary';
-          tr.style.backgroundColor = 'rgba(108, 117, 125, 0.25)';
+          tr.className = 'text-secondary bg-inactive';
         }
 
         // Cells

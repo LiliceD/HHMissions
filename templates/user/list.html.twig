@@ -35,7 +35,7 @@
 
     <tbody>
       {% for user in users %}
-        <tr id="user-{{ user.id }}">
+        <tr id="user-{{ user.id }}" class="{{ user.isActive ? : 'text-secondary bg-inactive' }}">
           <td>{{ user.name }}</td>
           <td>{{ user.username }}</td>
           <td>{{ user.category }}</td>
