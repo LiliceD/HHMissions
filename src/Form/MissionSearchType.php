@@ -53,23 +53,27 @@ class MissionSearchType extends AbstractType
                 'expanded' => true
             ])
             ->add('description', null, [
-                'required' => false,
+                'required' => false
             ])
             ->add('dateCreatedMin', DateType::class, [
                 'widget' => 'single_text',
-                'required' => false,
+                'format' => 'dd/MM/yyyy',
+                'required' => false
             ])
             ->add('dateCreatedMax', DateType::class, [
                 'widget' => 'single_text',
-                'required' => false,
+                'format' => 'dd/MM/yyyy',
+                'required' => false
             ])
             ->add('dateFinishedMin', DateType::class, [
                 'widget' => 'single_text',
-                'required' => false,
+                'format' => 'dd/MM/yyyy',
+                'required' => false
             ])
             ->add('dateFinishedMax', DateType::class, [
                 'widget' => 'single_text',
-                'required' => false,
+                'format' => 'dd/MM/yyyy',
+                'required' => false
             ])
         ;
     }

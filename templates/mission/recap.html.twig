@@ -28,11 +28,11 @@
         <div class="d-flex align-items-center">
           <small>Date demande entre le</small>
           <div class="input-group-sm input-date mx-2">
-            {{ form_widget(form.dateCreatedMin) }}
+            {{ form_widget(form.dateCreatedMin, {'attr': {'placeholder': 'jj/mm/aaaa'}}) }}
           </div>
           <small>et le</small>
           <div class="input-group-sm input-date mx-2">
-            {{ form_widget(form.dateCreatedMax) }}
+            {{ form_widget(form.dateCreatedMax, {'attr': {'placeholder': 'jj/mm/aaaa'}}) }}
           </div>
         </div>
 
@@ -84,7 +84,7 @@
 {% block javascripts %}
   {{ parent() }}
 
-  <script src="{{ asset('js/sortTable.js') }}"></script>
+  <script src="{{ asset('js/functions.js') }}"></script>
   <script src="{{ asset('js/ajax.js') }}"></script>
  
   <script>
@@ -131,8 +131,8 @@
 
       // Retrieve filters from search form, get matching missions from backend, fill in table, update number of missions and update link to pdf export
       function fillRecapMissionsTable() {
-        dateCreatedMin = dateCreatedMinInput.value;
-        dateCreatedMax = dateCreatedMaxInput.value;
+        dateCreatedMin = formatStringToDate(dateCreatedMinInput.value);
+        dateCreatedMax = formatStringToDate(dateCreatedMaxInput.value);
 
         // Send filters to controller
         ajaxPost("{{ path('app_mission_filter') }}", {'dateCreatedMin': dateCreatedMin, 'dateCreatedMax': dateCreatedMax}, JSONResponse => {
@@ -194,11 +194,13 @@
         // Address
         let tdAcc = document.createElement('td');
 
+        tdAcc.innerHTML = mission.accomodationStreet + '<br>';
+
         if (mission.accomodationName) {
-          tdAcc.innerHTML = mission.accomodationName + '<br>'; 
+          tdAcc.innerHTML += mission.accomodationName + '<br>'; 
         }
-          tdAcc.innerHTML += mission.accomodationStreet + '<br>';
-          tdAcc.innerHTML += mission.accomodationPostalCode + ' ' + mission.accomodationCity;
+
+        tdAcc.innerHTML += mission.accomodationPostalCode + ' ' + mission.accomodationCity;
 
         let tdDesc = document.createElement('td');
             tdDesc.innerHTML = mission.description;

@@ -13,7 +13,7 @@ class MissionRepository extends ServiceEntityRepository
         parent::__construct($registry, Mission::class);
     }
 
-    public function findByStatusJoined($value, $order)
+    public function findByStatusJoined($value)
     {
         $qb = $this->createQueryBuilder('m')
             ->innerJoin('m.accomodation', 'a')
@@ -25,7 +25,7 @@ class MissionRepository extends ServiceEntityRepository
         ;
         
         return $qb->add('where', $qb->expr()->in('m.status', ':value'))
-            ->orderBy('m.id', $order)
+            ->orderBy('m.id', 'DESC')
             ->setParameter('value', $value)
             // ->setMaxResults(10)
             ->getQuery()
@@ -33,21 +33,7 @@ class MissionRepository extends ServiceEntityRepository
         ;
     }
 
-    public function findAllJoined()
-    {
-        return $this->createQueryBuilder('m')
-            ->innerJoin('m.accomodation', 'a')
-            ->addSelect('a')
-            ->innerJoin('m.gla', 'g')
-            ->addSelect('g')
-            ->leftJoin('m.volunteer', 'v')
-            ->addSelect('v')
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-
-    public function findByFiltersJoined($filters, $order)
+    public function findByFiltersJoined($filters)
     {
         $qb = $this->createQueryBuilder('m')
             ->innerJoin('m.accomodation', 'a')
@@ -83,20 +69,9 @@ class MissionRepository extends ServiceEntityRepository
         }
 
         // Sort and return missions
-        return $qb->orderBy('m.id', $order)
+        return $qb->orderBy('m.id', 'DESC')
             ->getQuery()
             ->getResult()
         ;
     }
-
-    // public function findOneByIdJoinedToAccomodation($missionId)
-    // {
-    //     return $this->createQueryBuilder('m')
-    //         ->innerJoin('m.accomodation', 'c')
-    //         ->addSelect('c')
-    //         ->andWhere('m.id = :id')
-    //         ->setParameter('id', $misionId)
-    //         ->getQuery()
-    //         ->getOneOrNullResult();
-    // }
 }

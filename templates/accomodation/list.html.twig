@@ -44,11 +44,11 @@
       {% for accomodation in accomodations %}
         <tr id="accomodation-{{ accomodation.id }}">
           <td>
-            {% if accomodation.name %}
-              {{ accomodation.name }}
-              <br>
-            {% endif %}
             {{ accomodation.street }}
+            {% if accomodation.name %}
+              <br>
+              {{ accomodation.name }}
+            {% endif %}
           </td>
           <td>{{ accomodation.postalCode }}</td>
           <td>{{ accomodation.city }}</td>
@@ -73,7 +73,7 @@
 {% block javascripts %}
   {{ parent() }}
 
-  <script src="{{ asset('js/sortTable.js') }}"></script>
+  <script src="{{ asset('js/functions.js') }}"></script>
  
   <script>
     (function() {

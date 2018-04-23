@@ -29,7 +29,7 @@ class AccomodationType extends AbstractType
                 'label' => 'Propriétaire :',
                 'placeholder' => '-'
             ))
-            ->add('access', null, array('label' => 'Accès :', 'required' => false))
+            ->add('access', null, array('label' => 'Accès à l\'immeuble (facultatif) :', 'required' => false))
         ;
     }
 

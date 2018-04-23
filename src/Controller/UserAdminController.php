@@ -169,7 +169,7 @@ class UserAdminController extends Controller
     {    
         // Get all volunteers / glas / admins ordered alphabetically
         $repository = $this->getDoctrine()->getRepository(User::class);
-        $users = $repository->findBy([], ['roles' => 'DESC']);
+        $users = $repository->findBy([], ['id' => 'DESC']);
 
         return $this->render('user/list.html.twig', [
             'users' => $users

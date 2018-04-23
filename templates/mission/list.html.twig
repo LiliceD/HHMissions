@@ -48,12 +48,12 @@
             <td>{{ mission.gla }}</td>
             {# address #}
             <td>
+              {{ mission.accomodation.street }}
+              <br>
               {% if mission.accomodation.name %}
                 {{ mission.accomodation.name }}
                 <br>
               {% endif %}
-              {{ mission.accomodation.street }}
-              <br>
               {{ mission.accomodation.postalCode }} {{ mission.accomodation.city }}
             </td>
             <td><div class="text-ellipsis" title="{{ mission.description }}">{{ mission.description }}</div></td>
@@ -115,12 +115,12 @@
             <td class="gla gla-{{ mission.gla.id }}">{{ mission.gla }}</td>
             {# address #}
             <td>
+              {{ mission.accomodation.street }}
+              <br>
               {% if mission.accomodation.name %}
                 {{ mission.accomodation.name }}
                 <br>
               {% endif %}
-              {{ mission.accomodation.street }}
-              <br>
               {{ mission.accomodation.postalCode }} {{ mission.accomodation.city }}
             </td>
             <td class="volunteer volunteer-{{ mission.volunteer.id }}">{{ mission.volunteer }}</td>
@@ -193,11 +193,11 @@
         <div class="d-flex align-items-center">
           <small>Date demande entre le</small>
           <div class="input-group-sm input-date mx-2">
-            {{ form_widget(form.dateCreatedMin) }}
+            {{ form_widget(form.dateCreatedMin, {'attr': {'placeholder': 'jj/mm/aaaa'}}) }}
           </div>
           <small>et le</small>
           <div class="input-group-sm input-date mx-2">
-            {{ form_widget(form.dateCreatedMax) }}
+            {{ form_widget(form.dateCreatedMax, {'attr': {'placeholder': 'jj/mm/aaaa'}}) }}
           </div>
         </div>
 
@@ -205,11 +205,11 @@
         <div class="d-flex align-items-center">
           <small>Fin de mission entre le</small>
           <div class="input-group-sm input-date mx-2">
-            {{ form_widget(form.dateFinishedMin) }}
+            {{ form_widget(form.dateFinishedMin, {'attr': {'placeholder': 'jj/mm/aaaa'}}) }}
           </div>
           <small>et le</small>
           <div class="input-group-sm input-date ml-2">
-            {{ form_widget(form.dateFinishedMax) }}
+            {{ form_widget(form.dateFinishedMax, {'attr': {'placeholder': 'jj/mm/aaaa'}}) }}
           </div>
         </div>
       </div>
@@ -255,7 +255,7 @@
 {% block javascripts %}
   {{ parent() }}
 
-  <script src="{{ asset('js/sortTable.js') }}"></script>
+  <script src="{{ asset('js/functions.js') }}"></script>
   <script src="{{ asset('js/ajax.js') }}"></script>
 
   <script>
@@ -391,10 +391,10 @@
         volunteerIds = getCheckedValues(volunteerOptions);
         accomodationIds = getCheckedValues(accomodationOptions);
         descriptionSearch = descriptionInput.value.trim();
-        dateCreatedMin = dateCreatedMinInput.value;
-        dateCreatedMax = dateCreatedMaxInput.value;
-        dateFinishedMin = dateFinishedMinInput.value;
-        dateFinishedMax = dateFinishedMaxInput.value;
+        dateCreatedMin = formatStringToDate(dateCreatedMinInput.value);
+        dateCreatedMax = formatStringToDate(dateCreatedMaxInput.value);
+        dateFinishedMin = formatStringToDate(dateFinishedMinInput.value);
+        dateFinishedMax = formatStringToDate(dateFinishedMaxInput.value);
 
         // Send filters to controller
         ajaxPost("{{ path('app_mission_filter') }}", {'glaIds': glaIds, 'volunteerIds': volunteerIds, 'accomodationIds': accomodationIds, 'descriptionSearch': descriptionSearch, 'dateCreatedMin': dateCreatedMin, 'dateCreatedMax': dateCreatedMax, 'dateFinishedMin': dateFinishedMin, 'dateFinishedMax': dateFinishedMax}, JSONResponse => {
@@ -458,6 +458,7 @@
         // Closed missions are greyed
         if (mission.status === "{{ constant('App\\Entity\\Mission::STATUS_CLOSED') }}") {
           tr.className = 'text-secondary';
+          tr.style.backgroundColor = 'rgba(108, 117, 125, 0.25)';
         }
 
         // Cells
@@ -479,12 +480,14 @@
 
         // Address
         let tdAcc = document.createElement('td');
+        
+        tdAcc.innerHTML = mission.accomodationStreet + '<br>';
 
         if (mission.accomodationName) {
-          tdAcc.innerHTML = mission.accomodationName + '<br>'; 
+          tdAcc.innerHTML += mission.accomodationName + '<br>'; 
         }
-          tdAcc.innerHTML += mission.accomodationStreet + '<br>';
-          tdAcc.innerHTML += mission.accomodationPostalCode + ' ' + mission.accomodationCity;
+        
+        tdAcc.innerHTML += mission.accomodationPostalCode + ' ' + mission.accomodationCity;
 
         let tdVol = document.createElement('td');
             tdVol.className = 'volunteer volunteer-' + mission.volunteerId;

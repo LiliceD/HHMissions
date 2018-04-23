@@ -235,20 +235,12 @@ class MissionController extends Controller
     {    
         $repository = $this->getDoctrine()->getRepository(Mission::class);
 
-        // Missions not assigned yet
-        // $newMissions = $repository->findByStatus([Mission::STATUS_DEFAULT], 'DESC');
-        // // Missions assigned but not finished
-        // $assignedMissions = $repository->findByStatus([Mission::STATUS_ASSIGNED], 'DESC');
-        // // Missions finished (incl. closed)
-        // $finishedMissions = $repository->findByStatus([Mission::STATUS_FINISHED, Mission::STATUS_CLOSED], 'DESC');
-
         // Retrieve missions not finished
-        $missions = $repository->findByStatusJoined([Mission::STATUS_DEFAULT, Mission::STATUS_ASSIGNED], 'DESC');
+        $missions = $repository->findByStatusJoined([Mission::STATUS_DEFAULT, Mission::STATUS_ASSIGNED]);
         
         // Split missions based on their status
         $newMissions = [];
         $assignedMissions = [];
-        // $finishedMissions = [];
 
         foreach($missions as $mission) {
             switch ($mission->getStatus()) {
@@ -257,22 +249,14 @@ class MissionController extends Controller
                     break;
                 case Mission::STATUS_ASSIGNED:
                     array_push($assignedMissions, $mission);
-                    // break;
-                // default:
-                //     array_push($finishedMissions, $mission);
             }
         }
-
-        // if (!$newMissions && !$assignedMissions && !$finishedMissions) {
-        //     throw $this->createNotFoundException('Aucune fiche mission trouvée.');
-        // }
 
         $searchForm = $this->createForm(MissionSearchType::class);
 
         return $this->render('mission/list.html.twig', [
             'newMissions' => $newMissions,
             'assignedMissions' => $assignedMissions,
-            // 'finishedMissions' => $finishedMissions,
             'form' => $searchForm->createView(),
         ]);
     }
@@ -452,7 +436,7 @@ class MissionController extends Controller
             'mission' => $mission
         ]);
 
-        $filename = sprintf('fm-%s_%s.pdf', $mission->getId(), date('Y-m-d_His'));
+        $filename = sprintf('fm-%s__%s.pdf', $mission->getId(), $mission->getFormattedDateCreated());
 
         return new Response(
             $this->get('knp_snappy.pdf')->getOutputFromHtml($html),
@@ -474,10 +458,6 @@ class MissionController extends Controller
      */
     public function recapPdfExport($dateMin = '', $dateMax = '')
     {
-        // Get filters from request parameters
-        // $dateCreatedMin = $request->request->get('dateMin');
-        // $dateCreatedMax = $request->request->get('dateMax');
-
         // Create array of filters
         $filters = [];
 
@@ -503,7 +483,7 @@ class MissionController extends Controller
             'missions' => $missions
         ]);
 
-        $filename = sprintf('fm-recap_%s.pdf', date('Y-m-d_His'));
+        $filename = sprintf('fm-recap_%s.pdf', date('Y-m-d'));
 
         return new Response(
             $this->get('knp_snappy.pdf')->getOutputFromHtml($html, [
@@ -588,8 +568,6 @@ class MissionController extends Controller
 
             $statusFilter = ['field' => 'm.status', 'value' => $statuses];
             array_push($filters, $statusFilter);
-
-            $order = 'DESC';
         } else if (preg_match('/\/recap$/', $referer)) {
             // From mission recap : all but closed
             $statuses = array_values(Mission::getStatuses()); // Array of all statuses
@@ -597,14 +575,12 @@ class MissionController extends Controller
 
             $statusFilter = ['field' => 'm.status', 'value' => $statuses];
             array_push($filters, $statusFilter);
-
-            $order = 'ASC';
         }
         
         // Retrieve Missions matching filters
         $missions = $this->getDoctrine()
             ->getRepository(Mission::class)
-            ->findByFiltersJoined($filters, $order)
+            ->findByFiltersJoined($filters)
         ;
 
         // Convert Missions to JSON
@@ -651,27 +627,4 @@ class MissionController extends Controller
         // Return JSON response
         return new JsonResponse($data);
     }
-
-
-// ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗███████╗
-// ██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║██╔════╝
-// █████╗  ██║   ██║██╔██╗ ██║██║        ██║   ██║██║   ██║██╔██╗ ██║███████╗
-// ██╔══╝  ██║   ██║██║╚██╗██║██║        ██║   ██║██║   ██║██║╚██╗██║╚════██║
-// ██║     ╚██████╔╝██║ ╚████║╚██████╗   ██║   ██║╚██████╔╝██║ ╚████║███████║
-// ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝
-
-
-    private function getNonClosedMissions()
-    {
-        $nonClosedStatuses = array_values(Mission::getStatuses()); // Array of possible statuses
-        array_pop($nonClosedStatuses); // Remove STATUS_CLOSED
-
-        $repository = $this->getDoctrine()->getRepository(Mission::class);
-
-        // Get all missions with status not "Fermée" ordered by ASC id
-        $missions = $repository->findByStatusJoined($nonClosedStatuses, 'ASC');
-
-        return $missions;
-    }
-
 }

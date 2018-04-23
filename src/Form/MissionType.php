@@ -25,15 +25,18 @@ class MissionType extends AbstractType
             ->add('dateCreated', DateType::class, [
                 'label' => 'Date de demande :',
                 'widget' => 'single_text',
+                'format' => 'dd/MM/yyyy'
             ])
             ->add('dateAssigned', DateType::class, [
                 'label' => 'Date de prise en charge :',
                 'widget' => 'single_text',
+                'format' => 'dd/MM/yyyy',
                 'required' => false
             ])
             ->add('dateFinished', DateType::class, [
                 'label' => 'Date de fin de mission :',
                 'widget' => 'single_text',
+                'format' => 'dd/MM/yyyy',
                 'required' => false
             ])
             ->add('gla', EntityType::class, [

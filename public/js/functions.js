@@ -1,3 +1,15 @@
+// Convert string date from 'dd/mm/yyy' to 'yyyy-mm-dd'
+function formatStringToDate(strDate) {
+    let dateParts = strDate.split('/');
+
+    if (strDate) {
+        return dateParts[2] + '-' + dateParts[1] + '-' + dateParts[0];
+    } else {
+        return '';
+    }
+}
+
+// Add sorting to given table on click on given column n
 function sortTable(table, n) {
     let rows, switching = true, i, x, y, shouldSwitch, dir, switchcount = 0;
 
