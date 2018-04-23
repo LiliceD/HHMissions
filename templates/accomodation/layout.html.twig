@@ -56,22 +56,19 @@
 {% block javascripts %}
   {{ parent() }}
 
+  <script src="{{ asset('js/functions.js') }}"></script>
+
   <script>
     (function() {
-      function standardizeInput(input) {
-        return input.normalize('NFD').replace(/[\u0300-\u036F]/g, "").toUpperCase();
-      }
-
-
       // Remove accent and capitalize name, address and city
       document.getElementById("accomodation_name").addEventListener("input", (e) => {
-        e.target.value = standardizeInput(e.target.value);
+        e.target.value = capitalizeInput(e.target.value);
       });
       document.getElementById("accomodation_street").addEventListener("input", (e) => {
-        e.target.value = standardizeInput(e.target.value);
+        e.target.value = capitalizeInput(e.target.value);
       });
       document.getElementById("accomodation_city").addEventListener("input", (e) => {
-        e.target.value = standardizeInput(e.target.value);
+        e.target.value = capitalizeInput(e.target.value);
       });
 
       // Replace with city name dynamic population

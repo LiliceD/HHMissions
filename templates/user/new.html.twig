@@ -18,16 +18,16 @@
       </div>
     </div>
 
-    <div class="alert alert-danger">
-      Vérifiez bien que <strong>l'adresse email est celle fournie par Habitat et Humanisme</strong>. Si ce n'est pas le cas, modifiez l'identifiant.
-    </div>
     <div class="form-row">
-      <div class="form-group col-sm-4">
+      <div class="form-group col-sm-4 mb-0">
         {{ form_row(form.username) }}
       </div>
-      <div class="form-group col-sm-8">
+      <div class="form-group col-sm-8 mb-0">
         {{ form_row(form.email, {'attr': {'readonly': 'true'}}) }}
       </div>
+    </div>
+     <div class="alert alert-danger mb-4">
+      Vérifiez bien que <strong>l'adresse email est celle fournie par Habitat et Humanisme</strong>. Si ce n'est pas le cas, modifiez l'<a href="#user_username">identifiant</a>.
     </div>
     
     {# Category / roles #}
@@ -69,6 +69,8 @@
 {% block javascripts %}
   {{ parent() }}
 
+  <script src="{{ asset('js/functions.js') }}"></script>
+
   <script>
     (function() {
       let firstNameElt = document.getElementById('user_firstName'),
@@ -78,6 +80,24 @@
           emailElt = document.getElementById('user_email'),
           pwd1Elt = document.getElementById('user_plainPassword_first'),
           pwd2Elt = document.getElementById('user_plainPassword_second');
+
+
+      // Convert spaces to "-" and first letter to uppercase in first name
+      firstNameElt.addEventListener("input", (e) => {
+        e.target.value = standardizeFirstName(e.target.value);
+      });
+
+      // Remove accent and capitalize last name
+      lastNameElt.addEventListener("input", (e) => {
+        e.target.value = capitalizeInput(e.target.value);
+      });
+
+      // Update username and email with first and last name changes
+      firstNameElt.addEventListener('change', namesUpdate);
+      lastNameElt.addEventListener('change', namesUpdate);
+      
+      // Update email with username changes
+      usernameElt.addEventListener('change', usernameUpdate);
 
 
       function namesUpdate() {
@@ -121,6 +141,10 @@
         }
       }
 
+      function standardizeFirstName(string) {
+        return capitalizeFirstLetter(string.replace(/\s+/g, '-'));
+      }
+
       function capitalizeFirstLetter(string) {
         let finalString,
             hyphenIndex = string.indexOf('-');
@@ -135,13 +159,6 @@
 
         return finalString;
       }
-
-      // Update username and email with first and last name changes
-      firstNameElt.addEventListener('change', namesUpdate);
-      lastNameElt.addEventListener('change', namesUpdate);
-      
-      // Update email with username changes
-      usernameElt.addEventListener('change', usernameUpdate);
     })();
   </script>
 {% endblock %}

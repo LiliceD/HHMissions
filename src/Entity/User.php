@@ -114,9 +114,9 @@ class User implements UserInterface, \Serializable
     public static function getCategories()
     {
         return [
-            Self::CAT_ADMIN => 'ROLE_ADMIN',
+            Self::CAT_VOLUNTEER => 'ROLE_VOLUNTEER',
             Self::CAT_GLA => 'ROLE_GLA',
-            Self::CAT_VOLUNTEER => 'ROLE_VOLUNTEER'
+            Self::CAT_ADMIN => 'ROLE_ADMIN'
         ];
     }
 

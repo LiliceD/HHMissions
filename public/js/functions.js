@@ -1,3 +1,9 @@
+// Remove accents and convert to uppercase
+function capitalizeInput(input) {
+    return input.normalize('NFD').replace(/[\u0300-\u036F]/g, "").toUpperCase();
+}
+
+
 // Convert string date from 'dd/mm/yyy' to 'yyyy-mm-dd'
 function formatStringToDate(strDate) {
     let dateParts = strDate.split('/');
@@ -8,6 +14,7 @@ function formatStringToDate(strDate) {
         return '';
     }
 }
+
 
 // Add sorting to given table on click on given column n
 function sortTable(table, n) {
