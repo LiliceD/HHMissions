@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface; // to use Callback validation
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 
 /**
  * @ORM\Table(name="users")
@@ -16,7 +16,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * @UniqueEntity(fields="email", message="Adresse email déjà utilisée")
  * @UniqueEntity(fields="username", message="Nom d'utilisateur déjà utilisé")
  */
-class User implements UserInterface, \Serializable
+class User implements AdvancedUserInterface, \Serializable
 {
     // Categories (cf getCategory() to see relation to roles)
     const CAT_ADMIN = 'Admin';
@@ -61,9 +61,9 @@ class User implements UserInterface, \Serializable
     private $roles;
 
     /**
-     * @ORM\Column(type="string", length=25)
+     * @ORM\Column(type="string", length=50)
      * @Assert\NotBlank(groups={"Default", "edit"})
-     * @Assert\Length(max=25)
+     * @Assert\Length(max=50)
      */
     private $name;
 
@@ -177,6 +177,7 @@ class User implements UserInterface, \Serializable
             $this->id,
             $this->username,
             $this->password,
+            $this->active
         ));
     }
 
@@ -188,6 +189,7 @@ class User implements UserInterface, \Serializable
             $this->id,
             $this->username,
             $this->password,
+            $this->active
         ) = unserialize($serialized);
     }
 
@@ -315,5 +317,27 @@ class User implements UserInterface, \Serializable
     public function getMissionsAsVolunteer()
     {
         return $this->missionsAsVolunteer;
+    }
+
+
+    // Below are required functions for AdvancedUserInterface to prevent inactive users from logging in
+    public function isAccountNonExpired()
+    {
+        return true;
+    }
+
+    public function isAccountNonLocked()
+    {
+        return true;
+    }
+
+    public function isCredentialsNonExpired()
+    {
+        return true;
+    }
+
+    public function isEnabled()
+    {
+        return $this->active;
     }
 }

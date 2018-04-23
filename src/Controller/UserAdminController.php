@@ -175,4 +175,57 @@ class UserAdminController extends Controller
             'users' => $users
         ]);
     }
+
+
+//  █████╗  ██████╗████████╗██╗ ██████╗ ███╗   ██╗███████╗
+// ██╔══██╗██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║██╔════╝
+// ███████║██║        ██║   ██║██║   ██║██╔██╗ ██║███████╗
+// ██╔══██║██║        ██║   ██║██║   ██║██║╚██╗██║╚════██║
+// ██║  ██║╚██████╗   ██║   ██║╚██████╔╝██║ ╚████║███████║
+// ╚═╝  ╚═╝ ╚═════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝
+
+
+    /**
+     * (De)activate user
+     * 
+     * @Route(
+     *  "/desactiver/{id}",
+     *  name="app_user_deactivate",
+     *  requirements={
+     *      "id"="\d+"
+     *  }
+     * )
+     */
+    public function changeActive(User $user)
+    {
+        // Retrieve app user to prevent self-deactivation
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $appUserId = $this->getUser()->getId();
+
+        if ($user->getId() === $appUserId) {
+            // Set a "flash" success message
+            $this->addFlash(
+                'error',
+                'Oups ! Vous ne pouvez pas vous désactiver vous-même 😉'
+            );
+        } else {
+            $user->setActive(!$user->isActive());
+
+            // Persist changes to DB
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($user);
+            $em->flush();
+
+            // Set a "flash" success message
+            $this->addFlash(
+                'notice',
+                'L\'utilisateur·trice a été '.($user->isActive() ? '' : 'dés').'activé·e.'
+            );
+        }
+
+        // Redirect to user view
+        return $this->redirectToRoute('app_user_view', [
+            'id' => $user->getId()
+        ]);
+    }
 }
