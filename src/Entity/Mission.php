@@ -216,7 +216,7 @@ class Mission
     {
         return $this->volunteer;
     }
-    public function setVolunteer(User $volunteer)
+    public function setVolunteer(?User $volunteer)
     {
         $this->volunteer = $volunteer;
     }

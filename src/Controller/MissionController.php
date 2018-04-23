@@ -103,13 +103,16 @@ class MissionController extends Controller
         // Retrieve user and allow action only if user is admin, mission's gla or mission's volunteer
         $this->denyAccessUnlessGranted('simpleEdit', $mission);
         
+        // Copy all previous data
+        $oldMission = $mission;
+
         // Save previous attachment file name to avoid delete by edit with no changes
-        $previousFileName = $mission->getAttachment();
+        $oldFileName = $oldMission->getAttachment();
 
         // Set file from file name
-        if ($previousFileName) {
+        if ($oldFileName) {
             $mission->setAttachment(
-                new File($this->getParameter('app_attachment_directory').'/'.$previousFileName)
+                new File($this->getParameter('app_attachment_directory').'/'.$oldFileName)
             );
         }
 
@@ -118,19 +121,43 @@ class MissionController extends Controller
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            
+            // Retrieve user to check authorizations
+            $user = $this->getUser();
+
+            // DateCreated, accomodation and GLA can't be changed
+            $mission->setDateCreated($oldMission->getDateCreated());
+            $mission->setAccomodation($oldMission->getAccomodation());
+            $mission->setGla($oldMission->getGla());
+
+            // DateAssigned and Volunteer can only be changed by admin
+            if (!$this->isGranted('ROLE_ADMIN', $user)) {
+                $mission->setDateAssigned($oldMission->getDateAssigned());
+                $mission->setVolunteer($oldMission->getVolunteer());
+            }
+
+            // DateFinished can only be changed by volunteer assigned or admin
+            if (!$this->isGranted('ROLE_VOLUNTEER', $user)) {
+                $mission->setDateFinished($oldMission->getDateFinished());
+            }
+
+            // Description and Info can only be changed by GLA or admin
+            if (!$this->isGranted('ROLE_GLA', $user)) {
+                $mission->setDescription($oldMission->getDescription());
+                $mission->setInfo($oldMission->getInfo());
+            }
+
             // Update status
             $mission->updateStatus();
 
             // Manage attachment
             $file = $mission->getAttachment();
 
-            if ($file) {
+            if ($file && $this->isGranted('ROLE_GLA', $user)) {
                 $fileName = $fileUploader->upload($file);
 
                 $mission->setAttachment($fileName);
-            } else if ($previousFileName) {
-                $mission->setAttachment($previousFileName);
+            } else if ($oldFileName) {
+                $mission->setAttachment($oldFileName);
             }
 
             // Persist to DB
@@ -150,7 +177,7 @@ class MissionController extends Controller
         return $this->render('mission/edit.html.twig', [
             'form' => $form->createView(),
             'mission' => $mission,
-            'attachmentUrl' => $previousFileName
+            'attachmentUrl' => $oldFileName
         ]);
     }
 
