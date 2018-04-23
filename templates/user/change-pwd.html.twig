@@ -5,6 +5,13 @@
   Modifier le mot de passe
 {% endblock %}
 
+{% block header_button %}
+  <a href="{{ path('app_profile_view') }}" class="btn btn-outline-secondary">
+    <i class="fas fa-chevron-left"></i>
+    Annuler
+  </a>
+{% endblock %}
+
 
 {% block card_body %}
   {{ form_start(form) }}

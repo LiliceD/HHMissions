@@ -54,12 +54,12 @@
           {% if is_granted('ROLE_ADMIN') %}
             {{ form_row(form.dateAssigned) }}
           {% else %}
-            {{ form_row(form.dateAssigned, {'attr': {'disabled': 'true'}}) }}
+            {{ form_row(form.dateAssigned, {'attr': {'readonly': 'true'}}) }}
           {% endif %}
           {% if is_granted('ROLE_VOLUNTEER') %}
             {{ form_row(form.dateFinished) }}
           {% else %}
-            {{ form_row(form.dateFinished, {'attr': {'disabled': 'true'}}) }}
+            {{ form_row(form.dateFinished, {'attr': {'readonly': 'true'}}) }}
           {% endif %}
         </div>
       </div>

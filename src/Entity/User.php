@@ -39,7 +39,7 @@ class User implements UserInterface, \Serializable
 
     /**
      * @Assert\NotBlank(groups={"Default", "change_password"})
-     * @Assert\Length(min=6, max=4096, groups={"Default", "change_password"})
+     * @Assert\Length(min=8, max=4096, groups={"Default", "change_password"})
      */
     private $plainPassword;
 

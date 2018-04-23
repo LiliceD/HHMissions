@@ -56,6 +56,9 @@
 
     <div class="d-flex justify-content-end">
       <input type="submit" class="btn btn-primary mr-2" valye="Valider" />
+      <a href="{{ path('app_user_view', {'id': user.id}) }}" class="btn btn-outline-secondary">
+        Annuler
+      </a>
     </div>
 
   {{ form_end(form) }}
