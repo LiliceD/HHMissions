@@ -34,13 +34,14 @@ class Mission
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Accomodation", inversedBy="missions")
-     * @ORM\JoinColumn()
+     * @ORM\JoinColumn(nullable=false)
+     * @Assert\NotBlank()
      */
     private $accomodation;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="missionsAsGla")
-     * @ORM\JoinColumn()
+     * @ORM\JoinColumn(nullable=false)
      * @Assert\NotBlank()
      * @Assert\Expression(
      *     "value.isGla() and value.isActive()",

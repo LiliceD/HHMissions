@@ -30,4 +30,12 @@
             </exclude>
         </whitelist>
     </filter>
+
+    <groups>
+      <include>
+        <group>url</group>
+        <group>mission</group>
+        <group>accomodation</group>
+      </include>
+    </groups>
 </phpunit>
