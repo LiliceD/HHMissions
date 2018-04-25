@@ -52,7 +52,7 @@
           <td>{{ accomodation.postalCode }}</td>
           <td>{{ accomodation.city }}</td>
           <td>{{ accomodation.ownerType }}</td>
-          <td>{{ accomodation.access }}</td>
+          <td><div class="access-ellipsis" title="{{ accomodation.access }}">{{ accomodation.access }}</div></td>
           {# edit button only visible for gla and admin #}
           {% if is_granted('ROLE_GLA') %}
             <td>

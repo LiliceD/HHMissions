@@ -6,5 +6,5 @@ knp_snappy:
         
     image:
         enabled:    false
-        binary:     '%env(WKHTMLTOIMAGE_PATH)%'
+        # binary:     '%env(WKHTMLTOIMAGE_PATH)%'   (commented to avoid cache:clear error)
         options:    []

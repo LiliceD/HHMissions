@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block header_button %}
-  <a id="exportBtn" href="{{ path('app_mission_recap_pdf-export') }}" class="btn btn-primary" download>
+  <a id="exportBtn" href="{{ path('app_mission_recap_pdf-export') }}" class="btn btn-primary" download hidden>
     <i class="fas fa-download"></i>
     Exporter au format PDF
   </a>
@@ -54,9 +54,15 @@
   
   {{ form_end(form) }}
 
+  {# Loading alert #}
+  <div id="loadingAlert" class="alert alert-info text-center" role="alert">
+    <i class="fas fa-spinner fa-spin"></i>
+    Chargement en cours ...
+  </div>
+
   {# Table #}
   <div class="table-responsive">
-    <table class="table table-sm table-hover table-recap">
+    <table class="table table-sm table-hover table-recap" hidden>
       <thead class="thead-light">
         <tr>
           <th scope="col" class="table-recap-id"># <i class="fas fa-sort"></i></th>
@@ -78,6 +84,8 @@
       </tbody>
     </table>
   </div>
+
+  <div id="noOpenedMissions" class="text-center font-weight-bold"></div>
 {% endblock %}
 
 
@@ -92,7 +100,10 @@
       let table = document.querySelector('table'),
           dateCreatedMinInput = document.getElementById('mission_search_dateCreatedMin'),
           dateCreatedMaxInput = document.getElementById('mission_search_dateCreatedMax'),
-          dateCreatedMin, dateCreatedMax;
+          dateCreatedMin, dateCreatedMax,
+          exportBtn = document.getElementById('exportBtn'),
+          loadingAlert = document.getElementById('loadingAlert'),
+          noOpenedMissionsDiv = document.getElementById('noOpenedMissions');
 
 
       // Add table sorting on clicking on one of its header
@@ -131,29 +142,49 @@
 
       // Retrieve filters from search form, get matching missions from backend, fill in table, update number of missions and update link to pdf export
       function fillRecapMissionsTable() {
+        // Hide message
+        noOpenedMissionsDiv.innerHTML = '';
+
+        // Show loading alert
+        loadingAlert.removeAttribute('hidden');
+
+        // Retrieve filters
         dateCreatedMin = formatStringToDate(dateCreatedMinInput.value);
         dateCreatedMax = formatStringToDate(dateCreatedMaxInput.value);
 
         // Send filters to controller
         ajaxPost("{{ path('app_mission_filter') }}", {'dateCreatedMin': dateCreatedMin, 'dateCreatedMax': dateCreatedMax}, JSONResponse => {
             // Retrieve missions matching filters
-            let data = JSON.parse(JSONResponse),
-                missions = data.missions;
+            let data = JSON.parse(JSONResponse);
             
             // Empty table body
             let tbody = document.querySelector('tbody');
                 tbody.innerHTML = '';
 
-            // Fill table body with missions
-            missions.forEach( mission => {
-              tbody.appendChild(createMissionRow(mission));
-            });
+            if (data) {
+              let missions = data.missions;
 
-            // Update badge with number of missions
-            document.getElementById('recapMissionsBadge').innerHTML = missions.length;
+              // Fill table body with missions
+              missions.forEach( mission => {
+                tbody.appendChild(createMissionRow(mission));
+              });
 
-            // Update link to pdf export
-            document.getElementById('exportBtn').href = data.recap.url;
+              // Update badge with number of missions
+              document.getElementById('recapMissionsBadge').innerHTML = missions.length;
+
+              // Update link to pdf export
+              exportBtn.href = data.recap.url;
+
+              // Unhide table and export button
+              table.removeAttribute('hidden');
+              exportBtn.removeAttribute('hidden');
+            } else {
+              // Display message
+              noOpenedMissionsDiv.innerHTML = 'Aucune mission à afficher !';
+            }
+
+            // Hide loading alert
+            loadingAlert.setAttribute('hidden', 'true');
         });
       }
 

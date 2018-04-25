@@ -56,7 +56,7 @@
               {% endif %}
               {{ mission.accomodation.postalCode }} {{ mission.accomodation.city }}
             </td>
-            <td><div class="text-ellipsis" title="{{ mission.description }}">{{ mission.description }}</div></td>
+            <td><div class="description-ellipsis" title="{{ mission.description }}">{{ mission.description }}</div></td>
             {# view button #}
             <td>
               <a href="{{ path('app_mission_view', {'id': mission.id}) }}" class="btn btn-sm btn-primary">
@@ -78,7 +78,7 @@
       </tbody>
     </table>
   {% else %}
-    Aucune mission en attente !
+    <div class="text-center font-weight-bold">Aucune mission en attente !</div>
   {% endif %}
   <hr>
 
@@ -124,7 +124,7 @@
               {{ mission.accomodation.postalCode }} {{ mission.accomodation.city }}
             </td>
             <td class="volunteer volunteer-{{ mission.volunteer.id }}">{{ mission.volunteer }}</td>
-            <td><div class="text-ellipsis" title="{{ mission.description }}">{{ mission.description }}</div></td>
+            <td><div class="description-ellipsis" title="{{ mission.description }}">{{ mission.description }}</div></td>
             {# view button #}
             <td>
               <a href="{{ path('app_mission_view', {'id': mission.id}) }}" class="btn btn-sm btn-primary">
@@ -137,7 +137,7 @@
       </tbody>
     </table>
   {% else %}
-    Aucune mission en cours !
+    <div class="text-center font-weight-bold">Aucune mission en cours !</div>
   {% endif %}
 
   <hr>
@@ -229,7 +229,14 @@
     <label for="myFinishedMissions" class="mb-2 ml-2">Afficher uniquement mes missions</label>
   </div>
 
-  <table id="finishedMissions" class="table table-hover">
+  {# Loading alert #}
+  <div id="loadingAlert" class="alert alert-info text-center" role="alert">
+    <i class="fas fa-spinner fa-spin"></i>
+    Chargement en cours ...
+  </div>
+
+  {# Table #}
+  <table id="finishedMissions" class="table table-hover" hidden>
     <thead class="thead-light">
       <tr>
         <th scope="col">N° <i class="fas fa-sort"></i></th>
@@ -249,6 +256,10 @@
       {# id, dateCreated, dateFinished, gla, accomodation, volunteer, description, button to view #}
     </tbody>
   </table>
+
+  <div id="noFinishedMissions" class="text-center font-weight-bold"></div>
+
+  <br>
 {% endblock %}
 
 
@@ -264,7 +275,10 @@
           newMissionsTable = document.getElementById('newMissions'),
           assignedMissionsTable = document.getElementById('assignedMissions'),
           finishedMissionsTable = document.getElementById('finishedMissions'),
-          glaOptions = document.getElementsByName('mission_search[gla][]'),
+          loadingAlert = document.getElementById('loadingAlert'),
+          noFinishedMissionsDiv = document.getElementById('noFinishedMissions');
+
+      let glaOptions = document.getElementsByName('mission_search[gla][]'),
           volunteerOptions = document.getElementsByName('mission_search[volunteer][]'),
           accomodationOptions = document.getElementsByName('mission_search[accomodation][]'),
           descriptionInput = document.getElementById('mission_search_description'),
@@ -308,6 +322,7 @@
       // Filter finished missions table on search form submit
       document.getElementById('searchSubmitBtn').addEventListener('click', (e) => {
         e.preventDefault();
+
         fillFinishedMissionsTable();
       });
 
@@ -386,6 +401,12 @@
 
       // Retrieve filters from search form, get matching missions from backend, fill in table, update number of finished missions, uncheck 'myMissions' checkbox and sort table by status
       function fillFinishedMissionsTable() {
+        // Hide message
+        noFinishedMissionsDiv.innerHTML = '';
+
+        // Show loading alert
+        loadingAlert.removeAttribute('hidden');
+
         // Get array of checked elements
         glaIds = getCheckedValues(glaOptions);
         volunteerIds = getCheckedValues(volunteerOptions);
@@ -399,38 +420,50 @@
         // Send filters to controller
         ajaxPost("{{ path('app_mission_filter') }}", {'glaIds': glaIds, 'volunteerIds': volunteerIds, 'accomodationIds': accomodationIds, 'descriptionSearch': descriptionSearch, 'dateCreatedMin': dateCreatedMin, 'dateCreatedMax': dateCreatedMax, 'dateFinishedMin': dateFinishedMin, 'dateFinishedMax': dateFinishedMax}, JSONResponse => {
             // Retrieve missions matching filters
-            let data = JSON.parse(JSONResponse),
-                missions = data.missions;
+            let data = JSON.parse(JSONResponse);
             
             // Empty table body
             let tbody = document.querySelector('#finishedMissions tbody');
                 tbody.innerHTML = '';
 
-            // Split missions by status
-            let finishedMissions = [], closedMissions = [];
+            if (data) {
+              // Split missions by status
+              let missions = data.missions,
+                  finishedMissions = [],
+                  closedMissions = [];
 
-            missions.forEach( mission => {
-              if (mission.status === "{{ constant('App\\Entity\\Mission::STATUS_FINISHED') }}") {
-                finishedMissions.push(mission);
-              } else {
-                closedMissions.push(mission);
-              }
-            });
+              missions.forEach( mission => {
+                if (mission.status === "{{ constant('App\\Entity\\Mission::STATUS_FINISHED') }}") {
+                  finishedMissions.push(mission);
+                } else {
+                  closedMissions.push(mission);
+                }
+              });
 
-            // Add missions to table
-            finishedMissions.forEach( mission => {
-              tbody.appendChild(createMissionRow(mission));
-            });
+              // Add missions to table
+              finishedMissions.forEach( mission => {
+                tbody.appendChild(createMissionRow(mission));
+              });
 
-            closedMissions.forEach( mission => {
-              tbody.appendChild(createMissionRow(mission));
-            });
+              closedMissions.forEach( mission => {
+                tbody.appendChild(createMissionRow(mission));
+              });
 
-            // Update badge with number of missions finished but not closed
-            document.getElementById('finishedMissionsBadge').innerHTML = finishedMissions.length;
+              // Update badge with number of missions finished but not closed
+              document.getElementById('finishedMissionsBadge').innerHTML = finishedMissions.length;
+
+              // Unhide table
+              finishedMissionsTable.removeAttribute('hidden');
+            } else {
+              // Display message
+              noFinishedMissionsDiv.innerHTML = 'Aucune mission à afficher !';
+            }
 
             // Uncheck 'myMissions' checkbox
             document.getElementById('myFinishedMissions').checked = false;
+
+            // Hide loading alert
+            loadingAlert.setAttribute('hidden', 'true');
         });
       }
 
@@ -496,7 +529,7 @@
         let tdDesc = document.createElement('td'),
             divDesc = document.createElement('div');
 
-        divDesc.className = 'text-ellipsis';
+        divDesc.className = 'description-ellipsis';
         divDesc.title = mission.description;
         divDesc.innerHTML = mission.description;
 

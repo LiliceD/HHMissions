@@ -13,7 +13,7 @@ h3 {
   margin-bottom: 24px;
 }
 
-.text-ellipsis {
+.description-ellipsis {
   width: 250px;
   height: 48px;
   white-space: pre-line;
@@ -103,4 +103,11 @@ h3 {
   padding: .18rem .38rem;
   line-height: 1.1;
   font-size: 12px;
+}
+
+.access-ellipsis {
+  width: 250px;
+  white-space: pre;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
