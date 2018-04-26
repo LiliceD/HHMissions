@@ -224,16 +224,41 @@ class MissionController extends Controller
 
     /**
      * @Route(
-     *  "/{page}",
+     *  "/",
      *  name="app_mission_list",
-     *  requirements={
-     *      "page"="\d+"
-     *  }
      * )
      */
-    public function list($page = 1)
+    public function list(Request $request)
     {    
+        // Create search by id form
+        $form = $this->createForm(MissionSearchType::class);
+        $form->handleRequest($request);
+
+        // Get Mission repository
         $repository = $this->getDoctrine()->getRepository(Mission::class);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Get id submitted 
+            $data = $form->getData();
+            $id = $data['id'];
+
+            // Retrieve mission
+            $mission = $repository->findOneBy(['id' => $id]);
+
+            if ($mission) {
+                return $this->redirectToRoute('app_mission_view', [
+                    'id' => $mission->getId()
+                ]);
+            }
+
+            // Set a "flash" error message
+            $this->addFlash(
+                'error',
+                'Il n\'y a pas de fiche mission n°'.$id
+            );
+
+            return $this->redirectToRoute('app_mission_list');
+        }
 
         // Retrieve missions not finished
         $missions = $repository->findByStatusJoined([Mission::STATUS_DEFAULT, Mission::STATUS_ASSIGNED]);
@@ -252,12 +277,11 @@ class MissionController extends Controller
             }
         }
 
-        $searchForm = $this->createForm(MissionSearchType::class);
-
         return $this->render('mission/list.html.twig', [
+            'form' => $form->createView(),
             'newMissions' => $newMissions,
             'assignedMissions' => $assignedMissions,
-            'form' => $searchForm->createView(),
+            'searchForm' => $form->createView()
         ]);
     }
 
