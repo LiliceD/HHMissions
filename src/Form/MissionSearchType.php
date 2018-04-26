@@ -4,19 +4,25 @@ namespace App\Form;
 
 use App\Entity\Accomodation;
 use App\Entity\User;
-use Doctrine\ORM\EntityRepository; // for 'address' query builder
-use Symfony\Bridge\Doctrine\Form\Type\EntityType; // for 'address' drop-down
+use Doctrine\ORM\EntityRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Validator\Constraints\GreaterThan;
 
 class MissionSearchType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+            ->add('id', IntegerType::class, [
+                'constraints' => [new GreaterThan(0)],
+                'required' => false
+            ])
             ->add('gla', EntityType::class, [
                 // Multiple choice dropdown from User table, gla = true
                 'class' => User::class,

@@ -21,7 +21,7 @@ class SecurityController extends Controller
     {
         if ($authChecker->isGranted('IS_AUTHENTICATED_FULLY')) {
             // If user is connected, redirect to mission list
-            // return $this->redirectToRoute('app_mission_list');
+            return $this->redirectToRoute('app_mission_list');
         }
 
         // get the login error if there is one
