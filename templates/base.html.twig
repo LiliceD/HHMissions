@@ -121,8 +121,15 @@
 
       <script type="text/javascript">
         $(function () {
-          $('[data-toggle="tooltip"]').tooltip()
-        })
+          $('[data-toggle="popover"]').popover({
+              'placement': 'auto',
+              'trigger': 'hover'
+            });
+
+          $('[data-toggle="tooltip"]').tooltip({
+              'placement': 'auto',
+            });
+        });
       </script>
     {% endblock %}
   </body>

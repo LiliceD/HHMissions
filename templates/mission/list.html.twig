@@ -56,7 +56,7 @@
               {% endif %}
               {{ mission.accomodation.postalCode }} {{ mission.accomodation.city }}
             </td>
-            <td><div class="description-ellipsis" title="{{ mission.description }}">{{ mission.description }}</div></td>
+            <td><div class="description-ellipsis" data-toggle="popover" data-content="{{ mission.description }}">{{ mission.description }}</div></td>
             {# view button #}
             <td>
               <a href="{{ path('app_mission_view', {'id': mission.id}) }}" class="btn btn-sm btn-primary">
@@ -124,7 +124,7 @@
               {{ mission.accomodation.postalCode }} {{ mission.accomodation.city }}
             </td>
             <td class="volunteer volunteer-{{ mission.volunteer.id }}">{{ mission.volunteer }}</td>
-            <td><div class="description-ellipsis" title="{{ mission.description }}">{{ mission.description }}</div></td>
+            <td><div class="description-ellipsis" data-toggle="popover" data-content="{{ mission.description }}">{{ mission.description }}</div></td>
             {# view button #}
             <td>
               <a href="{{ path('app_mission_view', {'id': mission.id}) }}" class="btn btn-sm btn-primary">
@@ -454,6 +454,12 @@
 
               // Unhide table
               finishedMissionsTable.removeAttribute('hidden');
+
+              // Activate popovers
+              $('[data-toggle="popover"]').popover({
+                'placement': 'auto',
+                'trigger': 'hover'
+              });
             } else {
               // Display message
               noFinishedMissionsDiv.innerHTML = 'Aucune mission à afficher !';
@@ -530,7 +536,8 @@
             divDesc = document.createElement('div');
 
         divDesc.className = 'description-ellipsis';
-        divDesc.title = mission.description;
+        divDesc.setAttribute('data-toggle', 'popover');
+        divDesc.setAttribute('data-content', mission.description);
         divDesc.innerHTML = mission.description;
 
         tdDesc.appendChild(divDesc);
