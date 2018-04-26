@@ -1,49 +1,51 @@
-{% extends 'base.html.twig' %}
+{% extends 'security/layout.html.twig' %}
 
 
-{% block nav %}
+{% block header %}
+  Alys - Connexion
 {% endblock %}
 
 
-{% block body %}
-  <div class="container col-md-7 col-lg-5 mt-sm-5">
-    <div class="card bg-light text-center">
+{% block messages %}
+  {# Error message #}
+  {% if error %}
+    <div class="alert alert-danger">
+      {{ error.messageKey|trans(error.messageData, 'security') }}
+    </div>
+  {% endif %}
 
-      <div class="card-header pt-3">
-        <h4>Connexion</h4>
-      </div>
+  {# Success/Info messages #}
+  {% for message in app.flashes('notice') %}
+    <div class="alert alert-info">
+      {{ message }}
+    </div>
+  {% endfor %}
+{% endblock %}
 
-      <div class="card-body">
-        {% if error %}
-          <div class="alert alert-danger">
-            {{ error.messageKey|trans(error.messageData, 'security') }}
-          </div>
-        {% endif %}
 
-        <form action="{{ path('login') }}" method="post">
-          <div class="mb-4">
-            <label for="username" class="col-sm-auto">Nom d'utilisateur :</label>
-            <input type="text" id="username" name="_username" class="col-sm-auto form-alike" value="{{ last_username }}" autofocus="true"/>
-          </div>
-          
-          <div class="mb-4">
-            <label for="password" class="col-sm-auto">Mot de passe :</label>
-            <input type="password" id="password" name="_password" class="col-sm-auto form-alike" />
-          </div>
+{% block form %}
+  <form action="{{ path('login') }}" method="post">
+    <div class="mb-4">
+      <label for="username" class="col-sm-auto">Identifiant :</label>
+      <input type="text" id="username" name="_username" class="col-sm-auto form-alike" value="{{ last_username }}" autofocus="true"/>
+      <span data-toggle="tooltip" title="La première partie de votre adresse email Habitat et Humanisme"><i class="fas fa-question-circle text-secondary ml-2"></i></span>
+    </div>
+    
+    <div class="mb-4">
+      <label for="password" class="col-sm-auto">Mot de passe :</label>
+      <input type="password" id="password" name="_password" class="col-sm-auto form-alike" />
+    </div>
 
-          <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}" />
-          
-          {#
-              If you want to control the URL the user
-              is redirected to on success (more details below)
-              <input type="hidden" name="_target_path" value="/account" />
-          #}
-          <div class="">
-            <button type="submit" class="btn btn-primary">Valider</button>
-          </div>
-        </form>
-      </div> {# div card-body #}
-
-    </div> {# div card #}
-  </div> {# div container #}
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}" />
+    
+    {#
+        If you want to control the URL the user
+        is redirected to on success (more details below)
+        <input type="hidden" name="_target_path" value="/account" />
+    #}
+    <div class="">
+      <a href="{{ path('app.reset-pwd') }}" class="btn btn-sm btn-link">Mot de passe oublié ?</a>
+      <button type="submit" class="btn btn-primary ml-2">Valider</button>
+    </div>
+  </form>
 {% endblock %}

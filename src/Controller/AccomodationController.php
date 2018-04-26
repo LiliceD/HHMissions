@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-// use App\Entity\Accomodation;
 use App\Entity\Accomodation;
 use App\Form\AccomodationType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
