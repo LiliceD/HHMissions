@@ -62,7 +62,7 @@ class UserProfileController extends Controller
             // Set a "flash" success message
             $this->addFlash(
                 'notice',
-                'Le mot de passe a bien été enregistré.'
+                'Votre mot de passe a bien été enregistré.'
             );
 
             // Redirect to user view
