@@ -108,16 +108,27 @@ class AccomodationController extends Controller
      */
     public function delete(Accomodation $accomodation)
     {
-        // Persist changes to DB
-        $em = $this->getDoctrine()->getManager();
-        $em->remove($accomodation);
-        $em->flush();
+        // Check if accomodation is linked to missions
+        $missions = $accomodation->getMissions();
 
-        // Set a "flash" success message
-        $this->addFlash(
-            'notice',
-            'Le logement a bien été supprimé.'
-        );
+        if (!$missions->isEmpty()) {
+            // Set a "flash" success message
+            $this->addFlash(
+                'error',
+                'L\'adresse n\'a pas pu être supprimée car elle est liée à des missions.'
+            );
+        } else {
+            // Persist changes to DB
+            $em = $this->getDoctrine()->getManager();
+            $em->remove($accomodation);
+            $em->flush();
+
+            // Set a "flash" success message
+            $this->addFlash(
+                'notice',
+                'Le logement a bien été supprimé.'
+            );
+        }
 
         return $this->redirectToRoute('app_accomodation_list');
     }

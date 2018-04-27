@@ -25,8 +25,17 @@
     <hr>
 
     {% block flash_messages %}
+      {# Success messages #}
       {% for message in app.flashes('notice') %}
           <div class="alert alert-success">
+              <a href="#" class="close" data-dismiss="alert" aria-label="Fermer">&times;</a>
+              {{ message }}
+          </div>
+      {% endfor %}
+
+      {# Error messages #}
+      {% for message in app.flashes('error') %}
+          <div class="alert alert-danger">
               <a href="#" class="close" data-dismiss="alert" aria-label="Fermer">&times;</a>
               {{ message }}
           </div>
