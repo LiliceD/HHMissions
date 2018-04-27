@@ -136,6 +136,23 @@ class UserAdminController extends Controller
      */
     public function delete(User $user)
     {
+        // Check if user is linked to missions
+        $missionsAsGla = $user->getMissionsAsGla();
+        $missionsAsVolunteer = $user->getMissionsAsVolunteer();
+
+        if (!$missionsAsGla->isEmpty() || !$missionsAsVolunteer->isEmpty()) {
+            // Set a "flash" success message
+            $this->addFlash(
+                'error',
+                'Ce compte n\'a pas pu être supprimé car il est lié à des missions.'
+            );
+
+            // Redirect to user view
+            return $this->redirectToRoute('app_user_view', [
+                'id' => $user->getId()
+            ]);
+        }
+
         // Persist changes to DB
         $em = $this->getDoctrine()->getManager();
         $em->remove($user);
@@ -144,7 +161,7 @@ class UserAdminController extends Controller
         // Set a "flash" success message
         $this->addFlash(
             'notice',
-            'L\'utilisateur·trice a bien été supprimé·e.'
+            'Le compte a bien été supprimé.'
         );
 
         return $this->redirectToRoute('app_user_list');
@@ -219,7 +236,7 @@ class UserAdminController extends Controller
             // Set a "flash" success message
             $this->addFlash(
                 'notice',
-                'L\'utilisateur·trice a été '.($user->isActive() ? '' : 'dés').'activé·e.'
+                'Ce compte a été '.($user->isActive() ? '' : 'dés').'activé.'
             );
         }
 

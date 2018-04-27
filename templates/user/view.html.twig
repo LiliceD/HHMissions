@@ -13,11 +13,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="deactivateModalLabel">
-            {% if user.isActive %}
-              Désactiver le compte de l'utilisateur·trice
-            {% else %}
-              Activer le compte de l'utilisateur·trice
-            {% endif %}
+            {{ user.isActive ? 'Désactiver' : 'Activer' }} le compte de cet·te utilisateur·trice
           </h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
             <span aria-hidden="true">&times;</span>
@@ -25,11 +21,11 @@
         </div>
         <div class="modal-body">
           {% if user.isActive %}
-            <p>Si vous désactivez cet·te utilisateur·trice, il ou elle ne pourra plus se connecter à l'application et n'apparaîtra plus dans la liste des GLAs et bénévoles possibles pour les fiches mission.</p>
-            <p>Un·e utilisateur·trice désactivé·e n'est pas supprimé·e, ses fiches mission sont conservées et son compte peut être réactivé ultérieurement.</p>
+            <p>Si vous désactivez ce compte, son utilisateur·trice ne pourra plus se connecter à l'application et n'apparaîtra plus dans la liste des GLAs et bénévoles possibles pour les fiches mission.</p>
+            <p>Un compte désactivé n'est pas supprimé, ses fiches mission sont conservées et son compte peut être réactivé ultérieurement.</p>
             <p>Confirmez-vous la désactivation de ce compte ?</p>
           {% else %}
-            <p>L'activation de cet·te utilisateur·trice lui permettra de se connecter à l'application et d'apparaître dans la liste des GLAs et/ou bénévoles possibles pour les fiches mission.</p>
+            <p>L'activation de ce compte permettra à son utilisateur·trice de se connecter à l'application et d'apparaître dans la liste des GLAs et/ou bénévoles possibles pour les fiches mission.</p>
             <p>Confirmez-vous l'activation de ce compte ?</p>
           {% endif %}
         </div>
