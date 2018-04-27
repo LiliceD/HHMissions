@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+
+  <div class="container" id="main-container">
+    
+    {% block flash_messages %}
+      {{ include('flash-messages.html.twig') }}
+    {% endblock %}
+
+    <div class="card bg-light mb-4">
+      <div class="card-header pt-3 bg-white d-flex justify-content-between">
+
+        {% block header %}
+        {% endblock %}
+
+        <div>
+
+          {% block header_button %}
+          {% endblock %}
+
+        </div>
+      </div> {# div card-header #}
+
+      
+      <div class="card-body">
+
+        {% block card_body %}
+        {% endblock %}
+
+      </div> {# div card-body #}
+
+      <div class="card-footer bg-white">
+        <div class="d-flex justify-content-between">
+          {% block card_footer_left %}
+          {% endblock %}
+
+          {% block card_footer_right %}
+          {% endblock %}
+        </div>
+      </div> {# div card-footer #}
+    </div> {# div card #}
+  </div> {# div container #}
+{% endblock %}

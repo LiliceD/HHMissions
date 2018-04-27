@@ -10,25 +10,13 @@
   {# Modal to confirm mission assignment #}
   {# only visible for volunteer #}
   {% if is_granted('assign', mission) %}
-    <div class="modal fade" id="assignModal" tabindex="-1" role="dialog" aria-labelledby="assignModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="assignModalLabel">Prendre en charge la mission</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            En cliquant sur valider vous serez le ou la bénévole en charge de la mission. (Vous ne pourrez pas annuler ce choix.)
-          </div>
-          <div class="modal-footer">
-            <a href="{{ path('app_mission_assign', {'id': mission.id}) }}" class="btn btn-primary">Valider</a>
-            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
-          </div>
-        </div>
-      </div>
-    </div>
+    {% from 'macros.html.twig' import modal as modal %}
+
+    {% set modalHeader = 'Prendre en charge la mission' %}
+    {% set modalBody = 'En cliquant sur valider vous serez le ou la bénévole en charge de la mission et la date de prise en charge sera celle d\'aujourd\'hui.<br>(Vous ne pourrez pas modifier ce choix)' %}
+    {% set btnPath = path('app_mission_assign', {'id': mission.id}) %}
+    
+    {{ modal('assign', modalHeader, modalBody, btnPath, 'btn-primary', 'Valider') }}
   {% endif %}
 
 
@@ -185,12 +173,15 @@
   </div>
 {% endblock %}
 
-{% block card_footer %}
-  <div class="d-flex justify-content-between">
+
+{% block card_footer_left %}
     <a href="{{ path('app_mission_pdf-export', {'id': mission.id}) }}" class="btn btn-primary">
       <i class="fas fa-download"></i>
       Exporter en PDF
     </a>
+{% endblock %}
+
+{% block card_footer_right %}
     <div>
       {# Assign button opening a modal, only visible for volunteers #}
       {% if is_granted('assign', mission) %}
@@ -199,6 +190,7 @@
           Prendre en charge
         </button>
       {% endif %}
+
       {# edit button only visible if mission is not closed and if user is admin, mission's gla or mission's volunteer #}
       {% if mission.status != constant('STATUS_CLOSED', mission) and is_granted('simpleEdit', mission) %}
         <a href="{{ path('app_mission_edit', {'id': mission.id}) }}" class="btn btn-outline-primary">
@@ -207,5 +199,4 @@
         </a>
       {% endif %}
     </div>
-  </div>
 {% endblock %}

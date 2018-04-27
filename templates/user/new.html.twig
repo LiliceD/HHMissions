@@ -1,7 +1,8 @@
 {% extends 'user/layout.html.twig' %}
+{% from 'macros.html.twig' import formButtons as formButtons %}
 
 
-{% block header_h2 %}
+{% block header_h4 %}
   Créer un·e utilisateur·trice
 {% endblock %}
 
@@ -55,13 +56,8 @@
 
     <br>
 
-    <div class="d-flex justify-content-end">
-      <input type="submit" class="btn btn-primary mr-2" value="Valider" />
-      <a href="{{ path('app_user_new') }}" class="btn btn-outline-secondary">
-        Vider
-      </a>
-    </div>
-
+    {# Buttons Submit / Cancel #}
+    {{ formButtons(path('app_user_new'), 'Vider') }}
   {{ form_end(form) }}
 {% endblock %}
 

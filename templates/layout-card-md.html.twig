@@ -1,0 +1,20 @@
+{% extends 'layout-card.html.twig' %}
+
+
+{% block header %}
+  <h2>
+    {% block header_h2 %}
+    {% endblock %}
+  </h2>
+{% endblock %}
+
+
+{% block javascripts %}
+  {{ parent() }}
+
+  <script type="text/javascript">
+    $(function () {
+      $('#main-container').addClass('col-lg-8');
+    });
+  </script>
+{% endblock %}

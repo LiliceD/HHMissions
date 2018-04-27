@@ -1,27 +1,36 @@
-{% extends 'base.html.twig' %}
+{% extends 'layout-card-sm.html.twig' %}
 
 
 {% block nav %}
 {% endblock %}
 
 
-{% block body %}
-  <div class="container col-md-7 col-lg-5 mt-sm-5">
-    <div class="card bg-light text-center">
-      <div class="card-header pt-3">
-        <h4>
-          {% block header %}
-          {% endblock %}
-        </h4>
-      </div>
+{% block flash_messages %}
+{% endblock %}
 
-      <div class="card-body">
-        {% block messages %}
-        {% endblock %}
 
-        {% block form %}
-        {% endblock %}
-      </div>
-    </div>
-  </div>
+{% block card_body %}
+
+  {% block messages %}
+    {{ include('flash-messages.html.twig') }}
+  {% endblock %}
+
+  {% block form %}
+  {% endblock %}
+
+{% endblock %}
+
+
+{% block javascripts %}
+  {{ parent() }}
+
+  <script type="text/javascript">
+    $(function () {
+      $('#main-container').addClass('mt-sm-5');
+      $('.card').addClass('text-center');
+      $('.card-header').removeClass('bg-white d-flex justify-content-between').addClass('bg-light');
+
+      $('body').css('background', 'url({{ absolute_url(asset("style/images/hh_bg.jpg")) }}) round fixed');
+    });
+  </script>
 {% endblock %}

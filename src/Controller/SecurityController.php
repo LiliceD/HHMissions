@@ -39,7 +39,7 @@ class SecurityController extends Controller
     /**
      * @Route("/reinitialisermdp", name="app.reset-pwd")
      */
-    public function resetPassword(Request $request, MailController $mailController, UserPasswordEncoderInterface $passwordEncoder)
+    public function resetPassword(Request $request, AuthorizationCheckerInterface $authChecker, MailController $mailController, UserPasswordEncoderInterface $passwordEncoder)
     {
         if ($authChecker->isGranted('IS_AUTHENTICATED_FULLY')) {
             // If user is connected, redirect to mission list

@@ -1,33 +1,19 @@
 {% extends 'user/layout.html.twig' %}
+{% import 'macros.html.twig' as macros %}
 
 
-{% block header_h2 %}
+{% block header_h4 %}
   Modifier l'utilisateur·trice
 {% endblock %}
 
 
 {% block card_body %}
   {# Modal to confirm user delete #}
-  <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="deleteModalLabel">Supprimer le compte de cet·te utilisateur·trice</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <p>Attention ! Un compte utilisateur ne peut être supprimé que si aucune fiche mission ne lui est associée (en tant que GLA et/ou bénévole).</p>
-          <p>Confirmez-vous la suppression de ce compte ?</p>
-        </div>
-        <div class="modal-footer">
-          <a href="{{ path('app_user_delete', {'id': user.id}) }}" class="btn btn-danger">Supprimer</a>
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-        </div>
-      </div>
-    </div>
-  </div>
+  {% set modalHeader = 'Supprimer le compte de cet·te utilisateur·trice' %}
+  {% set modalBody = 'Confirmez-vous la suppression de ce compte ?' %}
+  {% set btnPath = path('app_user_delete', {'id': user.id}) %}
+  
+  {{ macros.modal('delete', modalHeader, modalBody, btnPath, 'btn-danger', 'Supprimer') }}
 
   {# Form #}
   {{ form_start(form) }}
@@ -49,19 +35,13 @@
       </div>
     </div>
 
-    <br>
-
-    <div class="d-flex justify-content-end">
-      <input type="submit" class="btn btn-primary mr-2" valye="Valider" />
-      <a href="{{ path('app_user_view', {'id': user.id}) }}" class="btn btn-outline-secondary">
-        Annuler
-      </a>
-    </div>
-
+    {# Buttons Submit / Cancel #}
+    {{ macros.formButtons(path('app_user_view', {'id': user.id})) }}
   {{ form_end(form) }}
 {% endblock %}
 
-{% block card_footer %}
+
+{% block card_footer_left %}
   {# Delete button opening a modal #}
   <button class="btn btn-sm btn-outline-danger" data-toggle="modal" data-target="#deleteModal">
     <i class="fas fa-trash-alt"></i>

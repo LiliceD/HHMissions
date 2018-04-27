@@ -1,4 +1,5 @@
 {% extends 'mission/layout.html.twig' %}
+{% from 'macros.html.twig' import formButtons as formButtons %}
 
 
 {% block header_h2 %}
@@ -59,13 +60,8 @@
 
     <br>
 
-    <div class="d-flex justify-content-end">
-      <input type="submit" class="btn btn-primary mr-2" value="Créer la fiche mission"/>
-      <a href="{{ path('app_mission_new') }}" class="btn btn-outline-secondary">
-        Vider
-      </a>
-    </div>
-
+    {# Buttons Submit / Cancel #}
+    {{ formButtons(path('app_mission_new'), 'Vider') }}
   {{ form_end(form) }}
 {% endblock %}
 
