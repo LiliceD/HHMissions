@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use Mailgun\Mailgun;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
@@ -10,24 +11,22 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
  */
 class MailController extends Controller
 {
-    private $mailer;
+    private $mailgun;
+    private $domain;
 
-    public function __construct(\Swift_Mailer $mailer)
+    public function __construct()
     {
-        $this->mailer = $mailer;
+        $this->mailgun = new Mailgun(getenv('MAILGUN_API_KEY'), new \Http\Adapter\Guzzle6\Client());
+        $this->domain = getenv('MAILGUN_DOMAIN');
     }
     
     public function send($subject, $to, $view)
     {
-        $message = (new \Swift_Message($subject))
-            ->setFrom('a.dahan@habitat-humanisme.org', 'Alys')
-            ->setTo($to)
-            ->setBody(
-                $view,
-                'text/html'
-            )
-        ;
-
-        $this->mailer->send($message);
+        $result = $this->mailgun->sendMessage("$this->domain", [
+            'from'    => 'Alys <a.dahan@habitat-humanisme.org>',
+            'to'      => $to,
+            'subject' => $subject,
+            'html'    => $view
+        ]);
     }
 }

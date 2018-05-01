@@ -64,15 +64,10 @@ class SecurityController extends Controller
                 $password = $passwordEncoder->encodePassword($user, $user->getUsername());
                 $user->setPassword($password);
 
-                // Persist changes to DB
-                $em = $this->getDoctrine()->getManager();
-                $em->persist($user);
-                $em->flush();
-
                 // Send email
                 $mailParams = [
                     'subject' => 'Alors, on est tête en l\'air ? 😉',
-                    'to' => $user->getEmail()
+                    'to' => $user->getName().' <'.$user->getEmail().'>'
                 ];
 
                 $viewParams = [
@@ -83,6 +78,11 @@ class SecurityController extends Controller
                 $view = $this->renderView($viewParams['route'], $viewParams['params']);
 
                 $mailController->send($mailParams['subject'], $mailParams['to'], $view);
+
+                // Persist changes to DB
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($user);
+                $em->flush();
 
                 // Set a "flash" success message
                 $this->addFlash(
