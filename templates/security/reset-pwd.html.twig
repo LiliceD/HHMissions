@@ -1,18 +1,9 @@
 {% extends 'security/layout.html.twig' %}
+{% from 'macros.html.twig' import formButtons as formButtons %}
 
 
-{% block header %}
+{% block header_h4 %}
   Réinitialisation de mot de passe
-{% endblock %}
-
-
-{% block messages %}
-  {# Error message #}
-  {% for message in app.flashes('error') %}
-    <div class="alert alert-danger">
-      {{ message }}
-    </div>
-  {% endfor %}
 {% endblock %}
 
 
@@ -22,8 +13,8 @@
   </div>
 
   {{ form_start(form) }}
-    <div class="d-flex justify-content-center align-items-center mb-4">
-      <div class="col-auto">
+    <div class="d-sm-flex justify-content-center align-items-center mb-4">
+      <div class="col-sauto">
         {{ form_label(form.username) }}
       </div>
       <div class="col-auto">
@@ -32,11 +23,7 @@
       <span data-toggle="tooltip" title="La première partie de votre adresse email Habitat et Humanisme"><i class="fas fa-question-circle text-secondary ml-2"></i></span>
     </div>
 
-    <div class="d-flex justify-content-center">
-      <input type="submit" class="btn btn-primary mr-2" value="Valider"/>
-      <a href="{{ path('login') }}" class="btn btn-outline-secondary">
-        Annuler
-      </a>
-    </div>
+    {# Buttons Submit / Cancel #}
+    {{ formButtons(path('login'), '', 'center') }}
   {{ form_end(form) }}
 {% endblock %}

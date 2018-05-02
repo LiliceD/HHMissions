@@ -76,14 +76,8 @@
  
   <script>
     (function() {
-      // Add table sorting on clicking on one of its header
-      tableHeadRows = document.querySelectorAll('th');
-      
-      for(let i = 0, c = tableHeadRows.length - 1; i < c; i++) {
-        tableHeadRows[i].addEventListener('click', () => {
-          sortTable(document.querySelector('table'), i);
-        });
-      }
+      // Add table sorting on clicking on one of its header (except last column)
+      sortTable(document.querySelector('table'), 1);
     })();
   </script>
 {% endblock %}

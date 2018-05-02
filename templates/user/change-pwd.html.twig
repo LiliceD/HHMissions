@@ -1,31 +1,18 @@
-{% extends 'layout-center.html.twig' %}
+{% extends 'user/layout.html.twig' %}
+{% from 'macros.html.twig' import formButtons as formButtons %}
 
 
-{% block header_h2 %}
+{% block header_h4 %}
   Modifier le mot de passe
-{% endblock %}
-
-{% block header_button %}
-  <a href="{{ path('app_profile_view') }}" class="btn btn-outline-secondary">
-    <i class="fas fa-chevron-left"></i>
-    Annuler
-  </a>
 {% endblock %}
 
 
 {% block card_body %}
   {{ form_start(form) }}
+    {{ form_row(form.plainPassword.first) }}
+    {{ form_row(form.plainPassword.second) }}
 
-    <div class="col-6">
-      {{ form_row(form.plainPassword.first) }}
-      {{ form_row(form.plainPassword.second) }}
-
-      <br>
-
-      <div class="d-flex justify-content-end">
-        <input type="submit" class="btn btn-primary mr-2" valye="Valider" />
-      </div>
-    </div>
-    
+    {# Buttons Submit / Cancel #}
+    {{ formButtons(path('app_profile_view')) }}
   {{ form_end(form) }}
 {% endblock %}

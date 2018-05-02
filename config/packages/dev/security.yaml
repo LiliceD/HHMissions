@@ -32,7 +32,7 @@ security:
         - { path: ^/reinitialisermdp, roles: IS_AUTHENTICATED_ANONYMOUSLY }
 
         - { path: ^/admin, roles: ROLE_ADMIN }
-        - { path: ^/profil, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/monprofil, roles: IS_AUTHENTICATED_FULLY }
 
         - { path: ^/missions/ajouter, roles: ROLE_GLA }
         - { path: ^/missions/voir, roles: IS_AUTHENTICATED_FULLY }

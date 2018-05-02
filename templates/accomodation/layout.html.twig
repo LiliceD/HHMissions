@@ -1,5 +1,5 @@
-{% extends 'layout-center.html.twig' %}
-
+{% extends 'layout-card-md.html.twig' %}
+{% from 'macros.html.twig' import formButtons as formButtons %}
 
 {% block title %}
   Logements - {{ parent() }}
@@ -42,13 +42,9 @@
     {{ form_row(form.access) }}
     
     <br>
-        
-    <div class="d-flex justify-content-end">
-      <input type="submit" class="btn btn-primary mr-2" value="Valider"/>
-      <a href="{{ path('app_accomodation_list') }}" class="btn btn-outline-secondary">
-        Annuler
-      </a>
-    </div>
+    
+    {# Buttons Submit / Cancel #}
+    {{ formButtons(path('app_accomodation_list')) }}
   {{ form_end(form) }}
 {% endblock %}
 

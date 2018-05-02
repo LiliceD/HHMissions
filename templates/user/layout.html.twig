@@ -1,4 +1,4 @@
-{% extends 'layout-center.html.twig' %}
+{% extends 'layout-card-sm.html.twig' %}
 
 
 {% block title %}
@@ -7,7 +7,7 @@
 
 
 {% block header_button %}
-  {% if is_granted('ROLE_ADMIN') and not (app.request.pathinfo ends with '/profil') %}
+  {% if is_granted('ROLE_ADMIN') and not ('/monprofil' in app.request.pathinfo) %}
     <a href="{{ path('app_user_list') }}" class="btn btn-outline-secondary">
       <i class="fas fa-chevron-left"></i>
       Retour à la liste

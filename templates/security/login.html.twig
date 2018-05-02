@@ -1,7 +1,7 @@
 {% extends 'security/layout.html.twig' %}
 
 
-{% block header %}
+{% block header_h4 %}
   Alys - Connexion
 {% endblock %}
 
@@ -14,12 +14,7 @@
     </div>
   {% endif %}
 
-  {# Success/Info messages #}
-  {% for message in app.flashes('notice') %}
-    <div class="alert alert-info">
-      {{ message }}
-    </div>
-  {% endfor %}
+  {{ parent() }}
 {% endblock %}
 
 

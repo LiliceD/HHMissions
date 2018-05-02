@@ -306,7 +306,7 @@ class User implements AdvancedUserInterface, \Serializable
     /**
      * @return Collection|Mission[]
      */
-    public function getMissionsAsGla()
+    public function getMissionsAsGla():Collection
     {
         return $this->missionsAsGla;
     }
@@ -314,7 +314,7 @@ class User implements AdvancedUserInterface, \Serializable
     /**
      * @return Collection|Mission[]
      */
-    public function getMissionsAsVolunteer()
+    public function getMissionsAsVolunteer():Collection
     {
         return $this->missionsAsVolunteer;
     }

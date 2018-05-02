@@ -4,7 +4,6 @@
 {% block body %}
 
   <div class="container">
-    
     <div class="d-flex justify-content-between">
       <h2>
 
@@ -25,17 +24,11 @@
     <hr>
 
     {% block flash_messages %}
-      {% for message in app.flashes('notice') %}
-          <div class="alert alert-success">
-              <a href="#" class="close" data-dismiss="alert" aria-label="Fermer">&times;</a>
-              {{ message }}
-          </div>
-      {% endfor %}
+      {{ include('flash-messages.html.twig') }}
     {% endblock %}
     
     {% block content %}
     {% endblock %}
 
   </div> {# div container #}
-
 {% endblock %}

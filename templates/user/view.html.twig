@@ -1,51 +1,36 @@
 {% extends 'user/layout.html.twig' %}
+{% from 'macros.html.twig' import modal as modal %}
 
 
-{% block header_h2 %}
-  {{ user.name }} {{ user.isActive ? '' : '(compte désactivé)' }}
+{% block header_h4 %}
+  {{ user.name }}
 {% endblock %}
 
 
 {% block card_body %}
   {# Modal to confirm user deactivation #}
-  <div class="modal fade" id="deactivateModal" tabindex="-1" role="dialog" aria-labelledby="deactivateModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="deactivateModalLabel">
-            {% if user.isActive %}
-              Désactiver le compte de l'utilisateur·trice
-            {% else %}
-              Activer le compte de l'utilisateur·trice
-            {% endif %}
-          </h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          {% if user.isActive %}
-            <p>Si vous désactivez cet·te utilisateur·trice, il ou elle ne pourra plus se connecter à l'application et n'apparaîtra plus dans la liste des GLAs et bénévoles possibles pour les fiches mission.</p>
-            <p>Un·e utilisateur·trice désactivé·e n'est pas supprimé·e, ses fiches mission sont conservées et son compte peut être réactivé ultérieurement.</p>
-            <p>Confirmez-vous la désactivation de ce compte ?</p>
-          {% else %}
-            <p>L'activation de cet·te utilisateur·trice lui permettra de se connecter à l'application et d'apparaître dans la liste des GLAs et/ou bénévoles possibles pour les fiches mission.</p>
-            <p>Confirmez-vous l'activation de ce compte ?</p>
-          {% endif %}
-        </div>
-        <div class="modal-footer">
-          <a href="{{ path('app_user_deactivate', {'id': user.id}) }}" class="btn {{ user.isActive ? 'btn-danger' : 'btn-primary' }}">
-            {% if user.isActive %}
-              Désactiver
-            {% else %}
-              Activer
-            {% endif %}
-          </a>
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-        </div>
-      </div>
+  {% if user.isActive %}
+    {% set modalHeader = 'Désactiver le compte de cet·te utilisateur·trice' %}
+    {% set modalBody = "<p class='text-secondary font-italic'>Si vous désactivez ce compte, son utilisateur·trice ne pourra plus se connecter à l'application et n'apparaîtra plus dans la liste des GLAs et bénévoles possibles pour les fiches mission.</p><p class='text-secondary font-italic'>Un compte désactivé n'est pas supprimé, ses fiches mission sont conservées et il peut être réactivé ultérieurement.</p><p>Confirmez-vous la désactivation de ce compte ?</p>" %}
+    {% set btnClass = 'btn-danger' %}
+    {% set btnValue = 'Désactiver' %}
+  {% else %}
+    {% set modalHeader = 'Activer le compte de cet·te utilisateur·trice' %}
+    {% set modalBody = "<p class='text-secondary font-italic'>L'activation de ce compte permettra à son utilisateur·trice de se connecter à l'application et d'apparaître dans la liste des GLAs et/ou bénévoles possibles pour les fiches mission.</p><p>Confirmez-vous l'activation de ce compte ?</p>" %}
+    {% set btnClass = 'btn-primary' %}
+    {% set btnValue = 'Activer' %}
+  {% endif %}
+
+  {% set btnPath = path('app_user_deactivate', {'id': user.id}) %}
+  
+  {{ modal('deactivate', modalHeader, modalBody, btnPath, btnClass, btnValue) }}
+
+  {# Alert inactive account #}
+  {% if not user.isActive %}
+    <div class="alert alert-warning text-center font-weight-bold">
+      Ce compte est désactivé
     </div>
-  </div>
+  {% endif %}
 
   {# User details #}
   <div class="mb-3">
@@ -61,30 +46,35 @@
   </div>
 {% endblock %}
 
-{% block card_footer %}
-  <div class="d-flex justify-content-between">
-    {% if app.user.id == user.id %}
-      <a href="{{ path('app_profile_change-pwd')}}" class="btn btn-outline-primary">
-        Changer de mot de passe
-      </a>
+
+{% block card_footer_left %}
+  {% if app.user.id == user.id %}
+    <a href="{{ path('app_profile_change-pwd')}}" class="btn btn-outline-primary">
+      Changer de mot de passe
+    </a>
+  {% endif %}
+{% endblock %}
+
+{% block card_footer_right %}
+  {# edit and deactivation buttons only visible for admin #}
+  {% if is_granted('ROLE_ADMIN') and not (app.request.pathinfo ends with '/profil') %}
+    {# Edit #}
+    <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-outline-primary">
+      <i class="fas fa-edit"></i>
+      Modifier
+    </a>
+
+    {# (de)activation #}
+    {% if user.isActive %}
+      <button class="btn btn-outline-danger" data-toggle="modal" data-target="#deactivateModal">
+        <i class="fas fa-ban"></i>
+        Désactiver le compte
+      </button>
+    {% else %}
+      <button class="btn btn-outline-success" data-toggle="modal" data-target="#deactivateModal">
+        <i class="fas fa-check"></i>
+        Activer le compte
+      </button>
     {% endif %}
-    {# edit and deactivation buttons only visible for admin #}
-    {% if is_granted('ROLE_ADMIN') and not (app.request.pathinfo ends with '/profil') %}
-      <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-outline-primary">
-        <i class="fas fa-edit"></i>
-        Modifier
-      </a>
-      {% if user.isActive %}
-        <button class="btn btn-outline-danger" data-toggle="modal" data-target="#deactivateModal">
-          <i class="fas fa-ban"></i>
-          Désactiver le compte
-        </button>
-      {% else %}
-        <button class="btn btn-outline-success" data-toggle="modal" data-target="#deactivateModal">
-          <i class="fas fa-check"></i>
-          Activer le compte
-        </button>
-      {% endif %}
-    {% endif %}
-  </div>
+  {% endif %}
 {% endblock %}

@@ -39,8 +39,13 @@ class SecurityController extends Controller
     /**
      * @Route("/reinitialisermdp", name="app.reset-pwd")
      */
-    public function resetPassword(Request $request, MailController $mailController, UserPasswordEncoderInterface $passwordEncoder)
+    public function resetPassword(Request $request, AuthorizationCheckerInterface $authChecker, MailController $mailController, UserPasswordEncoderInterface $passwordEncoder)
     {
+        if ($authChecker->isGranted('IS_AUTHENTICATED_FULLY')) {
+            // If user is connected, redirect to mission list
+            // return $this->redirectToRoute('app_mission_list');
+        }
+
         // Create form
         $form = $this->createForm(ResetPasswordType::class);
         $form->handleRequest($request);
@@ -59,15 +64,13 @@ class SecurityController extends Controller
                 $password = $passwordEncoder->encodePassword($user, $user->getUsername());
                 $user->setPassword($password);
 
-                // Persist changes to DB
-                $em = $this->getDoctrine()->getManager();
-                $em->persist($user);
-                $em->flush();
-
                 // Send email
                 $mailParams = [
                     'subject' => 'Alors, on est tête en l\'air ? 😉',
-                    'to' => $user->getEmail()
+                    'to' => [
+                        'email' => $user->getEmail(),
+                        'name' => $user->getName()
+                    ]
                 ];
 
                 $viewParams = [
@@ -78,6 +81,11 @@ class SecurityController extends Controller
                 $view = $this->renderView($viewParams['route'], $viewParams['params']);
 
                 $mailController->send($mailParams['subject'], $mailParams['to'], $view);
+
+                // Persist changes to DB
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($user);
+                $em->flush();
 
                 // Set a "flash" success message
                 $this->addFlash(

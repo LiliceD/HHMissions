@@ -289,14 +289,11 @@ class MissionController extends Controller
      * Recap of opened (= any status but "closed") missions
      *
      * @Route(
-     *  "/recap/{page}",
+     *  "/recap/",
      *  name="app_mission_recap",
-     *  requirements={
-     *      "page"="\d+"
-     *  }
      * )
      */
-    public function recap($page = 1)
+    public function recap()
     {    
         // Create search form
         $searchForm = $this->createForm(MissionSearchType::class);
@@ -586,13 +583,13 @@ class MissionController extends Controller
         }
 
         // Add filter on status (can't manage to send it with JavaScript) and order
-        if (preg_match('/\/missions$/', $referer)) {
+        if (preg_match('/\/missions\/$/', $referer)) {
             // From missions list : only finished and closed
             $statuses = [Mission::STATUS_FINISHED, Mission::STATUS_CLOSED];
 
             $statusFilter = ['field' => 'm.status', 'value' => $statuses];
             array_push($filters, $statusFilter);
-        } else if (preg_match('/\/recap$/', $referer)) {
+        } else if (preg_match('/\/recap\/$/', $referer)) {
             // From mission recap : all but closed
             $statuses = array_values(Mission::getStatuses()); // Array of all statuses
             array_pop($statuses); // Remove STATUS_CLOSED
@@ -623,18 +620,29 @@ class MissionController extends Controller
                 'description' => $mission->getDescription(),
                 'conclusions' => $mission->getConclusions(),
                 // Gla
-                'glaId' => $mission->getGla()->getId(),
-                'glaName' => $mission->getGla()->getName(),
-                // Volunteer
-                'volunteerId' => $mission->getVolunteer() ? $mission->getVolunteer()->getId() : null,
-                'volunteerName' => $mission->getVolunteer() ? $mission->getVolunteer()->getName() : null,
+                'gla' => [
+                    'id' => $mission->getGla()->getId(),
+                    'name' => $mission->getGla()->getName()
+                ],
                 // Accomodation
-                'accomodationId' => $mission->getAccomodation()->getId(),
-                'accomodationName' => $mission->getAccomodation()->getName(),
-                'accomodationStreet' => $mission->getAccomodation()->getStreet(),
-                'accomodationPostalCode' => $mission->getAccomodation()->getPostalCode(),
-                'accomodationCity' => $mission->getAccomodation()->getCity(),
+                'accomodation' => [
+                    'id' => $mission->getAccomodation()->getId(),
+                    'name' => $mission->getAccomodation()->getName(),
+                    'street' => $mission->getAccomodation()->getStreet(),
+                    'postalCode' => $mission->getAccomodation()->getPostalCode(),
+                    'city' => $mission->getAccomodation()->getCity()
+                ]
             ];
+
+            if ($mission->getVolunteer()) {
+                // Volunteer
+                $volunteerJson = ['volunteer' => [
+                    'id' => $mission->getVolunteer()->getId(),
+                    'name' => $mission->getVolunteer()->getName()
+                ]];
+
+                $missionJson = array_merge($missionJson, $volunteerJson);
+            }
 
             array_push($missionsJson, $missionJson);
         }

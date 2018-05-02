@@ -1,5 +1,5 @@
 {% extends 'mission/layout.html.twig' %}
-
+{% import 'macros.html.twig' as macros %}
 
 {% block header_h2 %}
   Modifier la fiche mission n°{{ mission.id }}
@@ -10,25 +10,11 @@
   {# Modal to confirm mission delete #}
   {# only visible for admin or mission's GLA #}
   {% if is_granted('edit', mission) %}
-    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="deleteModalLabel">Supprimer la fiche mission</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            Confirmez-vous la suppression de cette fiche mission ?
-          </div>
-          <div class="modal-footer">
-            <a href="{{ path('app_mission_delete', {'id': mission.id}) }}" class="btn btn-danger">Supprimer</a>
-            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
-          </div>
-        </div>
-      </div>
-    </div>
+    {% set modalHeader = 'Supprimer la fiche mission' %}
+    {% set modalBody = 'Confirmez-vous la suppression de cette fiche mission ?' %}
+    {% set btnPath = path('app_mission_delete', {'id': mission.id}) %}
+    
+    {{ macros.modal('delete', modalHeader, modalBody, btnPath, 'btn-danger', 'Supprimer') }}
   {% endif %}
 
   {# Form #}
@@ -121,17 +107,13 @@
 
     <br>
 
-    {# Buttons #}
-    <div class="d-flex justify-content-end">
-      <input type="submit" class="btn btn-primary mr-2" value="Valider"/>
-      <a href="{{ path('app_mission_view', {'id': mission.id}) }}" class="btn btn-outline-secondary">
-        Annuler
-      </a>
-    </div>
+    {# Buttons Submit / Cancel #}
+    {{ macros.formButtons(path('app_mission_view', {'id': mission.id})) }}
   {{ form_end(form) }}
 {% endblock %}
 
-{% block card_footer %}
+
+{% block card_footer_left %}
   {# Delete button opening a modal #}
   {# only visible for admin or mission's GLA #}
   {% if is_granted('edit', mission) %}
