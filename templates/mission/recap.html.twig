@@ -45,6 +45,7 @@
     </div>
   </div>
 
+  {{ form_widget(form.id, {'attr': {'hidden': 'true'}}) }}
   {{ form_widget(form.gla, {'attr': {'hidden': 'true'}}) }}
   {{ form_widget(form.volunteer, {'attr': {'hidden': 'true'}}) }}
   {{ form_widget(form.accomodation, {'attr': {'hidden': 'true'}}) }}
@@ -85,7 +86,7 @@
     </table>
   </div>
 
-  <div id="noOpenedMissions" class="text-center font-weight-bold"></div>
+  <div id="noMissions" class="text-center font-weight-bold"></div>
 {% endblock %}
 
 
@@ -99,22 +100,10 @@
     (function() {
       let table = document.querySelector('table'),
           dateCreatedMinInput = document.getElementById('mission_search_dateCreatedMin'),
-          dateCreatedMaxInput = document.getElementById('mission_search_dateCreatedMax'),
-          dateCreatedMin, dateCreatedMax,
-          exportBtn = document.getElementById('exportBtn'),
-          loadingAlert = document.getElementById('loadingAlert'),
-          noOpenedMissionsDiv = document.getElementById('noOpenedMissions');
-
+          dateCreatedMaxInput = document.getElementById('mission_search_dateCreatedMax');
 
       // Add table sorting on clicking on one of its header
-      tableHeadRows = document.querySelectorAll('th');
-      
-      for(let i = 0, c = tableHeadRows.length; i < c; i++) {
-        tableHeadRows[i].addEventListener('click', () => {
-          sortTable(table, i);
-        });
-      }
-
+      sortTable(table);
 
       // Fill recap missions table on load
       document.addEventListener('DOMContentLoaded', () => {
@@ -142,122 +131,37 @@
 
       // Retrieve filters from search form, get matching missions from backend, fill in table, update number of missions and update link to pdf export
       function fillRecapMissionsTable() {
-        // Hide message
-        noOpenedMissionsDiv.innerHTML = '';
-
-        // Show loading alert
-        loadingAlert.removeAttribute('hidden');
-
         // Retrieve filters
-        dateCreatedMin = formatStringToDate(dateCreatedMinInput.value);
-        dateCreatedMax = formatStringToDate(dateCreatedMaxInput.value);
+        let dateCreatedMin = formatStringToDate(dateCreatedMinInput.value),
+            dateCreatedMax = formatStringToDate(dateCreatedMaxInput.value);
 
-        // Send filters to controller
-        ajaxPost("{{ path('app_mission_filter') }}", {'dateCreatedMin': dateCreatedMin, 'dateCreatedMax': dateCreatedMax}, JSONResponse => {
-            // Retrieve missions matching filters
-            let data = JSON.parse(JSONResponse);
-            
-            // Empty table body
-            let tbody = document.querySelector('tbody');
-                tbody.innerHTML = '';
+        let filters = {
+              'dateCreatedMin': dateCreatedMin, 
+              'dateCreatedMax': dateCreatedMax
+            },
+            url = "{{ path('app_mission_filter') }}",
+            noMissionsDiv = document.getElementById('noMissions'),
+            loadingAlert = document.getElementById('loadingAlert'),
+            badge = document.getElementById('recapMissionsBadge');
 
-            if (data) {
-              let missions = data.missions;
-
-              // Fill table body with missions
-              missions.forEach( mission => {
-                tbody.appendChild(createMissionRow(mission));
-              });
-
-              // Update badge with number of missions
-              document.getElementById('recapMissionsBadge').innerHTML = missions.length;
-
-              // Update link to pdf export
-              exportBtn.href = data.recap.url;
-
-              // Unhide table and export button
-              table.removeAttribute('hidden');
-              exportBtn.removeAttribute('hidden');
-            } else {
-              // Display message
-              noOpenedMissionsDiv.innerHTML = 'Aucune mission à afficher !';
-            }
-
-            // Hide loading alert
-            loadingAlert.setAttribute('hidden', 'true');
-        });
+        // Retrieve matching missions and add them to table
+        fillMissionsTable(table, filters, url, dataCallback, noMissionsDiv, loadingAlert, badge);
       }
 
-      // Return tr element with mission details, ready to append to table body
-      function createMissionRow(mission) {
-        // Row
-        let tr = document.createElement('tr');
+      function dataCallback(data) {
+        // Unhide export button and update link to pdf export
+        let exportBtn = document.getElementById('exportBtn')
 
-        // Cells
-        let tdId = document.createElement('td'),
-            aId = document.createElement('a');
+        exportBtn.removeAttribute('hidden');
+        exportBtn.href = data.recap.url;
 
-        aId.href = mission.url;
-        aId.title = 'Voir la FM';
-        aId.innerHTML = mission.id
+        let missions = data.missions,
+            counter = missions.length,
+            properties = ['id', 'dateCreated', 'gla', 'dateAssigned', 'dateFinished', 'accomodation', 'description', 'volunteer', 'conclusions', 'status'],
+            shortDescription = false,
+            button = false;
 
-        tdId.appendChild(aId);
-
-        let tdDC = document.createElement('td'),
-            strongDC = document.createElement('strong');
-
-        strongDC.innerHTML = mission.dateCreated;
-
-        tdDC.appendChild(strongDC);
-        tdDC.setAttribute('data-is-date', 'true');
-
-        let tdGla = document.createElement('td');
-            tdGla.innerHTML = mission.glaName;
-
-        let tdDA = document.createElement('td');
-            tdDA.innerHTML = mission.dateAssigned ? mission.dateAssigned : '-';
-            tdDA.setAttribute('data-is-date', 'true');
-
-        let tdDF = document.createElement('td');
-            tdDF.innerHTML = mission.dateFinished ? mission.dateFinished : '-';
-            tdDF.setAttribute('data-is-date', 'true');
-
-        // Address
-        let tdAcc = document.createElement('td');
-
-        tdAcc.innerHTML = mission.accomodationStreet + '<br>';
-
-        if (mission.accomodationName) {
-          tdAcc.innerHTML += mission.accomodationName + '<br>'; 
-        }
-
-        tdAcc.innerHTML += mission.accomodationPostalCode + ' ' + mission.accomodationCity;
-
-        let tdDesc = document.createElement('td');
-            tdDesc.innerHTML = mission.description;
-
-        let tdVol = document.createElement('td');
-            tdVol.innerHTML = mission.volunteerName;
-
-        let tdConcl = document.createElement('td');
-            tdConcl.innerHTML = mission.conclusions;
-
-        let tdStat = document.createElement('td');
-            tdStat.innerHTML = mission.status;
-        
-        // Append cells to row
-        tr.appendChild(tdId);
-        tr.appendChild(tdDC);
-        tr.appendChild(tdGla);
-        tr.appendChild(tdDA);
-        tr.appendChild(tdDF);
-        tr.appendChild(tdAcc);
-        tr.appendChild(tdDesc);
-        tr.appendChild(tdVol);
-        tr.appendChild(tdConcl);
-        tr.appendChild(tdStat);
-
-        return tr;
+        return [missions, properties, shortDescription, button, counter];
       }
     })();
   </script>

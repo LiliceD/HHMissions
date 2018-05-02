@@ -16,15 +16,15 @@ class MailController extends Controller
 
     public function __construct()
     {
-        $this->mailgun = new Mailgun(getenv('MAILGUN_API_KEY'), new \Http\Adapter\Guzzle6\Client());
-        $this->domain = getenv('MAILGUN_DOMAIN');
+        $this->mailgun = new Mailgun('key-3efebd78f844e0a32233de9ef4aea0d1', new \Http\Adapter\Guzzle6\Client());
+        $this->domain = 'alys.amoki.fr'; //getenv('MAILGUN_API_KEY')
     }
     
     public function send($subject, $to, $view)
     {
         $result = $this->mailgun->sendMessage("$this->domain", [
             'from'    => 'Alys <a.dahan@habitat-humanisme.org>',
-            'to'      => $to,
+            'to'      => '<lilice.dhn@gmail.com>',
             'subject' => $subject,
             'html'    => $view
         ]);

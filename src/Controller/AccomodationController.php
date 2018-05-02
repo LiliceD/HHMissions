@@ -144,14 +144,11 @@ class AccomodationController extends Controller
 
     /**
      * @Route(
-     *  "/{page}",
+     *  "/",
      *  name="app_accomodation_list",
-     *  requirements={
-     *      "page"="\d+"
-     *  }
      * )
      */
-    public function list($page = 1)
+    public function list()
     {    
         $repository = $this->getDoctrine()->getRepository(Accomodation::class);
 

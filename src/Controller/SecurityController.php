@@ -80,9 +80,9 @@ class SecurityController extends Controller
                 $mailController->send($mailParams['subject'], $mailParams['to'], $view);
 
                 // Persist changes to DB
-                $em = $this->getDoctrine()->getManager();
-                $em->persist($user);
-                $em->flush();
+                // $em = $this->getDoctrine()->getManager();
+                // $em->persist($user);
+                // $em->flush();
 
                 // Set a "flash" success message
                 $this->addFlash(
