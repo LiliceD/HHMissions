@@ -43,7 +43,7 @@ class SecurityController extends Controller
     {
         if ($authChecker->isGranted('IS_AUTHENTICATED_FULLY')) {
             // If user is connected, redirect to mission list
-            return $this->redirectToRoute('app_mission_list');
+            // return $this->redirectToRoute('app_mission_list');
         }
 
         // Create form
@@ -67,7 +67,10 @@ class SecurityController extends Controller
                 // Send email
                 $mailParams = [
                     'subject' => 'Alors, on est tête en l\'air ? 😉',
-                    'to' => $user->getName().' <'.$user->getEmail().'>'
+                    'to' => [
+                        'email' => $user->getEmail(),
+                        'name' => $user->getName()
+                    ]
                 ];
 
                 $viewParams = [
@@ -80,9 +83,9 @@ class SecurityController extends Controller
                 $mailController->send($mailParams['subject'], $mailParams['to'], $view);
 
                 // Persist changes to DB
-                // $em = $this->getDoctrine()->getManager();
-                // $em->persist($user);
-                // $em->flush();
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($user);
+                $em->flush();
 
                 // Set a "flash" success message
                 $this->addFlash(

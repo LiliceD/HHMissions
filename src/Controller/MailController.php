@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use Mailgun\Mailgun;
+use Mailjet\Resources;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
@@ -11,22 +11,38 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
  */
 class MailController extends Controller
 {
-    private $mailgun;
-    private $domain;
+    private $apikey;
+    private $apisecret;
+    private $mj;
 
     public function __construct()
     {
-        $this->mailgun = new Mailgun('key-3efebd78f844e0a32233de9ef4aea0d1', new \Http\Adapter\Guzzle6\Client());
-        $this->domain = 'alys.amoki.fr'; //getenv('MAILGUN_API_KEY')
+        $this->apikey = getenv('MAILJET_APIKEY_PUBLIC');
+        $this->apikey = getenv('MAILJET_APIKEY_PRIVATE');
+        $this->mj = new \Mailjet\Client($this->apikey, $this->apisecret, true, ['version' => 'v3.1']);
     }
     
     public function send($subject, $to, $view)
     {
-        $result = $this->mailgun->sendMessage("$this->domain", [
-            'from'    => 'Alys <a.dahan@habitat-humanisme.org>',
-            'to'      => '<lilice.dhn@gmail.com>',
-            'subject' => $subject,
-            'html'    => $view
-        ]);
+        $body = [
+            'Messages' => [
+                [
+                    'From' => [
+                        'Email' => 'contact@alys.amoki.fr',
+                        'Name' => 'Alys'
+                    ],
+                    'To' => [
+                        [
+                            'Email' => $to['email'],
+                            'Name' => $to['name']
+                        ]
+                    ],
+                    'Subject' => $subject,
+                    'HTMLPart' => $view
+                ]
+            ]
+        ];
+
+        $this->mj->post(Resources::$Email, ['body' => $body]);
     }
 }
