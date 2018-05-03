@@ -34,8 +34,8 @@
           {{ mission.status }}
         </div>
         {# Button to close / reopen a mission when finished #}
-        {# only visible for admin or mission's GLA #}
-        {% if is_granted('edit', mission) %}
+        {# only visible for admin #}
+        {% if is_granted('ROLE_ADMIN') %}
           <div class="col-sm-auto">
             {% if mission.status == constant('STATUS_FINISHED', mission) %}
               <a href="{{ path('app_mission_close', {'id': mission.id}) }}" class="btn btn-sm btn-primary">
