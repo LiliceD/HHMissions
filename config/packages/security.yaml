@@ -33,11 +33,11 @@ security:
 
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/monprofil, roles: IS_AUTHENTICATED_FULLY }
-        
+
         - { path: ^/missions/ajouter, roles: ROLE_GLA }
         - { path: ^/missions/voir, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/missions/modifier, roles: IS_AUTHENTICATED_FULLY }
-        - { path: ^/missions/fermer, roles: ROLE_GLA }
+        - { path: ^/missions/fermer, roles: ROLE_ADMIN }
         - { path: ^/missions/supprimer-pj, roles: ROLE_GLA }
         - { path: ^/missions/supprimer, roles: ROLE_GLA }
         - { path: ^/missions/assigner, roles: ROLE_VOLUNTEER }

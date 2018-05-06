@@ -34,8 +34,8 @@
           {{ mission.status }}
         </div>
         {# Button to close / reopen a mission when finished #}
-        {# only visible for admin or mission's GLA #}
-        {% if is_granted('edit', mission) %}
+        {# only visible for admin #}
+        {% if is_granted('ROLE_ADMIN') %}
           <div class="col-sm-auto">
             {% if mission.status == constant('STATUS_FINISHED', mission) %}
               <a href="{{ path('app_mission_close', {'id': mission.id}) }}" class="btn btn-sm btn-primary">
@@ -118,11 +118,11 @@
       {{ mission.accomodation.ownerType ? : "" }}
     </div>
     <div class="col-sm-auto">
-    <a href="{{ constant('ACCOMODATION_SP_FOLDER', mission.accomodation) }}" target="_blank" class="btn btn-sm btn-outline-secondary mt-3 mt-sm-0">
-      <i class="fas fa-external-link-alt"></i>
-      Dossier Immeubles
-    </a>
-  </div>
+      <a href="{{ constant('ACCOMODATION_SP_FOLDER', mission.accomodation) }}" target="_blank" class="btn btn-sm btn-outline-secondary mt-3 mt-sm-0">
+        <i class="fas fa-external-link-alt"></i>
+        Dossier Immeubles
+      </a>
+    </div>
   </div>
 
   <br>

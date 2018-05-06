@@ -366,9 +366,6 @@ class MissionController extends Controller
      */
     public function close(Mission $mission)
     {
-        // Allow action only if user is admin or mission's gla
-        $this->denyAccessUnlessGranted('edit', $mission);
-
         $status = $mission->getStatus();
 
         // Change status and set a "flash" success message
