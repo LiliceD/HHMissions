@@ -48,7 +48,6 @@ h3 {
 
 
 /* mission/view.html.twig */
-
 .form-alike {
   padding: .375rem .75rem;
   color: #495057;
@@ -65,7 +64,6 @@ h3 {
 
 
 /* mission/recap.html.twig */
-
 .table-recap {
   font-size: 12px;
 }
@@ -94,7 +92,6 @@ h3 {
 
 
 /* accomodation/list.html.twig */
-
 .accomodations-table {
   font-size: 14px;
 }
@@ -110,4 +107,14 @@ h3 {
   white-space: pre;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.form-alike-sm {
+  padding: .25rem .5rem;
+  font-size: .875rem;
+  min-width: 300px;
+  color: #495057;
+  background-color: #fff;
+  border: 1px solid #ced4da;
+  border-radius: .25rem;
 }
