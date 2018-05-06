@@ -26,9 +26,23 @@
 
     
 {% block content %}
-  
-  <table class="table table-sm table-hover accomodations-table">
+  {# Search form #}
+  <div class="row justify-content-center">
+    <div class="col-11 card bg-light py-3 mb-3">
+      <div class="d-flex justify-content-between">
+        {# Filter address #}
+        <div class="d-flex align-items-center">
+          <small>Recherche par adresse :</small>
+          <div class="input-group-sm input-date mx-2">
+            <input type="text" id="addressInput" class="col-sm-auto form-alike-sm" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
+  {# Table #}
+  <table class="table table-sm table-hover accomodations-table">
     <thead class="thead-light">
       <tr>
         <th scope="col">Adresse <i class="fas fa-sort"></i></th>
@@ -80,8 +94,30 @@
  
   <script>
     (function() {
+      let table = document.querySelector('table'),
+          searchInput = document.getElementById('addressInput');
+
+
       // Add table sorting on clicking on one of its header (except last column)
-      sortTable(document.querySelector('table'), 1);
+      sortTable(table, 1);
+
+      // Filter table on address search input
+      searchInput.addEventListener('input', () => {
+        let search = capitalizeInput(searchInput.value.trim()),
+            rows = table.getElementsByTagName('tr');
+
+        // Row 0 is header
+        for (i = 1, iMax = rows.length; i < iMax; i++) {
+          let tr = rows[i];
+
+          // Add or remove 'hidden' attribute based on cell value / search match
+          if (tr.getElementsByTagName('td')[0].innerHTML.indexOf(search) === -1) {
+            tr.setAttribute('hidden', 'true');
+          } else {
+            tr.removeAttribute('hidden');
+          }
+        }
+      });
     })();
   </script>
 {% endblock %}
