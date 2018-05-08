@@ -67,18 +67,10 @@ class SecurityController extends Controller
                 // Send email
                 $mailParams = [
                     'subject' => 'Alors, on est tête en l\'air ? 😉',
-                    'to' => [
-                        'email' => $user->getEmail(),
-                        'name' => $user->getName()
-                    ]
+                    'to' => $user->getEmail()
                 ];
 
-                $viewParams = [
-                    'route' => 'emails/reset-pwd.html.twig',
-                    'params' => ['name' => $user->getName()]
-                ];
-
-                $view = $this->renderView($viewParams['route'], $viewParams['params']);
+                $view = $this->renderView('emails/reset-pwd.html.twig', ['name' => $user->getName()]);
 
                 $mailController->send($mailParams['subject'], $mailParams['to'], $view);
 
@@ -106,6 +98,27 @@ class SecurityController extends Controller
             // Stay on same page
             return $this->redirectToRoute('app.reset-pwd');
         }
+
+        return $this->render('security/reset-pwd.html.twig', [
+            'form' => $form->createView()
+        ]);
+    }
+
+    /**
+     * @Route("/reinitialisermdp2", name="app.reset-pwd2")
+     */
+    public function resetPassword2(Request $request, AuthorizationCheckerInterface $authChecker, MailController $mailController, UserPasswordEncoderInterface $passwordEncoder)
+    {
+        if ($authChecker->isGranted('IS_AUTHENTICATED_FULLY')) {
+            // If user is connected, redirect to mission list
+            // return $this->redirectToRoute('app_mission_list');
+        }
+
+        // Create form
+        $form = $this->createForm(ResetPasswordType::class);
+        $form->handleRequest($request);
+
+        $mailController->validate();
 
         return $this->render('security/reset-pwd.html.twig', [
             'form' => $form->createView()

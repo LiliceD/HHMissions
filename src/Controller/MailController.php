@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use Mailjet\Resources;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
@@ -11,38 +10,28 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
  */
 class MailController extends Controller
 {
-    private $apikey;
-    private $apisecret;
-    private $mj;
+    private $mailer;
+    private $senderAddress;
+    private $senderName;
 
-    public function __construct()
+    public function __construct(\Swift_Mailer $mailer)
     {
-        $this->apikey = getenv('MAILJET_APIKEY_PUBLIC');
-        $this->apikey = getenv('MAILJET_APIKEY_PRIVATE');
-        $this->mj = new \Mailjet\Client($this->apikey, $this->apisecret, true, ['version' => 'v3.1']);
+        $this->mailer = $mailer;
+        $this->senderAddress = 'a.dahan@habitat-humanisme.org';
+        $this->senderName = 'Alys';
     }
     
     public function send($subject, $to, $view)
     {
-        $body = [
-            'Messages' => [
-                [
-                    'From' => [
-                        'Email' => 'contact@alys.amoki.fr',
-                        'Name' => 'Alys'
-                    ],
-                    'To' => [
-                        [
-                            'Email' => $to['email'],
-                            'Name' => $to['name']
-                        ]
-                    ],
-                    'Subject' => $subject,
-                    'HTMLPart' => $view
-                ]
-            ]
-        ];
+        $message = (new \Swift_Message($subject))
+            ->setFrom($this->senderAddress, $this->senderName)
+            ->setTo($to)
+            ->setBody(
+                $view,
+                'text/html'
+            )
+        ;
 
-        $this->mj->post(Resources::$Email, ['body' => $body]);
+        $this->mailer->send($message);
     }
 }
