@@ -1,5 +1,6 @@
 ###> symfony/framework-bundle ###
 .env
+.idea
 /public/bundles/
 /var/
 /vendor/
@@ -18,7 +19,6 @@
 phpunit.xml
 ###< phpUnit ###
 
-###> testing ###
-habhum-tests-drop.sql
-habhum-tests-import.sql
-###< testing ###
+###> attachment ###
+/public/uploads
+###< attachment ###
