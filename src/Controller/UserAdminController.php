@@ -70,7 +70,7 @@ class UserAdminController extends Controller
 
     /**
      * @Route(
-     *  "/voir/{id}",
+     *  "/{id}/voir/",
      *  name="app_user_view",
      *  requirements={
      *      "id"="\d+"
@@ -86,7 +86,7 @@ class UserAdminController extends Controller
 
     /**
      * @Route(
-     *  "/modifier/{id}",
+     *  "/{id}/modifier/",
      *  name="app_user_edit",
      *  requirements={
      *      "id"="\d+"
@@ -127,7 +127,7 @@ class UserAdminController extends Controller
 
     /**
      * @Route(
-     *  "/supprimer/{id}",
+     *  "/{id}/supprimer/",
      *  name="app_user_delete",
      *  requirements={
      *      "id"="\d+"
@@ -206,7 +206,7 @@ class UserAdminController extends Controller
      * (De)activate user
      * 
      * @Route(
-     *  "/desactiver/{id}",
+     *  "/{id}/desactiver/",
      *  name="app_user_deactivate",
      *  requirements={
      *      "id"="\d+"

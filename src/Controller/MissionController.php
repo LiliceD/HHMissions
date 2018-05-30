@@ -75,7 +75,7 @@ class MissionController extends Controller
 
     /**
      * @Route(
-     *  "/voir/{id}",
+     *  "/{id}/voir/",
      *  name="app_mission_view",
      *  requirements={
      *      "id"="\d+"
@@ -91,7 +91,7 @@ class MissionController extends Controller
 
     /**
      * @Route(
-     *  "/modifier/{id}",
+     *  "/{id}/modifier/",
      *  name="app_mission_edit",
      *  requirements={
      *      "id"="\d+"
@@ -183,7 +183,7 @@ class MissionController extends Controller
 
     /**
      * @Route(
-     *  "/supprimer/{id}",
+     *  "/{id}/supprimer/",
      *  name="app_mission_delete",
      *  requirements={
      *      "id"="\d+"
@@ -316,7 +316,7 @@ class MissionController extends Controller
      * Assign user as volunteer of the mission
      * 
      * @Route(
-     *  "/assigner/{id}",
+     *  "/{id}/assigner/",
      *  name="app_mission_assign",
      *  requirements={
      *      "id"="\d+"
@@ -357,7 +357,7 @@ class MissionController extends Controller
      * Close / re-open a mission if its current status is finished / closed respectively
      * 
      * @Route(
-     *  "/fermer/{id}",
+     *  "/{id}/fermer/",
      *  name="app_mission_close",
      *  requirements={
      *      "id"="\d+"
@@ -402,7 +402,7 @@ class MissionController extends Controller
      * Empty field "attachment" and delete file
      * 
      * @Route(
-     *  "/supprimer-pj/{id}",
+     *  "/{id}/supprimer-pj/",
      *  name="app_mission_attachment-delete",
      *  requirements={
      *      "id"="\d+"
@@ -441,7 +441,7 @@ class MissionController extends Controller
      * Export a given mission to PDF
      * 
      * @Route(
-     *  "/pdf/{id}",
+     *  "/{id}/pdf/",
      *  name="app_mission_pdf-export",
      *  requirements={
      *      "id"="\d+"

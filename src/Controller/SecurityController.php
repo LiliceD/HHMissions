@@ -15,7 +15,7 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 class SecurityController extends Controller
 {
     /**
-     * @Route("/login", name="login")
+     * @Route("/login/", name="login")
      */
     public function login(Request $request, AuthenticationUtils $authenticationUtils, AuthorizationCheckerInterface $authChecker)
     {
@@ -37,7 +37,7 @@ class SecurityController extends Controller
     }
 
     /**
-     * @Route("/reinitialisermdp", name="app.reset-pwd")
+     * @Route("/reinitialisermdp/", name="app.reset-pwd")
      */
     public function resetPassword(Request $request, AuthorizationCheckerInterface $authChecker, MailController $mailController, UserPasswordEncoderInterface $passwordEncoder)
     {
@@ -98,27 +98,6 @@ class SecurityController extends Controller
             // Stay on same page
             return $this->redirectToRoute('app.reset-pwd');
         }
-
-        return $this->render('security/reset-pwd.html.twig', [
-            'form' => $form->createView()
-        ]);
-    }
-
-    /**
-     * @Route("/reinitialisermdp2", name="app.reset-pwd2")
-     */
-    public function resetPassword2(Request $request, AuthorizationCheckerInterface $authChecker, MailController $mailController, UserPasswordEncoderInterface $passwordEncoder)
-    {
-        if ($authChecker->isGranted('IS_AUTHENTICATED_FULLY')) {
-            // If user is connected, redirect to mission list
-            // return $this->redirectToRoute('app_mission_list');
-        }
-
-        // Create form
-        $form = $this->createForm(ResetPasswordType::class);
-        $form->handleRequest($request);
-
-        $mailController->validate();
 
         return $this->render('security/reset-pwd.html.twig', [
             'form' => $form->createView()
