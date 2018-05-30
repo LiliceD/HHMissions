@@ -17,7 +17,7 @@ class UserProfileController extends Controller
 {
     /**
      * @Route(
-     *  "",
+     *  "/",
      *  name="app_profile_view",
      * )
      */
@@ -35,7 +35,7 @@ class UserProfileController extends Controller
 
     /**
      * @Route(
-     *  "/changermdp",
+     *  "/changermdp/",
      *  name="app_profile_change-pwd",
      * )
      */
