@@ -14,24 +14,30 @@ class MailController extends Controller
     private $senderAddress;
     private $senderName;
 
-    public function __construct(\Swift_Mailer $mailer)
+    public function __construct()
     {
-        $this->mailer = $mailer;
+        $this->mailer = new \SendGrid(getenv('SENDGRID_API_KEY'));
         $this->senderAddress = 'a.dahan@habitat-humanisme.org';
         $this->senderName = 'Alys';
     }
     
     public function send($subject, $to, $view)
     {
-        $message = (new \Swift_Message($subject))
-            ->setFrom($this->senderAddress, $this->senderName)
-            ->setTo($to)
-            ->setBody(
-                $view,
-                'text/html'
-            )
-        ;
+        $email = new \SendGrid\Mail\Mail();
+        $email->setFrom($this->senderAddress, $this->senderName);
+        $email->setSubject($subject);
+        $email->addTo($to);
+        $email->addContent(
+            "text/html", $view
+        );
 
-        $this->mailer->send($message);
+        try {
+            $response = $this->mailer->send($email);
+            print $response->statusCode() . "\n";
+            print_r($response->headers());
+            print $response->body() . "\n";
+        } catch (\Exception $e) {
+            echo 'Caught exception: ',  $e->getMessage(), "\n";
+        }
     }
 }
