@@ -38,6 +38,8 @@ class SecurityController extends Controller
 
     /**
      * @Route("/reinitialisermdp", name="app.reset-pwd")
+     *
+     * @throws \Exception
      */
     public function resetPassword(Request $request, AuthorizationCheckerInterface $authChecker, MailController $mailController, UserPasswordEncoderInterface $passwordEncoder)
     {
@@ -61,17 +63,27 @@ class SecurityController extends Controller
 
             if ($user) {
                 // Reset and encode password
-                $password = $passwordEncoder->encodePassword($user, $user->getUsername());
+                $newPassword = bin2hex(random_bytes(10));
+
+                $password = $passwordEncoder->encodePassword($user, $newPassword);
                 $user->setPassword($password);
 
-                // Send email
+                // Set mail parameters
                 $mailParams = [
                     'subject' => 'Alors, on est tête en l\'air ? 😉',
-                    'to' => $user->getEmail()
+                    'to' => [
+                        'email' => $user->getEmail(),
+                        'name' => $user->getName(),
+                    ],
                 ];
 
-                $view = $this->renderView('emails/reset-pwd.html.twig', ['name' => $user->getName()]);
+                // Generate mail HTML body
+                $view = $this->renderView('emails/reset-pwd.html.twig', [
+                    'name' => $mailParams['to']['name'],
+                    'password' => $newPassword,
+                ]);
 
+                // Send mail
                 $mailController->send($mailParams['subject'], $mailParams['to'], $view);
 
                 // Persist changes to DB
