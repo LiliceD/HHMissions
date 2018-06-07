@@ -26,7 +26,7 @@ class MailController extends Controller
         $email = new \SendGrid\Mail\Mail();
         $email->setFrom($this->senderAddress, $this->senderName);
         $email->setSubject($subject);
-        $email->addTo($to);
+        $email->addTo($to['email'], $to['name']);
         $email->addContent(
             "text/html", $view
         );

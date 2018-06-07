@@ -2,14 +2,11 @@
   Bonjour {{ name }},
 </p>
 <p>
-  Votre mot de passe a été réinitiliasé.
-</p>
-<p>
-  Pour vous connecter à Alys suivez les étapes suivantes :
+  Pour réinitialiser votre mot de passe Alys, suivez les étapes suivantes :
   <ol>
-    <li>Cliquez sur <a href="{{ url('app_profile_change-pwd') }}">ce lien</a> ;</li>
-    <li>Connectez vous en utilisant votre identifiant (sans la partie @habitat-humanisme.org) comme mot de passe ;</li>
-    <li>Choisissez un nouveau mot de passe.</li>
+    <li>Cliquez sur <b><a href="{{ url('app_profile_change-pwd') }}">ce lien</a></b> ;</li>
+    <li>Connectez vous en copiant-collant votre mot de passe temporaire : <b>{{ password }}</b> ;</li>
+    <li>Choisissez un <b>nouveau mot de passe</b>.</li>
   </ol>
   Merci et belle journée !
 </p>
