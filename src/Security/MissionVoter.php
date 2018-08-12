@@ -4,6 +4,7 @@ namespace App\Security;
 
 use App\Entity\Mission;
 use App\Entity\User;
+use App\Utils\Constant;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\Authorization\AccessDecisionManagerInterface; // to check roles
@@ -21,7 +22,7 @@ class MissionVoter extends Voter
         $this->decisionManager = $decisionManager;
     }
 
-    protected function supports($attribute, $subject)
+    protected function supports($attribute, $subject): bool
     {
         // if the attribute isn't one we support, return false
         if (!in_array($attribute, array(self::SIMPLE_EDIT, self::EDIT, self::ASSIGN))) {
@@ -36,7 +37,7 @@ class MissionVoter extends Voter
         return true;
     }
 
-    protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
+    protected function voteOnAttribute($attribute, $subject, TokenInterface $token): bool
     {
         $user = $token->getUser();
 
@@ -55,13 +56,13 @@ class MissionVoter extends Voter
             case self::EDIT:
                 return $this->canEdit($mission, $user, $token);
             case self::ASSIGN:
-                return $this->canAssign($mission, $user, $token);
+                return $this->canAssign($mission, $token);
         }
 
         throw new \LogicException('This code should not be reached!');
     }
 
-    private function canSimpleEdit(Mission $mission, User $user, TokenInterface $token)
+    private function canSimpleEdit(Mission $mission, User $user, TokenInterface $token): bool
     {
         // if they can edit, they can "simple edit"
         if ($this->canEdit($mission, $user, $token)) {
@@ -69,7 +70,7 @@ class MissionVoter extends Voter
         }
 
         // if mission is closed it can't be simple edited
-        if ($mission->getStatus() === Mission::STATUS_CLOSED) {
+        if ($mission->getStatus() === Constant::STATUS_CLOSED) {
             return false;
         }
 
@@ -77,7 +78,7 @@ class MissionVoter extends Voter
         return $this->decisionManager->decide($token, array('ROLE_VOLUNTEER')) && $user === $mission->getVolunteer();
     }
 
-    private function canEdit(Mission $mission, User $user, TokenInterface $token)
+    private function canEdit(Mission $mission, User $user, TokenInterface $token): bool
     {
         // ROLE_ADMIN can edit any mission
         if ($this->decisionManager->decide($token, array('ROLE_ADMIN'))) {
@@ -88,10 +89,10 @@ class MissionVoter extends Voter
         return $this->decisionManager->decide($token, array('ROLE_GLA')) && $user === $mission->getGla();
     }
 
-    private function canAssign(Mission $mission, User $user, TokenInterface $token)
+    private function canAssign(Mission $mission, TokenInterface $token): bool
     {
         // if mission is already assigned it can't be assigned
-        if ($mission->getStatus() !== Mission::STATUS_DEFAULT) {
+        if ($mission->getStatus() !== Constant::STATUS_DEFAULT) {
             return false;
         }
 

@@ -48,7 +48,7 @@
   {{ form_widget(form.id, {'attr': {'hidden': 'true'}}) }}
   {{ form_widget(form.gla, {'attr': {'hidden': 'true'}}) }}
   {{ form_widget(form.volunteer, {'attr': {'hidden': 'true'}}) }}
-  {{ form_widget(form.accomodation, {'attr': {'hidden': 'true'}}) }}
+  {{ form_widget(form.address, {'attr': {'hidden': 'true'}}) }}
   {{ form_widget(form.description, {'attr': {'hidden': 'true'}}) }}
   {{ form_widget(form.dateFinishedMin, {'attr': {'hidden': 'true'}}) }}
   {{ form_widget(form.dateFinishedMax, {'attr': {'hidden': 'true'}}) }}
@@ -81,7 +81,7 @@
 
       <tbody>
         {# Filled by JavaScript #}
-        {# id, dateCreated, GLA, dateAssigned, dateFinished, accomodation, description, volunteer, conclusions, status #}
+        {# id, dateCreated, GLA, dateAssigned, dateFinished, address, description, volunteer, conclusions, status #}
       </tbody>
     </table>
   </div>
@@ -157,7 +157,7 @@
 
         let missions = data.missions,
             counter = missions.length,
-            properties = ['id', 'dateCreated', 'gla', 'dateAssigned', 'dateFinished', 'accomodation', 'description', 'volunteer', 'conclusions', 'status'],
+            properties = ['id', 'dateCreated', 'gla', 'dateAssigned', 'dateFinished', 'address', 'description', 'volunteer', 'conclusions', 'status'],
             shortDescription = false,
             button = false;
 

@@ -16,7 +16,7 @@ class MissionRepository extends ServiceEntityRepository
     public function findByStatusJoined($value)
     {
         $qb = $this->createQueryBuilder('m')
-            ->innerJoin('m.accomodation', 'a')
+            ->innerJoin('m.address', 'a')
             ->addSelect('a')
             ->innerJoin('m.gla', 'g')
             ->addSelect('g')
@@ -35,7 +35,7 @@ class MissionRepository extends ServiceEntityRepository
     public function findByFiltersJoined($filters)
     {
         $qb = $this->createQueryBuilder('m')
-            ->innerJoin('m.accomodation', 'a')
+            ->innerJoin('m.address', 'a')
             ->addSelect('a')
             ->innerJoin('m.gla', 'g')
             ->addSelect('g')
@@ -43,17 +43,17 @@ class MissionRepository extends ServiceEntityRepository
             ->addSelect('v')
         ;
 
-        foreach($filters as $key => $filter) {
+        foreach ($filters as $key => $filter) {
             if ($filter['field'] === 'm.description') {
             // For 'description' : search if it contains the value
                 $qb->andWhere($qb->expr()->like($filter['field'], '?'.$key))
                     ->setParameter($key, $filter['value']);
-            } else if (in_array($filter['field'], ['m.dateCreated', 'm.dateFinished'])) {
+            } elseif (in_array($filter['field'], ['m.dateCreated', 'm.dateFinished'])) {
             // For dates : search if it is greater than / lower than or between value(s)
                 if (!$filter['value']['min']) {
                     $qb->andWhere($qb->expr()->lte($filter['field'], ':max'))
                         ->setParameter('max', $filter['value']['max']);
-                } else if (!$filter['value']['max']) {
+                } elseif (!$filter['value']['max']) {
                     $qb->andWhere($qb->expr()->gte($filter['field'], ':min'))
                         ->setParameter('min', $filter['value']['min']);
                 } else {

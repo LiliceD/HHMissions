@@ -47,7 +47,7 @@
       <include>
         <group>url</group>
         <group>mission</group>
-        <group>accomodation</group>
+        <group>address</group>
       </include>
     </groups>
 </phpunit>

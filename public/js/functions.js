@@ -18,9 +18,9 @@ function formatStringToDate(strDate) {
 
 // Add sorting to given table to all columns but the last n ones
 function sortTable(table, n = 0) {
-    tableHeadRows = table.querySelectorAll('thead > tr > th');
+    let tableHeadRows = table.querySelectorAll('thead > tr > th');
       
-    for(let i = 0, c = tableHeadRows.length - n; i < c; i++) {
+    for (let i = 0, c = tableHeadRows.length - n; i < c; i++) {
         tableHeadRows[i].addEventListener('click', () => {
           sortTableColumn(table, i);
         });
@@ -195,15 +195,15 @@ function missionsToTbody(tbody, missions, properties, shortDescription, button, 
 
                         classes.push(prop);
                         classes.push(prop + '-' + mission[prop].id);
-                    } else if (prop === 'accomodation') {
-                    // Accomodation has special innerHTML
+                    } else if (prop === 'address') {
+                    // Address has special innerHTML
                         innerHTML = mission[prop].street + '<br>';
 
                         if (mission[prop].name) {
                           innerHTML += mission[prop].name + '<br>'; 
                         }
 
-                        innerHTML += mission[prop].postalCode + ' ' + mission[prop].city;
+                        innerHTML += mission[prop].zipCode + ' ' + mission[prop].city;
                     } else {
                         innerHTML = mission[prop];
                     }

@@ -5,7 +5,9 @@ namespace App\Controller;
 use App\Form\UserType;
 use App\Form\UserEditType;
 use App\Entity\User;
+use App\Manager\UserManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -17,12 +19,12 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 class UserAdminController extends Controller
 {
     
-    //  ██████╗██████╗ ██╗   ██╗██████╗ 
+    //  ██████╗██████╗ ██╗   ██╗██████╗
     // ██╔════╝██╔══██╗██║   ██║██╔══██╗
     // ██║     ██████╔╝██║   ██║██║  ██║
     // ██║     ██╔══██╗██║   ██║██║  ██║
     // ╚██████╗██║  ██║╚██████╔╝██████╔╝
-    //  ╚═════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ 
+    //  ╚═════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝
 
 
     /**
@@ -30,8 +32,14 @@ class UserAdminController extends Controller
      *  "/ajouter",
      *  name="app_user_new"
      * )
+     *
+     * @param Request                      $request
+     * @param UserPasswordEncoderInterface $passwordEncoder
+     * @param UserManager                  $userManager
+     *
+     * @return RedirectResponse|Response
      */
-    public function new(Request $request, UserPasswordEncoderInterface $passwordEncoder)
+    public function new(Request $request, UserPasswordEncoderInterface $passwordEncoder, UserManager $userManager)
     {
         // Create User and form
         $user = new User();
@@ -46,7 +54,7 @@ class UserAdminController extends Controller
 
             // Set roles
             $category = $form->get('category')->getData();
-            $user->setRolesFromCategory($category);
+            $userManager->setRolesFromCategory($user, $category);
 
             // Persist to DB
             $em = $this->getDoctrine()->getManager();
@@ -76,8 +84,12 @@ class UserAdminController extends Controller
      *      "id"="\d+"
      *  }
      * )
+     *
+     * @param User $user
+     *
+     * @return Response
      */
-    public function view(User $user)
+    public function view(User $user): Response
     {
         return $this->render('user/view.html.twig', [
             'user' => $user
@@ -92,8 +104,15 @@ class UserAdminController extends Controller
      *      "id"="\d+"
      *  }
      * )
+     *
+     * @param User                         $user
+     * @param Request                      $request
+     * @param UserPasswordEncoderInterface $passwordEncoder
+     * @param UserManager                  $userManager
+     *
+     * @return RedirectResponse|Response
      */
-    public function edit(User $user, Request $request, UserPasswordEncoderInterface $passwordEncoder)
+    public function edit(User $user, Request $request, UserPasswordEncoderInterface $passwordEncoder, UserManager $userManager)
     {
         // Create form
         $form = $this->createForm(UserEditType::class, $user);
@@ -106,7 +125,7 @@ class UserAdminController extends Controller
 
             // Set roles
             $category = $form->get('category')->getData();
-            $user->setRolesFromCategory($category);
+            $userManager->setRolesFromCategory($user, $category);
 
             // Persist changes to DB
             $em = $this->getDoctrine()->getManager();
@@ -133,8 +152,12 @@ class UserAdminController extends Controller
      *      "id"="\d+"
      *  }
      * )
+     *
+     * @param User $user
+     *
+     * @return RedirectResponse
      */
-    public function delete(User $user)
+    public function delete(User $user): RedirectResponse
     {
         // Check if user is linked to missions
         $missionsAsGla = $user->getMissionsAsGla();
@@ -181,9 +204,11 @@ class UserAdminController extends Controller
      *  "",
      *  name="app_user_list"
      * )
+     *
+     * @return Response
      */
-    public function list()
-    {    
+    public function list(): Response
+    {
         // Get all volunteers / glas / admins ordered alphabetically
         $repository = $this->getDoctrine()->getRepository(User::class);
         $users = $repository->findBy([], ['id' => 'DESC']);
@@ -204,7 +229,7 @@ class UserAdminController extends Controller
 
     /**
      * (De)activate user
-     * 
+     *
      * @Route(
      *  "/{id}/desactiver/",
      *  name="app_user_deactivate",
@@ -212,8 +237,12 @@ class UserAdminController extends Controller
      *      "id"="\d+"
      *  }
      * )
+     *
+     * @param User $user
+     *
+     * @return RedirectResponse
      */
-    public function changeActive(User $user)
+    public function changeActive(User $user): RedirectResponse
     {
         // Retrieve app user to prevent self-deactivation
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');

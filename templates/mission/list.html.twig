@@ -27,7 +27,7 @@
     <div class="d-flex align-items-center">
       {{ form_widget(form.gla, {'attr': {'hidden': 'true'}}) }}
       {{ form_widget(form.volunteer, {'attr': {'hidden': 'true'}}) }}
-      {{ form_widget(form.accomodation, {'attr': {'hidden': 'true'}}) }}
+      {{ form_widget(form.address, {'attr': {'hidden': 'true'}}) }}
       {{ form_widget(form.description, {'attr': {'hidden': 'true'}}) }}
       {{ form_widget(form.dateCreatedMin, {'attr': {'hidden': 'true'}}) }}
       {{ form_widget(form.dateCreatedMax, {'attr': {'hidden': 'true'}}) }}
@@ -88,13 +88,13 @@
             <td>{{ mission.gla }}</td>
             {# address #}
             <td>
-              {{ mission.accomodation.street }}
+              {{ mission.address.street }}
               <br>
-              {% if mission.accomodation.name %}
-                {{ mission.accomodation.name }}
+              {% if mission.address.name %}
+                {{ mission.address.name }}
                 <br>
               {% endif %}
-              {{ mission.accomodation.postalCode }} {{ mission.accomodation.city }}
+              {{ mission.address.zipCode }} {{ mission.address.city }}
             </td>
             <td><div class="description-ellipsis" data-toggle="popover" data-content="{{ mission.description }}">{{ mission.description }}</div></td>
             {# view button #}
@@ -154,13 +154,13 @@
             <td class="gla gla-{{ mission.gla.id }}">{{ mission.gla }}</td>
             {# address #}
             <td>
-              {{ mission.accomodation.street }}
+              {{ mission.address.street }}
               <br>
-              {% if mission.accomodation.name %}
-                {{ mission.accomodation.name }}
+              {% if mission.address.name %}
+                {{ mission.address.name }}
                 <br>
               {% endif %}
-              {{ mission.accomodation.postalCode }} {{ mission.accomodation.city }}
+              {{ mission.address.zipCode }} {{ mission.address.city }}
             </td>
             <td class="volunteer volunteer-{{ mission.volunteer.id }}">{{ mission.volunteer }}</td>
             <td><div class="description-ellipsis" data-toggle="popover" data-content="{{ mission.description }}">{{ mission.description }}</div></td>
@@ -211,14 +211,14 @@
           </div>
         </div>
 
-        {# Filter Accomodation #}
+        {# Filter Address #}
         <div class="dropdown mr-2">
-          <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="dropdownAccomodationButton" data-toggle="dropdown" data-flip="false" aria-haspopup="true" aria-expanded="false">
+          <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="dropdownAddressButton" data-toggle="dropdown" data-flip="false" aria-haspopup="true" aria-expanded="false">
             Adresse d'intervention
-            <span id="searchAccomodationNb" class="badge badge-secondary"></span>
+            <span id="searchAddressNb" class="badge badge-secondary"></span>
           </button>
-          <div class="dropdown-menu dropdown-select px-3 mb-3" aria-labelledby="dropdownAccomodationButton">
-            {{ form_widget(searchForm.accomodation) }}
+          <div class="dropdown-menu dropdown-select px-3 mb-3" aria-labelledby="dropdownAddressButton">
+            {{ form_widget(searchForm.address) }}
           </div>
         </div>
         
@@ -293,7 +293,7 @@
 
     <tbody>
       {# Filled by JavaScript #}
-      {# id, dateCreated, dateFinished, gla, accomodation, volunteer, description, button to view #}
+      {# id, dateCreated, dateFinished, gla, address, volunteer, description, button to view #}
     </tbody>
   </table>
 
@@ -318,7 +318,7 @@
 
       let glaOptions = document.getElementsByName('mission_search[gla][]'),
           volunteerOptions = document.getElementsByName('mission_search[volunteer][]'),
-          accomodationOptions = document.getElementsByName('mission_search[accomodation][]'),
+          addressOptions = document.getElementsByName('mission_search[address][]'),
           descriptionInput = document.getElementById('mission_search_description'),
           dateCreatedMinInput = document.getElementById('mission_search_dateCreatedMin'),
           dateCreatedMaxInput = document.getElementById('mission_search_dateCreatedMax'),
@@ -348,9 +348,9 @@
         document.getElementById('searchVolunteerNb').innerHTML = getCheckedValues(volunteerOptions).length ? getCheckedValues(volunteerOptions).length : '';
       });
 
-      // Show number of Accomodation options selected
-      document.getElementById('mission_search_accomodation').addEventListener('change', () => {
-        document.getElementById('searchAccomodationNb').innerHTML = getCheckedValues(accomodationOptions).length ? getCheckedValues(accomodationOptions).length : '';
+      // Show number of Address options selected
+      document.getElementById('mission_search_address').addEventListener('change', () => {
+        document.getElementById('searchAddressNb').innerHTML = getCheckedValues(addressOptions).length ? getCheckedValues(addressOptions).length : '';
       });
 
 
@@ -375,9 +375,9 @@
           volunteerOptions[i].checked = false;
         }
 
-        // Uncheck accomodation options
-        for (let i=0, iLen=accomodationOptions.length; i<iLen; i++) {
-          accomodationOptions[i].checked = false;
+        // Uncheck address options
+        for (let i=0, iLen=addressOptions.length; i<iLen; i++) {
+          addressOptions[i].checked = false;
         }
 
         // Reset description input
@@ -392,7 +392,7 @@
         // Reset form badges
         document.getElementById('searchGlaNb').innerHTML = '';
         document.getElementById('searchVolunteerNb').innerHTML = '';
-        document.getElementById('searchAccomodationNb').innerHTML = '';
+        document.getElementById('searchAddressNb').innerHTML = '';
 
         // Reset table
         fillFinishedMissionsTable();
@@ -415,7 +415,7 @@
         // Get array of checked elements
         let glaIds = getCheckedValues(glaOptions);
             volunteerIds = getCheckedValues(volunteerOptions);
-            accomodationIds = getCheckedValues(accomodationOptions);
+            addressIds = getCheckedValues(addressOptions);
             descriptionSearch = descriptionInput.value.trim();
             dateCreatedMin = formatStringToDate(dateCreatedMinInput.value);
             dateCreatedMax = formatStringToDate(dateCreatedMaxInput.value);
@@ -426,7 +426,7 @@
             filters = {
               'glaIds': glaIds, 
               'volunteerIds': volunteerIds, 
-              'accomodationIds': accomodationIds, 
+              'addressIds': addressIds,
               'descriptionSearch': descriptionSearch, 
               'dateCreatedMin': dateCreatedMin, 
               'dateCreatedMax': dateCreatedMax, 
@@ -437,7 +437,7 @@
             noMissionsDiv = document.getElementById('noMissions'),
             loadingAlert = document.getElementById('loadingAlert'),
             badge = document.getElementById('finishedMissionsBadge'),
-            closedStatus = "{{ constant('App\\Entity\\Mission::STATUS_CLOSED') }}";
+            closedStatus = "{{ constant('App\\Utils\\Constant::STATUS_CLOSED') }}";
 
         // Retrieve matching missions and add them to table
         fillMissionsTable(table, filters, url, dataCallback, noMissionsDiv, loadingAlert, badge, closedStatus);
@@ -475,7 +475,7 @@
             counter = 0;
 
         missions.forEach( mission => {
-          if (mission.status === "{{ constant('App\\Entity\\Mission::STATUS_FINISHED') }}") {
+          if (mission.status === "{{ constant('App\\Utils\\Constant::STATUS_FINISHED') }}") {
             finishedMissions.push(mission);
             counter ++;
           } else {
@@ -483,7 +483,7 @@
           }
         });
 
-        let properties = ['id', 'dateCreated', 'dateFinished', 'gla', 'accomodation', 'volunteer', 'description'],
+        let properties = ['id', 'dateCreated', 'dateFinished', 'gla', 'address', 'volunteer', 'description'],
             shortDescription = true,
             button = true;
        
