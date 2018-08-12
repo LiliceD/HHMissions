@@ -51,13 +51,13 @@
       </div>
     </div>
 
-    {{ form_row(form.accomodation, {'attr': {'disabled': 'true'}}) }}
+    {{ form_row(form.address, {'attr': {'disabled': 'true'}}) }}
     
     {# Owner type #}
     <div class="d-flex">
       <div class="form-group">
-        <label for="accomodation_ownerType" class="form-control-label">Propriétaire :</label>
-        <input type="text" id="accomodation_ownerType" name="accomodation[ownerType]" readonly="true" class="form-control" value="{{ mission.accomodation.ownerType }}" />
+        <label for="address_ownerType" class="form-control-label">Propriétaire :</label>
+        <input type="text" id="address_ownerType" name="address[ownerType]" readonly="true" class="form-control" value="{{ mission.address.ownerType }}" />
       </div>
     </div>
 
@@ -146,9 +146,9 @@
       document.getElementById('mission_conclusions').addEventListener('change', showConclusionsAlert);
       document.getElementById('mission_dateFinished').addEventListener('change', showConclusionsAlert);
 
-      // Un-disable accomodation, GLA and volunteer select to post data on form submit
+      // Un-disable address, GLA and volunteer select to post data on form submit
       document.querySelector('form').addEventListener('submit', () => {
-        document.getElementById('mission_accomodation').disabled = false;
+        document.getElementById('mission_address').disabled = false;
         document.getElementById('mission_gla').disabled = false;
         document.getElementById('mission_volunteer').disabled = false;
       });

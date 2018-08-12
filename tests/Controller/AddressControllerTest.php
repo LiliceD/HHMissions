@@ -4,7 +4,7 @@ namespace App\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class AccomodationControllerTest extends WebTestCase
+class AddressControllerTest extends WebTestCase
 {
     private $clientA; // client with ROLE_ADMIN
     private $clientG; // client with ROLE_GLA
@@ -40,7 +40,7 @@ class AccomodationControllerTest extends WebTestCase
     /**
      * @group url
      * 
-     * @dataProvider accomodationUrls
+     * @dataProvider addressUrls
      */
     public function testAccomodationUrls($url, $role, $code)
     {
@@ -57,34 +57,34 @@ class AccomodationControllerTest extends WebTestCase
         $this->assertEquals($code, $client->getResponse()->getStatusCode());
     }
 
-    public function accomodationUrls()
+    public function addressUrls()
     {
         return [
             ['/logements', 'ROLE_GLA', 200],
             ['/logements', 'ROLE_VOLUNTEER', 200],
             ['/logements/modifier/1', 'ROLE_GLA', 200],
-            ['/logements/modifier/1', 'ROLE_VOLUNTEER', 403], // Volunteers can't edit accomodations
+            ['/logements/modifier/1', 'ROLE_VOLUNTEER', 403], // Volunteers can't edit addresses
             ['/logements/ajouter', 'ROLE_GLA', 200],
-            ['/logements/ajouter', 'ROLE_VOLUNTEER', 403] // Volunteers can't add accomodations
+            ['/logements/ajouter', 'ROLE_VOLUNTEER', 403] // Volunteers can't add addresses
         ];
     }
 
 
     /**
-     * @group accomodation
+     * @group address
      */
-    public function testAccomodationsList()
+    public function testAddressesList()
     {
         $crawler = $this->clientA->request('GET', '/logements');
 
-        // 4 accomodations in initial test db
+        // 4 addresses in initial test db
         $this->assertSame(4, $crawler->filter('tbody > tr')->count());
     }
 
     /**
-     * Access form to create a new accomodation from /logements
+     * Access form to create a new address from /logements
      *
-     * @group accomodation
+     * @group address
      */
     public function testFromListToNewAccomodation()
     {
@@ -98,7 +98,7 @@ class AccomodationControllerTest extends WebTestCase
     }
 
     /**
-     * @group accomodation
+     * @group address
      */
     public function testNewAccomodation()
     {
@@ -106,44 +106,44 @@ class AccomodationControllerTest extends WebTestCase
 
         $form = $crawler->selectButton('Valider')->form();
 
-        $form['accomodation[street]'] = '9 RUE MATHIEU VARILLE';
-        $form['accomodation[postalCode]'] = '69007';
-        $form['accomodation[city]'] = 'LYON 7';
-        $form['accomodation[ownerType]']->select('FHH - Immeuble');
+        $form['address[street]'] = '9 RUE MATHIEU VARILLE';
+        $form['address[zipCode]'] = '69007';
+        $form['address[city]'] = 'LYON 7';
+        $form['address[ownerType]']->select('FHH - Immeuble');
 
         $crawler = $this->clientA->submit($form);
         $crawler = $this->clientA->followRedirect();
 
-        // New accomodation id is 12 because of test database initialization
+        // New address id is 12 because of test database initialization
         $this->assertSame(1, $crawler->filter('h2:contains("Liste des logements")')->count());
         $this->assertSame(1, $crawler->filter('.alert-success:contains("Le logement a bien été ajouté")')->count());     
-        $this->assertSame(1, $crawler->filter('#accomodation-12:contains("9 RUE MATHIEU VARILLE")')->count());
-        $this->assertSame(1, $crawler->filter('#accomodation-12:contains("69007")')->count());
-        $this->assertSame(1, $crawler->filter('#accomodation-12:contains("LYON 7")')->count());
-        $this->assertSame(1, $crawler->filter('#accomodation-12:contains("FHH - Immeuble")')->count());
+        $this->assertSame(1, $crawler->filter('#address-12:contains("9 RUE MATHIEU VARILLE")')->count());
+        $this->assertSame(1, $crawler->filter('#address-12:contains("69007")')->count());
+        $this->assertSame(1, $crawler->filter('#address-12:contains("LYON 7")')->count());
+        $this->assertSame(1, $crawler->filter('#address-12:contains("FHH - Immeuble")')->count());
     }
 
     /**
-     * Access edit of an accomodation from /logements
+     * Access edit of an address from /logements
      *
-     * @group accomodation
+     * @group address
      */
     public function testFromListToEditAccomodation()
     {
         $crawler = $this->clientA->request('GET', '/logements');
 
-        $link = $crawler->filter('#accomodation-5')->selectLink('Modifier')->link();
+        $link = $crawler->filter('#address-5')->selectLink('Modifier')->link();
         
         $crawler = $this->clientA->click($link);
 
         $form = $crawler->selectButton('Valider')->form();
 
         $this->assertSame(1, $crawler->filter('h2:contains("Modifier le logement")')->count());
-        $this->assertEquals('25 RUE DU PERRON', $crawler->filter('#accomodation_street')->attr('value'));
+        $this->assertEquals('25 RUE DU PERRON', $crawler->filter('#address_street')->attr('value'));
     }
 
     /**
-     * @group accomodation
+     * @group address
      */
     public function testEditAccomodation()
     {
@@ -151,20 +151,20 @@ class AccomodationControllerTest extends WebTestCase
 
         $form = $crawler->selectButton('Valider')->form();
 
-        $form['accomodation[access]'] = 'Digicode';
+        $form['address[access]'] = 'Digicode';
 
         $crawler = $this->clientA->submit($form);
         $crawler = $this->clientA->followRedirect();
 
         $this->assertSame(1, $crawler->filter('h2:contains("Liste des logements")')->count());
         $this->assertSame(1, $crawler->filter('.alert-success:contains("Les modifications ont bien été enregistrées")')->count());   
-        $this->assertSame(1, $crawler->filter('#accomodation-5:contains("Digicode")')->count());
+        $this->assertSame(1, $crawler->filter('#address-5:contains("Digicode")')->count());
     }
 
     /**
-     * Delete the accomodation created in testNewAccomodation()
+     * Delete the address created in testNewAccomodation()
      *
-     * @group accomodation
+     * @group address
      */
     public function testDeleteAccomodation()
     {
@@ -177,7 +177,7 @@ class AccomodationControllerTest extends WebTestCase
 
         $this->assertSame(1, $crawler->filter('h2:contains("Liste des logements")')->count());
         $this->assertSame(1, $crawler->filter('.alert-success:contains("Le logement a bien été supprimé")')->count());
-        $this->assertSame(0, $crawler->filter('#accomodation-12')->count());
+        $this->assertSame(0, $crawler->filter('#address-12')->count());
     }
 
 }

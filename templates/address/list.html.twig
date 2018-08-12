@@ -11,14 +11,14 @@
 {% endblock %}
 
 {% block header_button %}
-  {# button to add accomodation only visible for gla and admin #}
+  {# button to add address only visible for gla and admin #}
   {% if is_granted('ROLE_GLA') %}
-    <a href="{{ path('app_accomodation_new') }}" class="btn btn-success mr-2">
+    <a href="{{ path('app_address_new') }}" class="btn btn-success mr-2">
       <i class="fas fa-plus"></i>
       Ajouter un logement
     </a>
   {% endif %}
-  <a href="{{ constant('ACCOMODATION_SP_FOLDER', accomodations[0]) }}" target="_blank" class="btn btn-sm btn-secondary mt-3 mt-sm-0">
+  <a href="{{ constant('App\\Utils\\Constant::ADDRESS_SHAREPOINT_FOLDER') }}" target="_blank" class="btn btn-sm btn-secondary mt-3 mt-sm-0">
     <i class="fas fa-external-link-alt"></i>
     Dossier Immeubles
   </a>
@@ -42,7 +42,7 @@
   </div>
 
   {# Table #}
-  <table class="table table-sm table-hover accomodations-table">
+  <table class="table table-sm table-hover addresses-table">
     <thead class="thead-light">
       <tr>
         <th scope="col">Adresse <i class="fas fa-sort"></i></th>
@@ -58,23 +58,23 @@
     </thead>
 
     <tbody>
-      {% for accomodation in accomodations %}
-        <tr id="accomodation-{{ accomodation.id }}">
+      {% for address in addresses %}
+        <tr id="address-{{ address.id }}">
           <td>
-            {{ accomodation.street }}
-            {% if accomodation.name %}
+            {{ address.street }}
+            {% if address.name %}
               <br>
-              {{ accomodation.name }}
+              {{ address.name }}
             {% endif %}
           </td>
-          <td>{{ accomodation.postalCode }}</td>
-          <td>{{ accomodation.city }}</td>
-          <td>{{ accomodation.ownerType }}</td>
-          <td><div class="access-ellipsis" data-toggle="popover" data-content="{{ accomodation.access }}">{{ accomodation.access }}</div></td>
+          <td>{{ address.zipCode }}</td>
+          <td>{{ address.city }}</td>
+          <td>{{ address.ownerType }}</td>
+          <td><div class="access-ellipsis" data-toggle="popover" data-content="{{ address.access }}">{{ address.access }}</div></td>
           {# edit button only visible for gla and admin #}
           {% if is_granted('ROLE_GLA') %}
             <td>
-              <a href="{{ path('app_accomodation_edit', {'id': accomodation.id}) }}" class="btn btn-sm btn-xs btn-outline-primary">
+              <a href="{{ path('app_address_edit', {'id': address.id}) }}" class="btn btn-sm btn-xs btn-outline-primary">
                 <i class="fas fa-edit"></i>
                 Modifier
               </a>

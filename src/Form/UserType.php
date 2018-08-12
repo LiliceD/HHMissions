@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\User;
+use App\Utils\Constant;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -48,7 +49,7 @@ class UserType extends AbstractType
                 ;
                 // Add a "category" dropdown
                 $form->add('category', ChoiceType::class, [
-                    'choices' => User::getCategories(),
+                    'choices' => Constant::getUserCategoriesDropdown(),
                     'label' => 'Catégorie :',
                     'placeholder' => '-',
                     'mapped' => false
@@ -56,10 +57,10 @@ class UserType extends AbstractType
             } else {
                 // Add a "category" dropdown prepopulated with user's category
                 $userCategory = $user->getCategory(); // choice name (e.g. 'Admin'), to display to user
-                $selectedCategory = User::getCategories()[$userCategory]; // choice value (e.g. 'ROLE_ADMIN'), to set preferred_choices
+                $selectedCategory = Constant::getUserCategoriesDropdown()[$userCategory]; // choice value (e.g. 'ROLE_ADMIN'), to set preferred_choices
                 
                 $form->add('category', ChoiceType::class, [
-                    'choices' => User::getCategories(),
+                    'choices' => Constant::getUserCategoriesDropdown(),
                     'label' => 'Catégorie :',
                     'placeholder' => false,
                     'preferred_choices' => [$selectedCategory],

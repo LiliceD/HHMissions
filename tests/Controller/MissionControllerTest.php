@@ -117,7 +117,7 @@ class MissionControllerTest extends WebTestCase
         $form = $crawler->selectButton('Créer la fiche mission')->form();
 
         $form['mission[gla]']->select('3');
-        $form['mission[accomodation]']->select('8');    // 35-37 RUE JULES BRUNARD 69007 LYON 7
+        $form['mission[address]']->select('8');    // 35-37 RUE JULES BRUNARD 69007 LYON 7
         $form['mission[description]']->setValue('Test description de nouvelle mission');
 
         $crawler = $this->clientA->submit($form);

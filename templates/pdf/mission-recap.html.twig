@@ -99,12 +99,12 @@
             <td class="center">{{ mission.dateAssigned|date('d/m/y') }}</td>
             <td class="center">{{ mission.dateFinished|date('d/m/y') }}</td>
             <td>
-              {{ mission.accomodation.street }}
+              {{ mission.address.street }}
               <br>
-              {% if mission.accomodation.name %}
-                {{ mission.accomodation.name }}<br> 
+              {% if mission.address.name %}
+                {{ mission.address.name }}<br>
               {% endif %}
-              {{ mission.accomodation.postalCode }} {{ mission.accomodation.city }}
+              {{ mission.address.zipCode }} {{ mission.address.city }}
             </td>
             <td>{{ mission.description }}</td>
             <td>{{ mission.volunteer }}</td>

@@ -37,11 +37,11 @@
         {# only visible for admin #}
         {% if is_granted('ROLE_ADMIN') %}
           <div class="col-sm-auto">
-            {% if mission.status == constant('STATUS_FINISHED', mission) %}
+            {% if mission.status == constant('App\\Utils\\Constant::STATUS_FINISHED') %}
               <a href="{{ path('app_mission_close', {'id': mission.id}) }}" class="btn btn-sm btn-primary">
                 Fermer
               </a>
-            {% elseif mission.status == constant('STATUS_CLOSED', mission) %}
+            {% elseif mission.status == constant('App\\Utils\\Constant::STATUS_CLOSED') %}
               <a href="{{ path('app_mission_close', {'id': mission.id}) }}" class="btn btn-sm btn-primary">
                 Rouvrir
               </a>
@@ -106,7 +106,7 @@
     </div>
     <div class="pl-3 pr-3">
       <div id="address" class="col-sm-auto text-form-alike">
-        {{ mission.accomodation.address }}
+        {{ mission.address.street }}
       </div>
     </div>
   </div>
@@ -115,10 +115,10 @@
       Propriétaire :
     </div>
     <div class="col-sm-auto mr-auto text-form-alike font-weight-normal">
-      {{ mission.accomodation.ownerType ? : "" }}
+      {{ mission.address.ownerType ? : "" }}
     </div>
     <div class="col-sm-auto">
-      <a href="{{ constant('ACCOMODATION_SP_FOLDER', mission.accomodation) }}" target="_blank" class="btn btn-sm btn-outline-secondary mt-3 mt-sm-0">
+      <a href="{{ constant('App\\Utils\\Constant::ADDRESS_SHAREPOINT_FOLDER') }}" target="_blank" class="btn btn-sm btn-outline-secondary mt-3 mt-sm-0">
         <i class="fas fa-external-link-alt"></i>
         Dossier Immeubles
       </a>
@@ -192,7 +192,7 @@
       {% endif %}
 
       {# edit button only visible if mission is not closed and if user is admin, mission's gla or mission's volunteer #}
-      {% if mission.status != constant('STATUS_CLOSED', mission) and is_granted('simpleEdit', mission) %}
+      {% if mission.status != constant('App\\Utils\\Constant::STATUS_CLOSED') and is_granted('simpleEdit', mission) %}
         <a href="{{ path('app_mission_edit', {'id': mission.id}) }}" class="btn btn-outline-primary">
           <i class="fas fa-edit"></i>
           Modifier

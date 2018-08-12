@@ -2,10 +2,11 @@
 
 namespace App\Controller;
 
-use App\Entity\Accomodation;
-use App\Form\AccomodationType;
+use App\Entity\Address;
+use App\Form\AddressType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse; // function access
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -13,36 +14,40 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route("/logements")
  */
-class AccomodationController extends Controller
+class AddressController extends Controller
 {
     
-    //  ██████╗██████╗ ██╗   ██╗██████╗ 
+    //  ██████╗██████╗ ██╗   ██╗██████╗
     // ██╔════╝██╔══██╗██║   ██║██╔══██╗
     // ██║     ██████╔╝██║   ██║██║  ██║
     // ██║     ██╔══██╗██║   ██║██║  ██║
     // ╚██████╗██║  ██║╚██████╔╝██████╔╝
-    //  ╚═════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ 
+    //  ╚═════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝
 
     /**
      * @Route(
      *  "/ajouter/",
-     *  name="app_accomodation_new"
+     *  name="app_address_new"
      * )
+     *
+     * @param Request $request
+     *
+     * @return RedirectResponse|Response
      */
     public function new(Request $request)
     {
-        $accomodation = new Accomodation();
+        $address = new Address();
 
-        $form = $this->createForm(AccomodationType::class, $accomodation);
+        $form = $this->createForm(AddressType::class, $address);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             // Persist to DB
             $em = $this->getDoctrine()->getManager();
 
-            $accomodation = $form->getData();
+            $address = $form->getData();
 
-            $em->persist($accomodation);
+            $em->persist($address);
             $em->flush();
 
             // Set a "flash" success message
@@ -51,10 +56,10 @@ class AccomodationController extends Controller
                 'Le logement a bien été ajouté.'
             );
 
-            return $this->redirectToRoute('app_accomodation_list');
+            return $this->redirectToRoute('app_address_list');
         }
 
-        return $this->render('accomodation/new.html.twig', [
+        return $this->render('address/new.html.twig', [
             'form' => $form->createView()
         ]);
     }
@@ -62,24 +67,29 @@ class AccomodationController extends Controller
     /**
      * @Route(
      *  "/{id}/modifier/",
-     *  name="app_accomodation_edit",
+     *  name="app_address_edit",
      *  requirements={
      *      "id"="\d+"
      *  }
      * )
+     *
+     * @param Address $address
+     * @param Request      $request
+     *
+     * @return RedirectResponse|Response
      */
-    public function edit(Accomodation $accomodation, Request $request)
+    public function edit(Address $address, Request $request)
     {
-        $form = $this->createForm(AccomodationType::class, $accomodation);
+        $form = $this->createForm(AddressType::class, $address);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             // Persist changes to DB
             $em = $this->getDoctrine()->getManager();
 
-            $accomodation = $form->getData();
+            $address = $form->getData();
 
-            $em->persist($accomodation);
+            $em->persist($address);
             $em->flush();
 
             // Set a "flash" success message
@@ -88,28 +98,32 @@ class AccomodationController extends Controller
                 'Les modifications ont bien été enregistrées.'
             );
 
-            return $this->redirectToRoute('app_accomodation_list');
+            return $this->redirectToRoute('app_address_list');
         }
 
-        return $this->render('accomodation/edit.html.twig', [
+        return $this->render('address/edit.html.twig', [
             'form' => $form->createView(),
-            'accomodation' => $accomodation
+            'address' => $address
         ]);
     }
 
     /**
      * @Route(
      *  "/{id}/supprimer/",
-     *  name="app_accomodation_delete",
+     *  name="app_address_delete",
      *  requirements={
      *      "id"="\d+"
      *  }
      * )
+     *
+     * @param Address $address
+     *
+     * @return RedirectResponse
      */
-    public function delete(Accomodation $accomodation)
+    public function delete(Address $address): RedirectResponse
     {
-        // Check if accomodation is linked to missions
-        $missions = $accomodation->getMissions();
+        // Check if address is linked to missions
+        $missions = $address->getMissions();
 
         if (!$missions->isEmpty()) {
             // Set a "flash" success message
@@ -120,7 +134,7 @@ class AccomodationController extends Controller
         } else {
             // Persist changes to DB
             $em = $this->getDoctrine()->getManager();
-            $em->remove($accomodation);
+            $em->remove($address);
             $em->flush();
 
             // Set a "flash" success message
@@ -130,7 +144,7 @@ class AccomodationController extends Controller
             );
         }
 
-        return $this->redirectToRoute('app_accomodation_list');
+        return $this->redirectToRoute('app_address_list');
     }
 
 
@@ -145,47 +159,52 @@ class AccomodationController extends Controller
     /**
      * @Route(
      *  "/",
-     *  name="app_accomodation_list",
+     *  name="app_address_list",
      * )
+     *
+     * @return Response
      */
-    public function list()
-    {    
-        $repository = $this->getDoctrine()->getRepository(Accomodation::class);
+    public function list(): Response
+    {
+        $repository = $this->getDoctrine()->getRepository(Address::class);
 
-        $accomodations = $repository->findBy([], ['street' => 'ASC']);
+        $addresses = $repository->findBy([], ['street' => 'ASC']);
 
-        return $this->render('accomodation/list.html.twig', [
-            'accomodations' => $accomodations
+        return $this->render('address/list.html.twig', [
+            'addresses' => $addresses
         ]);
     }
 
 
 //  █████╗      ██╗ █████╗ ██╗  ██╗
 // ██╔══██╗     ██║██╔══██╗╚██╗██╔╝
-// ███████║     ██║███████║ ╚███╔╝ 
-// ██╔══██║██   ██║██╔══██║ ██╔██╗ 
+// ███████║     ██║███████║ ╚███╔╝
+// ██╔══██║██   ██║██╔══██║ ██╔██╗
 // ██║  ██║╚█████╔╝██║  ██║██╔╝ ██╗
 // ╚═╝  ╚═╝ ╚════╝ ╚═╝  ╚═╝╚═╝  ╚═╝
 
-    
+
     /**
      * @Route(
      *  "/info/",
-     *  name="app_accomodation_info",
+     *  name="app_address_info",
      * )
+     * @param Request $request
+     *
+     * @return JsonResponse
      */
-    public function info(Request $request)
+    public function info(Request $request): JsonResponse
     {
         $id = $request->request->get('id');
 
-        // Retrieve the requested Accomodation
-        $accomodation = $this->getDoctrine()
-            ->getRepository(Accomodation::class)
+        // Retrieve the requested Address
+        $address = $this->getDoctrine()
+            ->getRepository(Address::class)
             ->find($id);
 
         // Get values
-        $access = $accomodation->getAccess();
-        $ownerType = $accomodation->getOwnerType();
+        $access = $address->getAccess();
+        $ownerType = $address->getOwnerType();
 
         // Format values in JSON
         $json = [

@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\User;
+use App\Utils\Constant;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -28,12 +29,14 @@ class UserEditType extends AbstractType
             $form = $event->getForm();
 
             // Retrieve user's category
-            $userCategory = $user->getCategory(); // choice name (e.g. 'Admin'), to display to user
-            $selectedCategory = User::getCategories()[$userCategory]; // choice value (e.g. 'ROLE_ADMIN'), to set preferred_choices
+            // choice name (e.g. 'Admin'), to display to user
+            $userCategory = $user->getCategory();
+            // choice value (e.g. 'ROLE_ADMIN'), to set preferred_choices
+            $selectedCategory = Constant::getUserCategoriesDropdown()[$userCategory];
             
             // Add field
             $form->add('category', ChoiceType::class, [
-                'choices' => User::getCategories(),
+                'choices' => Constant::getUserCategoriesDropdown(),
                 'label' => 'Catégorie :',
                 'placeholder' => false,
                 'preferred_choices' => [$selectedCategory],

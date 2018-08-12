@@ -3,7 +3,7 @@
   display: block;
 }
 
-/* clicking on th sorts table (mission/list, mission/recap, accomodation/list, user/list) */
+/* clicking on th sorts table (mission/list, mission/recap, address/list, user/list) */
 th:hover {
   cursor: pointer;
 }
@@ -91,8 +91,8 @@ h3 {
 }
 
 
-/* accomodation/list.html.twig */
-.accomodations-table {
+/* address/list.html.twig */
+.addresses-table {
   font-size: 14px;
 }
 

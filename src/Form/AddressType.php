@@ -2,16 +2,13 @@
 
 namespace App\Form;
 
-use App\Entity\Accomodation;
-// use Symfony\Bridge\Doctrine\Form\Type\EntityType; // for 'address' drop-down
+use App\Entity\Address;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType; // for 'gla' drop-down;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType; // postal code
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class AccomodationType extends AbstractType
+class AddressType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -22,10 +19,10 @@ class AccomodationType extends AbstractType
                 'required' => false
             ))
             ->add('street', null, array('label' => 'Adresse :'))
-            ->add('postalCode', null, array('label' => 'Code postal :'))
+            ->add('zipCode', null, array('label' => 'Code postal :'))
             ->add('city', null, array('label' => 'Ville :'))
             ->add('ownerType', ChoiceType::class, array(
-                'choices' => Accomodation::getOwnerTypes(),
+                'choices' => Address::getOwnerTypes(),
                 'label' => 'Propriétaire :',
                 'placeholder' => '-'
             ))
@@ -36,7 +33,7 @@ class AccomodationType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => Accomodation::class,
+            'data_class' => Address::class,
         ));
     }
 }

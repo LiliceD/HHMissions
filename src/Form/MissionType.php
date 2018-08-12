@@ -2,18 +2,19 @@
 
 namespace App\Form;
 
-use App\Entity\Accomodation;
+use App\Entity\Address;
 use App\Entity\Mission;
 use App\Entity\User;
+use App\Repository\UserRepository;
+use App\Utils\Constant;
 use Doctrine\ORM\EntityRepository; // for 'address' query builder
 use Symfony\Bridge\Doctrine\Form\Type\EntityType; // for 'address' drop-down
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType; // for 'date created/assigned/finished' fields
 use Symfony\Component\Form\Extension\Core\Type\FileType; // for 'attachment'
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class MissionType extends AbstractType
@@ -21,6 +22,9 @@ class MissionType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+            ->add('activity', ChoiceType::class, [
+                'choices' => Constant::getActivities()
+            ])
             ->add('status', null, ['label' => 'Statut :'])
             ->add('dateCreated', DateType::class, [
                 'label' => 'Date de demande :',
@@ -43,6 +47,7 @@ class MissionType extends AbstractType
                 // Dropdown from User table, gla = true, active = true
                 'class' => User::class,
                 'query_builder' => function (EntityRepository $er) {
+                    /** @var UserRepository $er */
                     return $er->qbActiveByCategory('gla');
                 },
                 'choice_label' => 'name',
@@ -53,6 +58,7 @@ class MissionType extends AbstractType
                 // Dropdown from User table, volunteer = true, active = true
                 'class' => User::class,
                 'query_builder' => function (EntityRepository $er) {
+                    /** @var UserRepository $er */
                     return $er->qbActiveByCategory('volunteer');
                 },
                 'choice_label' => 'name',
@@ -60,9 +66,9 @@ class MissionType extends AbstractType
                 'placeholder' => '-',
                 'required' => false,
             ])
-            ->add('accomodation', EntityType::class, [
-                // Dropdown from Accomodation table
-                'class' => Accomodation::class,
+            ->add('address', EntityType::class, [
+                // Dropdown from Address table
+                'class' => Address::class,
                 'query_builder' => function (EntityRepository $er) {
                     return $er->createQueryBuilder('a')
                         ->orderBy('a.street', 'ASC');

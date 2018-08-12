@@ -20,16 +20,14 @@ class MailController extends Controller
         $this->senderAddress = 'a.dahan@habitat-humanisme.org';
         $this->senderName = 'Alys';
     }
-    
+
     public function send($subject, $to, $view)
     {
         $email = new \SendGrid\Mail\Mail();
         $email->setFrom($this->senderAddress, $this->senderName);
         $email->setSubject($subject);
-        $email->addTo($to['email'], $to['name']);
-        $email->addContent(
-            "text/html", $view
-        );
+        $email->addTo($to);
+        $email->addContent("text/html", $view);
 
         try {
             $response = $this->mailer->send($email);

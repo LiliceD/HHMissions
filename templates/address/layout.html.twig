@@ -7,7 +7,7 @@
 
 
 {% block header_button %}
-  <a href="{{ path('app_accomodation_list') }}" class="btn btn-outline-secondary">
+  <a href="{{ path('app_address_list') }}" class="btn btn-outline-secondary">
     <i class="fas fa-chevron-left"></i>
     Retour à la liste
   </a>
@@ -27,7 +27,7 @@
 
     <div class="row justify-content-between">
       <div class="col-sm-3">
-        {{ form_row(form.postalCode) }}
+        {{ form_row(form.zipCode) }}
       </div>
     
       <div class="col-sm-9">
@@ -44,7 +44,7 @@
     <br>
     
     {# Buttons Submit / Cancel #}
-    {{ formButtons(path('app_accomodation_list')) }}
+    {{ formButtons(path('app_address_list')) }}
   {{ form_end(form) }}
 {% endblock %}
 
@@ -57,21 +57,21 @@
   <script>
     (function() {
       // Remove accent and capitalize name, address and city
-      document.getElementById("accomodation_name").addEventListener("input", (e) => {
+      document.getElementById("address_name").addEventListener("input", (e) => {
         e.target.value = capitalizeInput(e.target.value);
       });
-      document.getElementById("accomodation_street").addEventListener("input", (e) => {
+      document.getElementById("address_street").addEventListener("input", (e) => {
         e.target.value = capitalizeInput(e.target.value);
       });
-      document.getElementById("accomodation_city").addEventListener("input", (e) => {
+      document.getElementById("address_city").addEventListener("input", (e) => {
         e.target.value = capitalizeInput(e.target.value);
       });
 
       // Replace with city name dynamic population
-      document.getElementById("accomodation_postalCode").addEventListener("change", (e) => {
+      document.getElementById("address_zipCode").addEventListener("change", (e) => {
         const input = e.target.value; 
         if (input.match(/^6900\d$/)) {
-          document.getElementById("accomodation_city").value = "LYON"; 
+          document.getElementById("address_city").value = "LYON";
         }
       });
     })();
