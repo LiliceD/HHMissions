@@ -23,7 +23,9 @@ class MissionType extends AbstractType
     {
         $builder
             ->add('activity', ChoiceType::class, [
-                'choices' => Constant::getActivities()
+                'choices' => Constant::getActivities(),
+                'label' => 'Pôle d\'activité :',
+                'placeholder' => '-- Pôle d\'activité -- ',
             ])
             ->add('status', null, ['label' => 'Statut :'])
             ->add('dateCreated', DateType::class, [

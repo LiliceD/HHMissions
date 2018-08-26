@@ -6,6 +6,7 @@ use App\Form\UserType;
 use App\Form\UserEditType;
 use App\Entity\User;
 use App\Manager\UserManager;
+use App\Utils\Constant;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -126,6 +127,11 @@ class UserAdminController extends Controller
             // Set roles
             $category = $form->get('category')->getData();
             $userManager->setRolesFromCategory($user, $category);
+
+            // An GLA belongs to all activities
+            if ($user->getCategory() === Constant::CAT_GLA) {
+                $user->setActivities(Constant::getActivities());
+            }
 
             // Persist changes to DB
             $em = $this->getDoctrine()->getManager();

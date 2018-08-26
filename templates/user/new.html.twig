@@ -32,9 +32,15 @@
     </div>
     
     {# Category / roles #}
-    <div class="form-row align-items-end">
+    <div class="form-row align-items-start">
       <div class="form-group col-sm-4">
         {{ form_row(form.category) }}
+      </div>
+      <div class="form-group col-sm d-flex justify-content-sm-center">
+      <div class="">
+        {{ form_label(form.activities) }}
+        {{ form_widget(form.activities) }}
+      </div>
       </div>
     </div>
 
@@ -74,6 +80,9 @@
           nameElt = document.getElementById('user_name'),
           usernameElt = document.getElementById('user_username'),
           emailElt = document.getElementById('user_email'),
+          categoryElt = document.getElementById('user_category'),
+          categoryElts = document.querySelectorAll('#user_category option'),
+          ckBoxElts = document.querySelectorAll('#user_activities .form-check-input'),
           pwd1Elt = document.getElementById('user_plainPassword_first'),
           pwd2Elt = document.getElementById('user_plainPassword_second');
 
@@ -94,6 +103,16 @@
       
       // Update email with username changes
       usernameElt.addEventListener('change', usernameUpdate);
+
+      // (Un)check and (dis)able activities boxes with category changes
+      categoryElt.addEventListener('change', categoryUpdate);
+
+      // Un-disable address, GLA and volunteer select to post data on form submit
+      document.querySelector('form').addEventListener('submit', () => {
+        for (i = 0, c = ckBoxElts.length; i < c; i++) {
+          ckBoxElts[i].disabled = false;
+        }
+      });
 
 
       function namesUpdate() {
@@ -154,6 +173,22 @@
         }
 
         return finalString;
+      }
+
+      function categoryUpdate() {
+        let categoryValue;
+
+        for (i = 0, c = categoryElts.length; i < c; i++) {
+            if (categoryElts[i].selected) {
+                categoryValue = categoryElts[i].value;
+                break;
+            }
+        }
+
+        for (i = 0, c = ckBoxElts.length; i < c; i++) {
+          ckBoxElts[i].checked = (categoryValue === 'ROLE_GLA');
+          ckBoxElts[i].disabled = (categoryValue === 'ROLE_GLA');
+        }
       }
     })();
   </script>

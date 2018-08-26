@@ -10,6 +10,11 @@ class Constant
     const CAT_GLA = 'GLA';
     const CAT_VOLUNTEER = 'Bénévole';
 
+    // User roles
+    const ROLE_ADMIN = 'ROLE_ADMIN';
+    const ROLE_GLA = 'ROLE_GLA';
+    const ROLE_VOLUNTEER = 'ROLE_VOLUNTEER';
+
     // User/Mission poles of activity (or divisions)
     const PA_GLA = 'Appui GLA';
     const PA_BRIC = 'Bricolage';
@@ -33,29 +38,30 @@ class Constant
 
     /**
      * Callback for User->$category
-     *
-     * @return array
-     */
-    public static function getUserCategories()
-    {
-        return [
-            self::CAT_VOLUNTEER,
-            self::CAT_GLA,
-            self::CAT_ADMIN,
-        ];
-    }
-
-    /**
      * Category dropdown in UserType
      *
      * @return array
      */
-    public static function getUserCategoriesDropdown()
+    public static function getUserCategories(): array
     {
         return [
-            self::CAT_VOLUNTEER => 'ROLE_VOLUNTEER',
-            self::CAT_GLA => 'ROLE_GLA',
-            self::CAT_ADMIN => 'ROLE_ADMIN'
+            self::CAT_VOLUNTEER => self::CAT_VOLUNTEER,
+            self::CAT_GLA => self::CAT_GLA,
+            self::CAT_ADMIN => self::CAT_ADMIN,
+        ];
+    }
+
+    /**
+     * Category to role mapping
+     *
+     * @return array
+     */
+    public static function getRoles(): array
+    {
+        return [
+            self::CAT_VOLUNTEER => [self::ROLE_VOLUNTEER],
+            self::CAT_GLA => [self::ROLE_GLA],
+            self::CAT_ADMIN => [self::ROLE_ADMIN],
         ];
     }
 
