@@ -136,7 +136,8 @@ class MissionController extends Controller
             // Retrieve user to check authorizations
             $user = $this->getUser();
 
-            // DateCreated, address and GLA can't be changed
+            // Activity, dateCreated, address and GLA can't be changed
+            $mission->setActivity($oldMission->getActivity());
             $mission->setDateCreated($oldMission->getDateCreated());
             $mission->setAddress($oldMission->getAddress());
             $mission->setGla($oldMission->getGla());

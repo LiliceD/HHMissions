@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Address;
+use App\Utils\Constant;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType; // for 'gla' drop-down;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -22,7 +23,7 @@ class AddressType extends AbstractType
             ->add('zipCode', null, array('label' => 'Code postal :'))
             ->add('city', null, array('label' => 'Ville :'))
             ->add('ownerType', ChoiceType::class, array(
-                'choices' => Address::getOwnerTypes(),
+                'choices' => Constant::getOwnerTypes(),
                 'label' => 'Propriétaire :',
                 'placeholder' => '-'
             ))

@@ -20,54 +20,34 @@ class UserType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+            ->add('firstName', TextType::class, [
+                'label' => 'Prénom :',
+                'mapped' => false
+            ])
+            ->add('lastName', TextType::class, [
+                'label' => 'Nom :',
+                'mapped' => false
+            ])
             ->add('name', TextType::class, ['label' => 'Prénom NOM :'])
             ->add('username', TextType::class, ['label' => 'Identifiant :'])
             ->add('email', EmailType::class, ['label' => 'Email :'])
+            ->add('category', ChoiceType::class, [
+                'choices' => Constant::getUserCategories(),
+                'label' => 'Catégorie :',
+                'placeholder' => '-',
+            ])
+            ->add('activities', ChoiceType::class, [
+                'choices' => Constant::getActivities(),
+                'expanded' => true,
+                'multiple' => true,
+                'label' => 'Pôle·s d\'activité :',
+            ])
             ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'first_options'  => ['label' => 'Mot de passe :'],
                 'second_options' => ['label' => 'Confirmer le mot de passe :'],
             ])
         ;
-
-        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
-            $user = $event->getData();
-            $form = $event->getForm();
-
-            // Checks if the user is being created or already exists
-            if (!$user || null === $user->getId()) {
-                // Add "first name" and "last name" fields for user creation
-                $form
-                    ->add('firstName', TextType::class, [
-                        'label' => 'Prénom :',
-                        'mapped' => false
-                    ])
-                    ->add('lastName', TextType::class, [
-                        'label' => 'Nom :',
-                        'mapped' => false
-                    ])
-                ;
-                // Add a "category" dropdown
-                $form->add('category', ChoiceType::class, [
-                    'choices' => Constant::getUserCategoriesDropdown(),
-                    'label' => 'Catégorie :',
-                    'placeholder' => '-',
-                    'mapped' => false
-                ]);
-            } else {
-                // Add a "category" dropdown prepopulated with user's category
-                $userCategory = $user->getCategory(); // choice name (e.g. 'Admin'), to display to user
-                $selectedCategory = Constant::getUserCategoriesDropdown()[$userCategory]; // choice value (e.g. 'ROLE_ADMIN'), to set preferred_choices
-                
-                $form->add('category', ChoiceType::class, [
-                    'choices' => Constant::getUserCategoriesDropdown(),
-                    'label' => 'Catégorie :',
-                    'placeholder' => false,
-                    'preferred_choices' => [$selectedCategory],
-                    'mapped' => false
-                ]);
-            }
-        });
     }
 
     public function configureOptions(OptionsResolver $resolver)

@@ -20,6 +20,17 @@
   {# Form #}
   {{ form_start(form) }}
 
+    <div class="d-sm-flex align-items-center">
+      <div class="col-sm-4 col-md-3 col-xl-3 mt-2 text-center">
+          {{ form_label(form.activity) }}
+      </div>
+      <div class="col-12 col-sm-6 col-md-4">
+          {{ form_widget(form.activity, {'attr': {'disabled': 'true'}}) }}
+      </div>
+    </div>
+
+    <hr>
+
     <div class="row justify-content-between">
       <div class="d-flex">
         <div class="col-sm">
@@ -130,6 +141,8 @@
 
   <script>
     (function() {
+      let caca = "{{ mission.activity }}";
+        console.log(caca);
       // Show / hide alert if conclusions has / not text
       function showConclusionsAlert() {
         let conclusionsAlertElt = document.getElementById('conclusionsAlert');
@@ -151,6 +164,7 @@
         document.getElementById('mission_address').disabled = false;
         document.getElementById('mission_gla').disabled = false;
         document.getElementById('mission_volunteer').disabled = false;
+        document.getElementById('mission_activity').disabled = false;
       });
     })();
   </script>

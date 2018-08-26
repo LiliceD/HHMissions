@@ -29,9 +29,19 @@
       </div>
     </div>
     
-    <div class="form-row align-items-end">
+    <div class="form-row align-items-start">
       <div class="form-group col-sm-4">
-        {{ form_row(form.category) }}
+          {{ form_row(form.category) }}
+      </div>
+      <div class="form-group col-sm d-flex justify-content-sm-center">
+        <div class="">
+          {% if (user.category != constant('App\\Utils\\Constant::CAT_GLA')) %}
+            {{ form_label(form.activities) }}
+            {{ form_widget(form.activities) }}
+          {% else %}
+            {{ form_widget(form.activities, {'attr': {'hidden': 'true'}}) }}
+          {% endif %}
+        </div>
       </div>
     </div>
 

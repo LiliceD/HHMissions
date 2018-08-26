@@ -21,28 +21,17 @@ class UserEditType extends AbstractType
             ->add('name', TextType::class, ['label' => 'Prénom NOM :'])
             ->add('username', TextType::class, ['label' => 'Identifiant :'])
             ->add('email', EmailType::class, ['label' => 'Email :'])
-        ;
-
-        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
-            // Add a "category" dropdown prepopulated with user's category
-            $user = $event->getData();
-            $form = $event->getForm();
-
-            // Retrieve user's category
-            // choice name (e.g. 'Admin'), to display to user
-            $userCategory = $user->getCategory();
-            // choice value (e.g. 'ROLE_ADMIN'), to set preferred_choices
-            $selectedCategory = Constant::getUserCategoriesDropdown()[$userCategory];
-            
-            // Add field
-            $form->add('category', ChoiceType::class, [
-                'choices' => Constant::getUserCategoriesDropdown(),
+            ->add('category', ChoiceType::class, [
+                'choices' => Constant::getUserCategories(),
                 'label' => 'Catégorie :',
                 'placeholder' => false,
-                'preferred_choices' => [$selectedCategory],
-                'mapped' => false
+            ])
+            ->add('activities', ChoiceType::class, [
+                'choices' => Constant::getActivities(),
+                'expanded' => true,
+                'multiple' => true,
+                'label' => 'Pôle·s d\'activité :',
             ]);
-        });
     }
 
     public function configureOptions(OptionsResolver $resolver)
