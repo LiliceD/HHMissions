@@ -6,9 +6,14 @@ use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\RepeatedType; // for password
-use Symfony\Component\Form\Extension\Core\Type\PasswordType; // for password
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 
+/**
+ * Class UserPasswordType
+ *
+ * @author Alice Dahan <lilice.dhn@gmail.com>
+ */
 class UserPasswordType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)

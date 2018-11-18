@@ -3,9 +3,15 @@
 namespace App\Repository;
 
 use App\Entity\User;
+use App\Utils\Constant;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
+/**
+ * Class UserRepository
+ *
+ * @author Alice Dahan <lilice.dhn@gmail.com>
+ */
 class UserRepository extends ServiceEntityRepository
 {
     public function __construct(RegistryInterface $registry)
@@ -24,14 +30,13 @@ class UserRepository extends ServiceEntityRepository
         
         // Possibly add filter on volunteer/gla
         switch ($category) {
-            case 'gla':
+            case Constant::CAT_GLA:
                 $qb->where('u.gla = true');
                 break;
-            case 'volunteer':
+            case Constant::CAT_VOLUNTEER:
                 $qb->where('u.volunteer = true');
         }
 
-        // Order alphabetically by name
         // Return directly the query builder (for EntityType fields query_builder in MissionType)
         return $qb->orderBy('u.name', 'ASC');
     }
@@ -45,10 +50,10 @@ class UserRepository extends ServiceEntityRepository
         
         // Possibly add filter on volunteer/gla
         switch ($category) {
-            case 'gla':
+            case Constant::CAT_GLA:
                 $qb->where('u.gla = true');
                 break;
-            case 'volunteer':
+            case Constant::CAT_VOLUNTEER:
                 $qb->where('u.volunteer = true');
         }
 

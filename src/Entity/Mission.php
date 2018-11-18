@@ -10,9 +10,13 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
+ * Class Mission
+ *
  * @ORM\Table(name="mission")
  *
  * @ORM\Entity(repositoryClass="App\Repository\MissionRepository")
+ *
+ * @author Alice Dahan <lilice.dhn@gmail.com>
  */
 class Mission
 {
@@ -204,6 +208,7 @@ class Mission
      *
      * @ORM\Column(type="integer", nullable=true)
      *
+
      * @var int
      */
     protected $duration;
@@ -307,10 +312,14 @@ class Mission
 
     /**
      * @param string $status
+     *
+     * @return Mission
      */
-    public function setStatus(string $status)
+    public function setStatus(string $status): Mission
     {
         $this->status = $status;
+
+        return $this;
     }
 
     /**
@@ -323,10 +332,14 @@ class Mission
 
     /**
      * @param Address $address
+     *
+     * @return Mission
      */
-    public function setAddress(Address $address)
+    public function setAddress(Address $address): Mission
     {
         $this->address = $address;
+
+        return $this;
     }
 
     /**
@@ -339,10 +352,14 @@ class Mission
 
     /**
      * @param User $gla
+     *
+     * @return Mission
      */
-    public function setGla(User $gla)
+    public function setGla(User $gla): Mission
     {
         $this->gla = $gla;
+
+        return $this;
     }
 
     /**
@@ -355,10 +372,14 @@ class Mission
 
     /**
      * @param User|null $volunteer
+     *
+     * @return Mission
      */
-    public function setVolunteer(?User $volunteer)
+    public function setVolunteer(?User $volunteer): Mission
     {
         $this->volunteer = $volunteer;
+
+        return $this;
     }
 
     /**
@@ -371,10 +392,14 @@ class Mission
 
     /**
      * @param string $activity
+     *
+     * @return Mission
      */
-    public function setActivity(string $activity)
+    public function setActivity(string $activity): Mission
     {
         $this->activity = $activity;
+
+        return $this;
     }
 
     /**
@@ -387,10 +412,14 @@ class Mission
 
     /**
      * @param string $description
+     *
+     * @return Mission
      */
-    public function setDescription(string $description)
+    public function setDescription(string $description): Mission
     {
         $this->description = $description;
+
+        return $this;
     }
 
     /**
@@ -403,10 +432,14 @@ class Mission
 
     /**
      * @param string $info
+     *
+     * @return Mission
      */
-    public function setInfo(string $info)
+    public function setInfo(string $info): Mission
     {
         $this->info = $info;
+
+        return $this;
     }
 
     /**
@@ -419,10 +452,14 @@ class Mission
 
     /**
      * @param string $conclusions
+     *
+     * @return Mission
      */
-    public function setConclusions(string $conclusions)
+    public function setConclusions(string $conclusions): Mission
     {
         $this->conclusions = $conclusions;
+
+        return $this;
     }
 
     /**
@@ -443,10 +480,14 @@ class Mission
 
     /**
      * @param \DateTime $dateCreated
+     *
+     * @return Mission
      */
-    public function setDateCreated(\DateTime $dateCreated)
+    public function setDateCreated(\DateTime $dateCreated): Mission
     {
         $this->dateCreated = $dateCreated;
+
+        return $this;
     }
 
     /**
@@ -471,10 +512,14 @@ class Mission
 
     /**
      * @param \DateTime|null $dateAssigned
+     *
+     * @return Mission
      */
-    public function setDateAssigned(?\DateTime $dateAssigned)
+    public function setDateAssigned(?\DateTime $dateAssigned): Mission
     {
         $this->dateAssigned = $dateAssigned;
+
+        return $this;
     }
 
     /**
@@ -499,10 +544,14 @@ class Mission
 
     /**
      * @param \DateTime|null $dateFinished
+     *
+     * @return Mission
      */
-    public function setDateFinished(?\DateTime $dateFinished)
+    public function setDateFinished(?\DateTime $dateFinished): Mission
     {
         $this->dateFinished = $dateFinished;
+
+        return $this;
     }
 
     /**
@@ -515,10 +564,14 @@ class Mission
 
     /**
      * @param File|string|null $attachment
+     *
+     * @return Mission
      */
-    public function setAttachment($attachment)
+    public function setAttachment($attachment): Mission
     {
         $this->attachment = $attachment;
+
+        return $this;
     }
 
     /**
@@ -531,10 +584,14 @@ class Mission
 
     /**
      * @param string $duration
+     *
+     * @return Mission
      */
-    public function setDuration(string $duration)
+    public function setDuration(string $duration): Mission
     {
         $this->duration = $duration;
+
+        return $this;
     }
 
     /**
@@ -547,9 +604,13 @@ class Mission
 
     /**
      * @param string $distance
+     *
+     * @return Mission
      */
-    public function setDistance(string $distance)
+    public function setDistance(string $distance): Mission
     {
         $this->distance = $distance;
+
+        return $this;
     }
 }

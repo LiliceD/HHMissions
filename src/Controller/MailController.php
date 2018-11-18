@@ -6,7 +6,11 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 /**
+ * Class MailController
+ *
  * @Route(service="app.mail_controller")
+ *
+ * @author Alice Dahan <lilice.dhn@gmail.com>
  */
 class MailController extends Controller
 {

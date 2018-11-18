@@ -7,14 +7,17 @@ use App\Utils\Constant;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType; // for 'category'
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\RepeatedType; // for password
-use Symfony\Component\Form\Extension\Core\Type\PasswordType; // for password
-use Symfony\Component\Form\FormEvent; // for EventListener
-use Symfony\Component\Form\FormEvents; // for EventListener
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 
+/**
+ * Class UserType
+ *
+ * @author Alice Dahan <lilice.dhn@gmail.com>
+ */
 class UserType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)

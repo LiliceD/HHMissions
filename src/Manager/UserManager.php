@@ -5,6 +5,11 @@ namespace App\Manager;
 use App\Entity\User;
 use App\Utils\Constant;
 
+/**
+ * Class UserManager
+ *
+ * @author Alice Dahan <lilice.dhn@gmail.com>
+ */
 class UserManager
 {
     /**
@@ -15,7 +20,7 @@ class UserManager
      */
     public function setRolesFromCategory(User $user, string $category): User
     {
-        $rolesByCategories = Constant::getRoles();
+        $rolesByCategories = Constant::getRolesFromCategories();
 
         $user->setRoles($rolesByCategories[$category]);
 

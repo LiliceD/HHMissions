@@ -12,7 +12,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
+ * Class AddressController
+ *
  * @Route("/logements")
+ *
+ * @author Alice Dahan <lilice.dhn@gmail.com>
  */
 class AddressController extends Controller
 {
@@ -177,6 +181,7 @@ class AddressController extends Controller
 
 
 //  █████╗      ██╗ █████╗ ██╗  ██╗
+
 // ██╔══██╗     ██║██╔══██╗╚██╗██╔╝
 // ███████║     ██║███████║ ╚███╔╝
 // ██╔══██║██   ██║██╔══██║ ██╔██╗

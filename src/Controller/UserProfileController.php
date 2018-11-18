@@ -11,7 +11,11 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 /**
+ * Class UserProfileController
+ *
  * @Route("/monprofil")
+ *
+ * @author Alice Dahan <lilice.dhn@gmail.com>
  */
 class UserProfileController extends Controller
 {
