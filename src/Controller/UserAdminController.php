@@ -15,7 +15,11 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 /**
+ * Class UserAdminController
+ *
  * @Route("/admin/users")
+ *
+ * @author Alice Dahan <lilice.dhn@gmail.com>
  */
 class UserAdminController extends Controller
 {

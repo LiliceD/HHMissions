@@ -11,6 +11,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 
 /**
+ * Class User
+ *
  * @ORM\Table(name="user")
  *
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
@@ -23,6 +25,8 @@ use Symfony\Component\Security\Core\User\AdvancedUserInterface;
  *     fields="username",
  *     message="Nom d'utilisateur déjà utilisé"
  * )
+ *
+ * @author Alice Dahan <lilice.dhn@gmail.com>
  */
 class User implements AdvancedUserInterface, \Serializable
 {
@@ -98,7 +102,7 @@ class User implements AdvancedUserInterface, \Serializable
      *
      * @var array
      */
-    private $roles;
+    private $roles = [];
 
     /**
      * User's category (admin, volunteer, gla...)
@@ -127,7 +131,7 @@ class User implements AdvancedUserInterface, \Serializable
      *
      * @var array
      */
-    private $activities;
+    private $activities = [];
 
     /**
      * User's full name
@@ -148,7 +152,7 @@ class User implements AdvancedUserInterface, \Serializable
      *
      * @var bool
      */
-    private $active;
+    private $active = true;
 
     /**
      * Can the User create missions?
@@ -159,7 +163,7 @@ class User implements AdvancedUserInterface, \Serializable
      *
      * @var bool
      */
-    private $gla;
+    private $gla = false;
 
     /**
      * Is the User a volunteer?
@@ -170,7 +174,7 @@ class User implements AdvancedUserInterface, \Serializable
      *
      * @var bool
      */
-    private $volunteer;
+    private $volunteer = false;
 
     /**
      * All the Missions the User has created
@@ -225,7 +229,6 @@ class User implements AdvancedUserInterface, \Serializable
      */
     public function __construct()
     {
-        $this->active = true;
         $this->missionsAsGla = new ArrayCollection();
         $this->missionsAsVolunteer = new ArrayCollection();
     }
@@ -241,7 +244,7 @@ class User implements AdvancedUserInterface, \Serializable
     /**
      * Mandatory function
      *
-     * @return string|null
+     * @return null
      */
     public function getSalt()
     {
@@ -263,7 +266,7 @@ class User implements AdvancedUserInterface, \Serializable
      *
      * @return string
      */
-    public function serialize()
+    public function serialize(): string
     {
         return serialize(array(
             $this->id,
@@ -300,7 +303,7 @@ class User implements AdvancedUserInterface, \Serializable
     /**
      * @return int
      */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -308,65 +311,81 @@ class User implements AdvancedUserInterface, \Serializable
     /**
      * @return string
      */
-    public function getUsername()
+    public function getUsername(): ?string
     {
         return $this->username;
     }
 
     /**
      * @param string $username
+     *
+     * @return User
      */
-    public function setUsername(string $username)
+    public function setUsername(string $username): User
     {
         $this->username = $username;
+
+        return $this;
     }
 
     /**
      * @return string
      */
-    public function getPlainPassword()
+    public function getPlainPassword(): ?string
     {
         return $this->plainPassword;
     }
 
     /**
      * @param string $password
+     *
+     * @return User
      */
-    public function setPlainPassword(string $password)
+    public function setPlainPassword(string $password): User
     {
         $this->plainPassword = $password;
+
+        return $this;
     }
 
     /**
      * @return string
      */
-    public function getPassword()
+    public function getPassword(): ?string
     {
         return $this->password;
     }
 
     /**
      * @param string $password
+     *
+     * @return User
      */
-    public function setPassword(string $password)
+    public function setPassword(string $password): User
     {
         $this->password = $password;
+
+        return $this;
     }
 
     /**
      * @return string
      */
-    public function getEmail()
+    public function getEmail(): ?string
     {
         return $this->email;
     }
 
     /**
      * @param string $email
+     *
+     * @return User
      */
-    public function setEmail(string $email)
+    public function setEmail(string $email): User
     {
         $this->email = $email;
+
+        return $this;
     }
 
     /**
@@ -374,92 +393,112 @@ class User implements AdvancedUserInterface, \Serializable
      *
      * @return array
      */
-    public function getRoles()
+    public function getRoles(): array
     {
         return $this->roles;
     }
 
     /**
      * @param array $roles
+     *
+     * @return User
      */
-    public function setRoles(array $roles)
+    public function setRoles(array $roles): User
     {
         $this->roles = $roles;
 
         // ROLE_GLA (resp. ROLE_VOLUNTEER) is only in Gla list (resp. Volunteer list)
         // ROLE_ADMIN is in both lists
-        $this->gla = in_array('ROLE_ADMIN', $roles) || in_array('ROLE_GLA', $roles);
-        $this->volunteer = in_array('ROLE_ADMIN', $roles) || in_array('ROLE_VOLUNTEER', $roles);
+        $this->gla = \in_array('ROLE_ADMIN', $roles) || \in_array('ROLE_GLA', $roles);
+        $this->volunteer = \in_array('ROLE_ADMIN', $roles) || \in_array('ROLE_VOLUNTEER', $roles);
+
+        return $this;
     }
 
     /**
      * @return array
      */
-    public function getActivities()
+    public function getActivities(): array
     {
         return $this->activities;
     }
 
     /**
      * @param array $activities
+     *
+     * @return User
      */
-    public function setActivities(array $activities)
+    public function setActivities(array $activities): User
     {
         $this->activities = $activities;
+
+        return $this;
     }
 
     /**
      * @return string
      */
-    public function getCategory()
+    public function getCategory(): ?string
     {
         return $this->category;
     }
 
     /**
      * @param string $category
+     *
+     * @return User
      */
-    public function setCategory(string $category)
+    public function setCategory(string $category): User
     {
         $this->category = $category;
+
+        return $this;
     }
 
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
     /**
      * @param string $name
+     *
+     * @return User
      */
-    public function setName(string $name)
+    public function setName(string $name): User
     {
         $this->name = $name;
+
+        return $this;
     }
 
     /**
      * @return bool
      */
-    public function isActive()
+    public function isActive(): bool
     {
         return $this->active;
     }
 
     /**
      * @param bool $active
+     *
+     * @return User
      */
-    public function setActive(bool $active)
+    public function setActive(bool $active): User
     {
         $this->active = $active;
+
+        return $this;
     }
 
     /**
      * @return bool
      */
-    public function isGla()
+    public function isGla(): bool
     {
         return $this->gla;
     }
@@ -467,23 +506,23 @@ class User implements AdvancedUserInterface, \Serializable
     /**
      * @return bool
      */
-    public function isVolunteer()
+    public function isVolunteer(): bool
     {
         return $this->volunteer;
     }
 
     /**
-     * @return Collection|Mission[]
+     * @return Collection
      */
-    public function getMissionsAsGla():Collection
+    public function getMissionsAsGla(): Collection
     {
         return $this->missionsAsGla;
     }
 
     /**
-     * @return Collection|Mission[]
+     * @return Collection
      */
-    public function getMissionsAsVolunteer():Collection
+    public function getMissionsAsVolunteer(): Collection
     {
         return $this->missionsAsVolunteer;
     }
@@ -493,7 +532,7 @@ class User implements AdvancedUserInterface, \Serializable
     /**
      * @return bool
      */
-    public function isAccountNonExpired()
+    public function isAccountNonExpired(): bool
     {
         return true;
     }
@@ -501,7 +540,7 @@ class User implements AdvancedUserInterface, \Serializable
     /**
      * @return bool
      */
-    public function isAccountNonLocked()
+    public function isAccountNonLocked(): bool
     {
         return true;
     }
@@ -509,7 +548,7 @@ class User implements AdvancedUserInterface, \Serializable
     /**
      * @return bool
      */
-    public function isCredentialsNonExpired()
+    public function isCredentialsNonExpired(): bool
     {
         return true;
     }
@@ -517,7 +556,7 @@ class User implements AdvancedUserInterface, \Serializable
     /**
      * @return bool
      */
-    public function isEnabled()
+    public function isEnabled(): bool
     {
         return $this->active;
     }

@@ -17,6 +17,11 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Class MissionType
+ *
+ * @author Alice Dahan <lilice.dhn@gmail.com>
+ */
 class MissionType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -50,7 +55,7 @@ class MissionType extends AbstractType
                 'class' => User::class,
                 'query_builder' => function (EntityRepository $er) {
                     /** @var UserRepository $er */
-                    return $er->qbActiveByCategory('gla');
+                    return $er->qbActiveByCategory(Constant::CAT_GLA);
                 },
                 'choice_label' => 'name',
                 'label' => 'Provenance GLA :',
@@ -61,7 +66,7 @@ class MissionType extends AbstractType
                 'class' => User::class,
                 'query_builder' => function (EntityRepository $er) {
                     /** @var UserRepository $er */
-                    return $er->qbActiveByCategory('volunteer');
+                    return $er->qbActiveByCategory(Constant::CAT_VOLUNTEER);
                 },
                 'choice_label' => 'name',
                 'label' => 'Bénévole :',

@@ -6,6 +6,11 @@ use Symfony\Component\Filesystem\Filesystem; // to delete scan pdf
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface; // to delete scan pdf (errors)
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
+/**
+ * Class FileUploader
+ *
+ * @author Alice Dahan <lilice.dhn@gmail.com>
+ */
 class FileUploader
 {
     private $targetDir;

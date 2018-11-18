@@ -6,6 +6,11 @@ use App\Entity\Mission;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
+/**
+ * Class MissionRepository
+ *
+ * @author Alice Dahan <lilice.dhn@gmail.com>
+ */
 class MissionRepository extends ServiceEntityRepository
 {
     public function __construct(RegistryInterface $registry)

@@ -5,6 +5,11 @@ namespace App\Manager;
 use App\Entity\Mission;
 use App\Utils\Constant;
 
+/**
+ * Class MissionManager
+ *
+ * @author Alice Dahan <lilice.dhn@gmail.com>
+ */
 class MissionManager
 {
     /**
@@ -14,7 +19,7 @@ class MissionManager
      *
      * @return Mission
      */
-    public function updateStatus(Mission $mission)
+    public static function updateStatus(Mission $mission)
     {
         if ($mission->getDateFinished()) {
             $mission->setStatus(Constant::STATUS_FINISHED);
@@ -25,5 +30,29 @@ class MissionManager
         }
 
         return $mission;
+    }
+
+    /**
+     * Check whether a mission is assigned
+     *
+     * @param Mission $mission
+     *
+     * @return bool
+     */
+    public static function isAssigned(Mission $mission): bool
+    {
+        return $mission->getStatus() !== Constant::STATUS_DEFAULT;
+    }
+
+    /**
+     * Check whether a mission is closed
+     *
+     * @param Mission $mission
+     *
+     * @return bool
+     */
+    public static function isClosed(Mission $mission): bool
+    {
+        return $mission->getStatus() === Constant::STATUS_CLOSED;
     }
 }

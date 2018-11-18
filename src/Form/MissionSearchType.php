@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\Address;
 use App\Entity\User;
 use App\Repository\UserRepository;
+use App\Utils\Constant;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -13,6 +14,11 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints\GreaterThan;
 
+/**
+ * Class MissionSearchType
+ *
+ * @author Alice Dahan <lilice.dhn@gmail.com>
+ */
 class MissionSearchType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -27,7 +33,7 @@ class MissionSearchType extends AbstractType
                 'class' => User::class,
                 'query_builder' => function (EntityRepository $er) {
                     /** @var UserRepository $er */
-                    return $er->qbAllByCategory('gla');
+                    return $er->qbAllByCategory(Constant::CAT_GLA);
                 },
                 'choice_label' => 'name',
                 'required' => false,
@@ -39,7 +45,7 @@ class MissionSearchType extends AbstractType
                 'class' => User::class,
                 'query_builder' => function (EntityRepository $er) {
                     /** @var UserRepository $er */
-                    return $er->qbAllByCategory('volunteer');
+                    return $er->qbAllByCategory(Constant::CAT_VOLUNTEER);
                 },
                 'choice_label' => 'name',
                 'required' => false,

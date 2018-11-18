@@ -2,19 +2,25 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection; // mapping address to missions
-use Doctrine\Common\Collections\Collection; // mapping address to missions
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity; // to use @UniqueEntity validation
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
+ * Class Address
+ *
  * @ORM\Table(name="address")
+ *
  * @ORM\Entity(repositoryClass="App\Repository\AddressRepository")
+ *
  * @UniqueEntity(
  *  fields={"street", "city"},
  *  message="Cette adresse existe déjà."
  * )
+ *
+ * @author Alice Dahan <lilice.dhn@gmail.com>
  */
 class Address
 {
@@ -102,23 +108,23 @@ class Address
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function __toString(): ?string
+    public function __toString(): string
     {
-        return $this->street;
+        return $this->street . ' '
+            . ($this->name ? '(' . $this->name . ') ' : '')
+            . $this->zipCode . ' ' . $this->city ?? '';
     }
 
     /**
      * Full address
      *
-     * @return string|null
+     * @return string
      */
-    public function getAddress(): ?string
+    public function getAddress(): string
     {
-        return $this->street . ' '
-            . ($this->name ? '(' . $this->name . ') ' : '')
-            . $this->zipCode . ' ' . $this->city;
+        return $this->__toString();
     }
 
     /********** Getters and setters *************/
@@ -141,10 +147,14 @@ class Address
 
     /**
      * @param string $name
+     *
+     * @return Address
      */
-    public function setName(string $name)
+    public function setName(string $name): Address
     {
         $this->name = $name;
+
+        return $this;
     }
 
     /**
@@ -157,10 +167,14 @@ class Address
 
     /**
      * @param string $street
+     *
+     * @return Address
      */
-    public function setStreet(string $street)
+    public function setStreet(string $street): Address
     {
         $this->street = $street;
+
+        return $this;
     }
 
     /**
@@ -173,10 +187,14 @@ class Address
 
     /**
      * @param int $zipCode
+     *
+     * @return Address
      */
-    public function setZipCode(int $zipCode)
+    public function setZipCode(int $zipCode): Address
     {
         $this->zipCode = $zipCode;
+
+        return $this;
     }
 
     /**
@@ -189,10 +207,14 @@ class Address
 
     /**
      * @param string $city
+     *
+     * @return Address
      */
-    public function setCity(string $city)
+    public function setCity(string $city): Address
     {
         $this->city = $city;
+
+        return $this;
     }
 
     /**
@@ -205,10 +227,14 @@ class Address
 
     /**
      * @param string $ownerType
+     *
+     * @return Address
      */
-    public function setOwnerType(string $ownerType)
+    public function setOwnerType(string $ownerType): Address
     {
         $this->ownerType = $ownerType;
+
+        return $this;
     }
 
     /**
@@ -221,16 +247,20 @@ class Address
 
     /**
      * @param string $access
+     *
+     * @return Address
      */
-    public function setAccess(string $access)
+    public function setAccess(string $access): Address
     {
         $this->access = $access;
+
+        return $this;
     }
 
     /**
-     * @return Collection|Mission[]|null
+     * @return Collection
      */
-    public function getMissions()
+    public function getMissions(): Collection
     {
         return $this->missions;
     }

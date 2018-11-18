@@ -6,6 +6,7 @@ use App\Entity\Mission;
 use App\Form\MissionType;
 use App\Form\MissionSearchType;
 use App\Manager\MissionManager;
+use App\Repository\MissionRepository;
 use App\Service\FileUploader; // to use FileUploader service in edit
 use App\Utils\Constant;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -18,7 +19,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
+ * Class MissionController
+ *
  * @Route("/missions")
+ *
+ * @author Alice Dahan <lilice.dhn@gmail.com>
  */
 class MissionController extends Controller
 {
@@ -257,6 +262,7 @@ class MissionController extends Controller
         $form->handleRequest($request);
 
         // Get Mission repository
+        /** @var MissionRepository $repository */
         $repository = $this->getDoctrine()->getRepository(Mission::class);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -540,10 +546,9 @@ class MissionController extends Controller
         array_push($filters, $statusFilter);
 
         // Retrieve Missions matching filters
-        $missions = $this->getDoctrine()
-            ->getRepository(Mission::class)
-            ->findByFiltersJoined($filters)
-        ;
+        /** @var MissionRepository $missionRepo */
+        $missionRepo = $this->getDoctrine()->getRepository(Mission::class);
+        $missions = $missionRepo->findByFiltersJoined($filters);
 
         $html = $this->renderView('pdf/mission-recap.html.twig', [
             'missions' => $missions
@@ -654,10 +659,9 @@ class MissionController extends Controller
         }
         
         // Retrieve Missions matching filters
-        $missions = $this->getDoctrine()
-            ->getRepository(Mission::class)
-            ->findByFiltersJoined($filters)
-        ;
+        /** @var MissionRepository $missionRepo */
+        $missionRepo = $this->getDoctrine()->getRepository(Mission::class);
+        $missions = $missionRepo->findByFiltersJoined($filters);
 
         // Convert Missions to JSON
         $missionsJson = [];

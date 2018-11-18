@@ -2,7 +2,11 @@
 
 namespace App\Utils;
 
-
+/**
+ * Class Constant
+ *
+ * @author Alice Dahan <lilice.dhn@gmail.com>
+ */
 class Constant
 {
     // User categories
@@ -11,6 +15,7 @@ class Constant
     const CAT_VOLUNTEER = 'Bénévole';
 
     // User roles
+    const ROLE_SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
     const ROLE_ADMIN = 'ROLE_ADMIN';
     const ROLE_GLA = 'ROLE_GLA';
     const ROLE_VOLUNTEER = 'ROLE_VOLUNTEER';
@@ -56,7 +61,7 @@ class Constant
      *
      * @return array
      */
-    public static function getRoles(): array
+    public static function getRolesFromCategories(): array
     {
         return [
             self::CAT_VOLUNTEER => [self::ROLE_VOLUNTEER],

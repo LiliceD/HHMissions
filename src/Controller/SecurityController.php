@@ -13,6 +13,11 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
+/**
+ * Class SecurityController
+ *
+ * @author Alice Dahan <lilice.dhn@gmail.com>
+ */
 class SecurityController extends Controller
 {
     /**
