@@ -12,12 +12,10 @@
   {% set modalHeader = 'Supprimer le compte de cet·te utilisateur·trice' %}
   {% set modalBody = 'Confirmez-vous la suppression de ce compte ?' %}
   {% set btnPath = path('app_user_delete', {'id': user.id}) %}
-  
   {{ macros.modal('delete', modalHeader, modalBody, btnPath, 'btn-danger', 'Supprimer') }}
 
   {# Form #}
   {{ form_start(form) }}
-    
     {{ form_row(form.name) }}
 
     <div class="form-row">

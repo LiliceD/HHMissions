@@ -1,4 +1,6 @@
+const CAT_GLA = 'GLA';
 const STATUS_CLOSED = 'Fermée';
+const EMAIL_DOMAIN = '@'+'habitat-humanisme.org';
 
 /**
  * Remove accents and convert to uppercase
@@ -45,6 +47,10 @@ function getCheckedOptionsValues(options) {
 
             return checkedOptions;
         }, []);
+}
+
+function getSelectedValue(select) {
+    return $('option:selected', select).val();
 }
 
 

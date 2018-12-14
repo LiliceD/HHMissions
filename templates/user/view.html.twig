@@ -20,9 +20,7 @@
     {% set btnClass = 'btn-primary' %}
     {% set btnValue = 'Activer' %}
   {% endif %}
-
   {% set btnPath = path('app_user_deactivate', {'id': user.id}) %}
-  
   {{ modal('deactivate', modalHeader, modalBody, btnPath, btnClass, btnValue) }}
 
   {# Alert inactive account #}
