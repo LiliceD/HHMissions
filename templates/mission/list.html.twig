@@ -2,520 +2,322 @@
 
 
 {% block title %}
-  Fiches mission - {{ parent() }}
+    Fiches mission - {{ parent() }}
 {% endblock %}
 
 
 {% block header_h2 %}
-  Liste des fiches mission
+    Liste des fiches mission
 {% endblock %}
 
 {% block header_button %}
-  {# new mission button only visible for gla (and admin) #}
-  {% if is_granted('ROLE_GLA') %}
-    <a href="{{ path('app_mission_new') }}" class="btn btn-success">
-      <i class="fas fa-plus"></i>
-      Créer une fiche mission
-    </a>
-  {% endif %}
+    {# new mission button only visible for gla (and admin) #}
+    {% if is_granted('ROLE_GLA') %}
+        <a href="{{ path('app_mission_new') }}" class="btn btn-success">
+            <i class="fas fa-plus"></i>
+            Créer une fiche mission
+        </a>
+    {% endif %}
 {% endblock %}
 
 
 {% block content %}
-  {# Search form by id #}
-  {{ form_start(form) }}
-    <div class="d-flex align-items-center">
-      {{ form_widget(form.gla, {'attr': {'hidden': 'true'}}) }}
-      {{ form_widget(form.volunteer, {'attr': {'hidden': 'true'}}) }}
-      {{ form_widget(form.address, {'attr': {'hidden': 'true'}}) }}
-      {{ form_widget(form.description, {'attr': {'hidden': 'true'}}) }}
-      {{ form_widget(form.dateCreatedMin, {'attr': {'hidden': 'true'}}) }}
-      {{ form_widget(form.dateCreatedMax, {'attr': {'hidden': 'true'}}) }}
-      {{ form_widget(form.dateFinishedMin, {'attr': {'hidden': 'true'}}) }}
-      {{ form_widget(form.dateFinishedMax, {'attr': {'hidden': 'true'}}) }}
+    {% include 'mission/search/by-id.html.twig' %}
 
-      <div class="col-sm-auto">
-        <strong>Rechercher une FM par son n° :</strong>
-      </div>
-      <div class="col-sm-auto">
-        {{ form_widget(form.id, {'attr': {'required': 'true'}}) }}
-      </div>
+    <hr>
 
-      <div class="col-sm-auto">
-        <input type="submit" class="btn btn-sm btn-secondary" value="Voir la FM"/>
-      </div>
+    <div id="newMissions">
+        <h3>Missions en attente <span class="nbOfMissions badge badge-pill badge-success"></span></h3>
 
-      {# Error messages #}
-      {% if form_errors(form.id) %}
-        <div class="col-sm-auto alert alert-danger mb-0 ml-5">
-          {{ form_errors(form.id) }}
-        </div>
-      {% endif %}
+        {% include 'loading.html.twig' %}
 
-      {% for message in app.flashes('error') %}
-        <div class="col-sm-auto alert alert-danger mb-0 ml-5">
-          {{ message }}
-        </div>
-      {% endfor %}
-    </div>
-  {{ form_end(form) }}
+        <table class="table table-hover">
+            <thead class="thead-light">
+            <tr>
+                <th scope="col">N° <i class="fas fa-sort"></i></th>
+                <th scope="col">Demande <i class="fas fa-sort"></i></th>
+                <th scope="col">Provenance GLA <i class="fas fa-sort"></i></th>
+                <th scope="col">Adresse <i class="fas fa-sort"></i></th>
+                <th scope="col">Description mission <i class="fas fa-sort"></i></th>
+                <th></th>
+            </tr>
+            </thead>
 
-  <hr>
+            <tbody>
+            {# Filled by JavaScript #}
+            {# id, dateCreated, gla, address, description, button to view #}
+            </tbody>
+        </table>
 
-  <h3>Missions en attente <span class="badge badge-pill badge-danger">{{ newMissions|length }}</span></h3>
-
-  {% if newMissions %}
-    <table id="newMissions" class="table table-hover">
-      <thead class="thead-light">
-        <tr>
-          <th scope="col">N° <i class="fas fa-sort"></i></th>
-          <th scope="col">Demande <i class="fas fa-sort"></i></th>
-          <th scope="col">Provenance GLA <i class="fas fa-sort"></i></th>
-          <th scope="col">Adresse <i class="fas fa-sort"></i></th>
-          <th scope="col">Description mission <i class="fas fa-sort"></i></th>
-          <th></th>
-          {% if is_granted('ROLE_GLA') %}
-            <th></th>
-          {% endif %}
-        </tr>
-      </thead>
-
-      <tbody>
-        {% for mission in newMissions %}
-          <tr id="mission-{{ mission.id }}">
-            <td>{{ mission.id }}</td>
-            <td data-is-date="true">{{ mission.dateCreated|date('d/m/y') }}</td>
-            <td>{{ mission.gla }}</td>
-            {# address #}
-            <td>
-              {{ mission.address.street }}
-              <br>
-              {% if mission.address.name %}
-                {{ mission.address.name }}
-                <br>
-              {% endif %}
-              {{ mission.address.zipCode }} {{ mission.address.city }}
-            </td>
-            <td><div class="description-ellipsis" data-toggle="popover" data-content="{{ mission.description }}">{{ mission.description }}</div></td>
-            {# view button #}
-            <td>
-              <a href="{{ path('app_mission_view', {'id': mission.id}) }}" class="btn btn-sm btn-primary">
-                <i class="fas fa-eye"></i>
-                Voir
-              </a>
-            </td>
-            {# edit button only visible for admin or mission's gla #}
-            {% if is_granted('edit', mission) %}
-              <td>
-                <a href="{{ path('app_mission_edit', {'id': mission.id}) }}" class="btn btn-sm btn-outline-primary">
-                  <i class="fas fa-edit"></i>
-                  Modifier
-                </a>
-              </td>
-            {% endif %}
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  {% else %}
-    <div class="text-center font-weight-bold">Aucune mission en attente !</div>
-  {% endif %}
-  <hr>
-
-  <h3>Missions en cours <span class="badge badge-pill badge-danger">{{ assignedMissions|length }}</span></h3>
-
-  {% if assignedMissions %}
-    <div class="d-flex align-items-center">
-      <input type="checkbox" id="myAssignedMissions" name="myAssignedMissions" class="mb-2" />
-      <label for="myAssignedMissions" class="mb-2 ml-2">Afficher uniquement mes missions</label>
+        {% include 'mission/no-mission-div.html.twig' %}
     </div>
 
+    <hr>
 
-    <table id="assignedMissions" class="table table-hover">
-      <thead class="thead-light">
-        <tr>
-          <th scope="col">N° <i class="fas fa-sort"></i></th>
-          <th scope="col">Demande <i class="fas fa-sort"></i></th>
-          <th scope="col">Prise en charge <i class="fas fa-sort"></i></th>
-          <th scope="col">Provenance GLA <i class="fas fa-sort"></i></th>
-          <th scope="col">Adresse <i class="fas fa-sort"></i></th>
-          <th scope="col">Bénévole <i class="fas fa-sort"></i></th>
-          <th scope="col">Description <i class="fas fa-sort"></i></th>
-          <th></th>
-        </tr>
-      </thead>
+    <div id="assignedMissions">
+        <h3>Missions en cours <span class="nbOfMissions badge badge-pill badge-success"></span></h3>
 
-      <tbody>
-        {% for mission in assignedMissions %}
-          <tr id="mission-{{ mission.id }}">
-            <td>{{ mission.id }}</td>
-            <td data-is-date="true">{{ mission.dateCreated|date('d/m/y') }}</td>
-            <td data-is-date="true">{{ mission.dateAssigned|date('d/m/y') }}</td>
-            <td class="gla gla-{{ mission.gla.id }}">{{ mission.gla }}</td>
-            {# address #}
-            <td>
-              {{ mission.address.street }}
-              <br>
-              {% if mission.address.name %}
-                {{ mission.address.name }}
-                <br>
-              {% endif %}
-              {{ mission.address.zipCode }} {{ mission.address.city }}
-            </td>
-            <td class="volunteer volunteer-{{ mission.volunteer.id }}">{{ mission.volunteer }}</td>
-            <td><div class="description-ellipsis" data-toggle="popover" data-content="{{ mission.description }}">{{ mission.description }}</div></td>
-            {# view button #}
-            <td>
-              <a href="{{ path('app_mission_view', {'id': mission.id}) }}" class="btn btn-sm btn-primary">
-                <i class="fas fa-eye"></i>
-                Voir
-              </a>
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  {% else %}
-    <div class="text-center font-weight-bold">Aucune mission en cours !</div>
-  {% endif %}
+        {% include 'mission/checkbox-my-missions.html.twig' %}
 
-  <hr>
+        {% include 'loading.html.twig' %}
 
-  <h3>Missions terminées <span id="finishedMissionsBadge" class="badge badge-pill badge-danger"></span></h3>
+        <table class="table table-hover">
+            <thead class="thead-light">
+            <tr>
+                <th scope="col">N° <i class="fas fa-sort"></i></th>
+                <th scope="col">Demande <i class="fas fa-sort"></i></th>
+                <th scope="col">Prise en charge <i class="fas fa-sort"></i></th>
+                <th scope="col">Provenance GLA <i class="fas fa-sort"></i></th>
+                <th scope="col">Adresse <i class="fas fa-sort"></i></th>
+                <th scope="col">Bénévole <i class="fas fa-sort"></i></th>
+                <th scope="col">Description <i class="fas fa-sort"></i></th>
+                <th></th>
+            </tr>
+            </thead>
 
-  {# Search form #}
-  {{ form_start(searchForm) }}
-  {{ form_widget(searchForm.id, {'attr': {'hidden': 'true'}}) }}
-  <div class="row justify-content-center">
-    <div class="col-11 card bg-light py-3">
-      <div class="d-flex justify-content-between my-1">
-        {# Filter GLA #}
-        <div class="dropdown mr-2">
-          <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="dropdownGlaButton" data-toggle="dropdown" data-flip="false" aria-haspopup="true" aria-expanded="false">
-            Provenance GLA
-            <span id="searchGlaNb" class="badge badge-secondary"></span>
-          </button>
-          <div class="dropdown-menu dropdown-select px-3 mb-3" aria-labelledby="dropdownGlaButton">
-            {{ form_widget(searchForm.gla) }}
-          </div>
-        </div>
+            <tbody>
+            {# Filled by JavaScript #}
+            {# id, dateCreated, dateAssigned, gla, address, volunteer, description, button to view #}
+            </tbody>
+        </table>
 
-        {# Filter Volunteer #}
-        <div class="dropdown mr-2">
-          <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="dropdownVolunteerButton" data-toggle="dropdown" data-flip="false" aria-haspopup="true" aria-expanded="false">
-            Bénévole
-            <span id="searchVolunteerNb" class="badge badge-secondary"></span>
-          </button>
-          <div class="dropdown-menu dropdown-select px-3 mb-3" aria-labelledby="dropdownVolunteerButton">
-            {{ form_widget(searchForm.volunteer) }}
-          </div>
-        </div>
-
-        {# Filter Address #}
-        <div class="dropdown mr-2">
-          <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="dropdownAddressButton" data-toggle="dropdown" data-flip="false" aria-haspopup="true" aria-expanded="false">
-            Adresse d'intervention
-            <span id="searchAddressNb" class="badge badge-secondary"></span>
-          </button>
-          <div class="dropdown-menu dropdown-select px-3 mb-3" aria-labelledby="dropdownAddressButton">
-            {{ form_widget(searchForm.address) }}
-          </div>
-        </div>
-        
-        {# Search description #}
-        <div class="input-group-sm w-50" >
-          {{ form_widget(searchForm.description, {'attr': {'placeholder': 'Description'}}) }}
-        </div>
-      </div>
-
-      <div class="d-flex justify-content-between my-1">
-        {# Filter date created #}
-        <div class="d-flex align-items-center">
-          <small>Date demande entre le</small>
-          <div class="input-group-sm input-date mx-2">
-            {{ form_widget(searchForm.dateCreatedMin, {'attr': {'placeholder': 'jj/mm/aaaa'}}) }}
-          </div>
-          <small>et le</small>
-          <div class="input-group-sm input-date mx-2">
-            {{ form_widget(searchForm.dateCreatedMax, {'attr': {'placeholder': 'jj/mm/aaaa'}}) }}
-          </div>
-        </div>
-
-        {# Filter date finished #}
-        <div class="d-flex align-items-center">
-          <small>Fin de mission entre le</small>
-          <div class="input-group-sm input-date mx-2">
-            {{ form_widget(searchForm.dateFinishedMin, {'attr': {'placeholder': 'jj/mm/aaaa'}}) }}
-          </div>
-          <small>et le</small>
-          <div class="input-group-sm input-date ml-2">
-            {{ form_widget(searchForm.dateFinishedMax, {'attr': {'placeholder': 'jj/mm/aaaa'}}) }}
-          </div>
-        </div>
-      </div>
-
-      <div class="d-flex justify-content-end mt-2">
-        {# Form buttons #}
-        <input type="submit" class="btn btn-sm btn-outline-primary mr-2" id="searchSubmitBtn" value="Rechercher" />
-        <button class="btn btn-sm btn-outline-secondary" id="searchResetBtn">Réinitialiser</button>
-      </div>
+        {% include 'mission/no-mission-div.html.twig' %}
     </div>
-  </div>
-  {{ form_end(searchForm) }}
 
-  {# Checkbox #}
-  <div class="d-flex align-items-center mt-2">
-    <input type="checkbox" id="myFinishedMissions" name="myFinishedMissions" class="mb-1" />
-    <label for="myFinishedMissions" class="mb-2 ml-2">Afficher uniquement mes missions</label>
-  </div>
+    <hr>
 
-  {# Loading alert #}
-  <div id="loadingAlert" class="alert alert-info text-center" role="alert">
-    <i class="fas fa-spinner fa-spin"></i>
-    Chargement en cours ...
-  </div>
+    <div id="finishedMissions">
+        <h3>Missions terminées <span class="nbOfMissions badge badge-pill badge-success"></span></h3>
 
-  {# Table #}
-  <table id="finishedMissions" class="table table-hover" hidden>
-    <thead class="thead-light">
-      <tr>
-        <th scope="col">N° <i class="fas fa-sort"></i></th>
-        <th scope="col">Demande <i class="fas fa-sort"></i></th>
-        <th scope="col">Fin de mission <i class="fas fa-sort"></i></th>
-        <th scope="col">Provenance GLA <i class="fas fa-sort"></i></th>
-        <th scope="col">Adresse <i class="fas fa-sort"></i></th>
-        <th scope="col">Bénévole <i class="fas fa-sort"></i></th>
-        <th scope="col">Description <i class="fas fa-sort"></i></th>
-        <th class="d-none"></th>
-        <th></th>
-      </tr>
-    </thead>
+        {% include 'mission/search/default.html.twig' %}
 
-    <tbody>
-      {# Filled by JavaScript #}
-      {# id, dateCreated, dateFinished, gla, address, volunteer, description, button to view #}
-    </tbody>
-  </table>
+        {% include 'mission/checkbox-my-missions.html.twig' %}
 
-  <div id="noMissions" class="text-center font-weight-bold"></div>
+        {% include 'loading.html.twig' %}
 
-  <br>
+        {# Table #}
+        <table class="table table-hover">
+            <thead class="thead-light">
+              <tr>
+                <th scope="col">N° <i class="fas fa-sort"></i></th>
+                <th scope="col">Demande <i class="fas fa-sort"></i></th>
+                <th scope="col">Fin de mission <i class="fas fa-sort"></i></th>
+                <th scope="col">Provenance GLA <i class="fas fa-sort"></i></th>
+                <th scope="col">Adresse <i class="fas fa-sort"></i></th>
+                <th scope="col">Bénévole <i class="fas fa-sort"></i></th>
+                <th scope="col">Description <i class="fas fa-sort"></i></th>
+                <th class="d-none"></th>
+                <th></th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {# Filled by JavaScript #}
+              {# id, dateCreated, dateFinished, gla, address, volunteer, description, button to view #}
+            </tbody>
+        </table>
+
+        {% include 'mission/no-mission-div.html.twig' %}
+    </div>
+
+    <br>
 {% endblock %}
 
 
 {% block javascripts %}
-  {{ parent() }}
+    {{ parent() }}
 
-  <script src="{{ asset('js/functions.js') }}"></script>
-  <script src="{{ asset('js/ajax.js') }}"></script>
+    <script src="{{ asset('js/functions.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.0/js/jquery.tablesorter.js"></script>
 
-  <script>
-    (function() {
-      let userId = {{ app.user.id }},
-          newMissionsTable = document.getElementById('newMissions'),
-          assignedMissionsTable = document.getElementById('assignedMissions'),
-          finishedMissionsTable = document.getElementById('finishedMissions');
+    <script>
+        (function() {
+            let userId = {{ app.user.id }};
 
-      let glaOptions = document.getElementsByName('mission_search[gla][]'),
-          volunteerOptions = document.getElementsByName('mission_search[volunteer][]'),
-          addressOptions = document.getElementsByName('mission_search[address][]'),
-          descriptionInput = document.getElementById('mission_search_description'),
-          dateCreatedMinInput = document.getElementById('mission_search_dateCreatedMin'),
-          dateCreatedMaxInput = document.getElementById('mission_search_dateCreatedMax'),
-          dateFinishedMinInput = document.getElementById('mission_search_dateFinishedMin'),
-          dateFinishedMaxInput = document.getElementById('mission_search_dateFinishedMax');
+            $(function() {
+                let newMissionsTable = $('table', $('#newMissions')),
+                    assignedMissionsTable = $('table', $('#assignedMissions')),
+                    finishedMissionsTable = $('table', $('#finishedMissions'));
 
-
-      // Add table sorting on clicking on one of its header
-      sortTable(newMissionsTable, 1);
-      sortTable(assignedMissionsTable, 1);
-      sortTable(finishedMissionsTable, 1);
-      
-
-      document.addEventListener('DOMContentLoaded', () => {
-        // Fill finished missions table on load
-        fillFinishedMissionsTable();
-      });
-      
-
-      // Show number of Gla options selected
-      document.getElementById('mission_search_gla').addEventListener('change', () => {
-        document.getElementById('searchGlaNb').innerHTML = getCheckedValues(glaOptions).length ? getCheckedValues(glaOptions).length : '';
-      });
-
-      // Show number of Volunteer options selected
-      document.getElementById('mission_search_volunteer').addEventListener('change', () => {
-        document.getElementById('searchVolunteerNb').innerHTML = getCheckedValues(volunteerOptions).length ? getCheckedValues(volunteerOptions).length : '';
-      });
-
-      // Show number of Address options selected
-      document.getElementById('mission_search_address').addEventListener('change', () => {
-        document.getElementById('searchAddressNb').innerHTML = getCheckedValues(addressOptions).length ? getCheckedValues(addressOptions).length : '';
-      });
+                addMissionsSorting([newMissionsTable, assignedMissionsTable, finishedMissionsTable]);
+                activateMyMissionsFilter();
+                displayNumberOfCheckedOptionsInBadges();
+                fillNewMissionsTable();
+                fillAssignedMissionsTable();
+                fillFinishedMissionsTable();
+                filterFinishedMissionsWithSearch();
 
 
-      // Filter finished missions table on search form submit
-      document.getElementById('searchSubmitBtn').addEventListener('click', (e) => {
-        e.preventDefault();
+                /**
+                 * "My missions" checkbox behavior:
+                 *
+                 * If one of myMissions checkbox is checked
+                 * - check both checkboxes
+                 * - show only missions where user is gla and/or volunteer
+                 * - hide other missions
+                 *
+                 * If one of myMissions checkbox is unchecked
+                 * - uncheck both checkboxes
+                 * - show all missions
+                 */
+                function activateMyMissionsFilter() {
+                    $('.myMissions').each((index, element) => {
+                        $(element).change(e => {
+                            let checkbox = $(e.target),
+                                checked = checkbox.prop('checked'),
+                                table = $('table', checkbox.parent().parent());
 
-        fillFinishedMissionsTable();
-      });
+                            if (checked) {
+                                showOnlyMyMissions(table);
+                            } else {
+                                showAllMissions(table);
+                            }
+                        });
+                    });
+                }
 
-      // Reset finished missions table on reset button click
-      document.getElementById('searchResetBtn').addEventListener('click', (e) => {
-        e.preventDefault();
+                function showOnlyMyMissions(table) {
+                    $('.mission', table).each((index, row) => {
+                        if (!isUserMission(row)) {
+                            $(row).hide();
+                        }
+                    });
+                }
 
-        // Uncheck GLA options
-        for (let i=0, iLen=glaOptions.length; i<iLen; i++) {
-          glaOptions[i].checked = false;
-        }
+                function isUserMission(row) {
+                    return $('.volunteer-' + userId, row).length || $('.gla-' + userId, row).length;
+                }
 
-        // Uncheck Volunteer options
-        for (let i=0, iLen=volunteerOptions.length; i<iLen; i++) {
-          volunteerOptions[i].checked = false;
-        }
+                function showAllMissions(table) {
+                    $('.mission', table).show();
+                }
 
-        // Uncheck address options
-        for (let i=0, iLen=addressOptions.length; i<iLen; i++) {
-          addressOptions[i].checked = false;
-        }
+                /**
+                 * New missions table
+                 */
+                function fillNewMissionsTable() {
+                    let url = "{{ path('app_mission_filter') }}",
+                        filters = getNewMissionsFilters();
 
-        // Reset description input
-        descriptionInput.value = '';
+                    fillMissionsTable(newMissionsTable, filters, url, newMissionsCallback);
+                }
 
-        // Reset date inputs
-        dateCreatedMinInput.value = '';
-        dateCreatedMaxInput.value = '';
-        dateFinishedMinInput.value = '';
-        dateFinishedMaxInput.value = '';
+                function getNewMissionsFilters() {
+                    let activity = "{{ constant('App\\Utils\\Constant::PA_GLA') }}",
+                        status = "{{ constant('App\\Utils\\Constant::STATUS_DEFAULT') }}";
 
-        // Reset form badges
-        document.getElementById('searchGlaNb').innerHTML = '';
-        document.getElementById('searchVolunteerNb').innerHTML = '';
-        document.getElementById('searchAddressNb').innerHTML = '';
+                    return {
+                        'activity': activity,
+                        'statuses': status
+                    }
+                }
 
-        // Reset table
-        fillFinishedMissionsTable();
-      });
+                function newMissionsCallback(data) {
+                    let missions = data.missions,
+                        properties = ['id', 'dateCreated', 'gla', 'address', 'description', 'button'];
 
+                    return [missions, properties];
+                }
 
-      // If myXXXMissions is checked, show only missions where user is gla and/or volunteer
-      document.getElementById('myAssignedMissions').addEventListener('change', (e) => {
-        myMissions(e.target, assignedMissionsTable);
-      });
+                /**
+                 * Assigned missions table
+                 */
+                function fillAssignedMissionsTable() {
+                    let url = "{{ path('app_mission_filter') }}",
+                        filters = getAssignedMissionsFilters();
 
-      // Show only user's finished missions on checkbox check
-      document.getElementById('myFinishedMissions').addEventListener('change', (e) => {
-        myMissions(e.target, finishedMissionsTable);
-      });
+                    fillMissionsTable(assignedMissionsTable, filters, url, assignedMissionsCallback);
+                }
 
+                function getAssignedMissionsFilters() {
+                    let activity = "{{ constant('App\\Utils\\Constant::PA_GLA') }}",
+                        status = "{{ constant('App\\Utils\\Constant::STATUS_ASSIGNED') }}";
 
-      // Retrieve filters from search form, get matching missions from backend, fill in table, update number of finished missions, uncheck 'myMissions' checkbox
-      function fillFinishedMissionsTable() {
-        // Get array of checked elements
-        let glaIds = getCheckedValues(glaOptions);
-            volunteerIds = getCheckedValues(volunteerOptions);
-            addressIds = getCheckedValues(addressOptions);
-            descriptionSearch = descriptionInput.value.trim();
-            dateCreatedMin = formatStringToDate(dateCreatedMinInput.value);
-            dateCreatedMax = formatStringToDate(dateCreatedMaxInput.value);
-            dateFinishedMin = formatStringToDate(dateFinishedMinInput.value);
-            dateFinishedMax = formatStringToDate(dateFinishedMaxInput.value);
+                    return {
+                        'activity': activity,
+                        'statuses': status
+                    }
+                }
 
-        let table = finishedMissionsTable,
-            filters = {
-              'glaIds': glaIds, 
-              'volunteerIds': volunteerIds, 
-              'addressIds': addressIds,
-              'descriptionSearch': descriptionSearch, 
-              'dateCreatedMin': dateCreatedMin, 
-              'dateCreatedMax': dateCreatedMax, 
-              'dateFinishedMin': dateFinishedMin, 
-              'dateFinishedMax': dateFinishedMax
-            },
-            url = "{{ path('app_mission_filter') }}",
-            noMissionsDiv = document.getElementById('noMissions'),
-            loadingAlert = document.getElementById('loadingAlert'),
-            badge = document.getElementById('finishedMissionsBadge'),
-            closedStatus = "{{ constant('App\\Utils\\Constant::STATUS_CLOSED') }}";
+                function assignedMissionsCallback(data) {
+                    let missions = data.missions,
+                        properties = ['id', 'dateCreated', 'dateAssigned', 'gla', 'address', 'volunteer', 'description', 'button'];
 
-        // Retrieve matching missions and add them to table
-        fillMissionsTable(table, filters, url, dataCallback, noMissionsDiv, loadingAlert, badge, closedStatus);
+                    return [missions, properties];
+                }
 
-        // Uncheck 'myMissions' checkbox
-        document.getElementById('myFinishedMissions').checked = false;
+                /**
+                 * Finished missions table
+                 */
+                function fillFinishedMissionsTable() {
+                    let url = "{{ path('app_mission_filter') }}",
+                        filters = getFinishedMissionsFilters();
 
-        // Activate popovers
-        $('[data-toggle="popover"]').popover({
-          'placement': 'auto',
-          'trigger': 'hover'
-        });
-      }
+                    fillMissionsTable(finishedMissionsTable, filters, url, finishedMissionsCallback);
+                }
 
-      // From array of checkbox input returns array of checked input only
-      function getCheckedValues(options) {
-        let checkedOptions = [];
+                function getFinishedMissionsFilters() {
+                    let descriptionInput = $('#mission_search_description'),
+                        dateCreatedMinInput = $('#mission_search_dateCreatedMin'),
+                        dateCreatedMaxInput = $('#mission_search_dateCreatedMax'),
+                        dateFinishedMinInput = $('#mission_search_dateFinishedMin'),
+                        dateFinishedMaxInput = $('#mission_search_dateFinishedMax');
 
-        for (let i=0, iLen=options.length; i<iLen; i++) {
-          option = options[i];
+                    // Get filters values
+                    let glaIds = getCheckedOptionsValues($('#mission_search_gla')),
+                        volunteerIds = getCheckedOptionsValues($('#mission_search_volunteer')),
+                        addressIds = getCheckedOptionsValues($('#mission_search_address')),
+                        descriptionSearch = descriptionInput.val().trim(),
+                        dateCreatedMin = formatStringToDate(dateCreatedMinInput.val()),
+                        dateCreatedMax = formatStringToDate(dateCreatedMaxInput.val()),
+                        dateFinishedMin = formatStringToDate(dateFinishedMinInput.val()),
+                        dateFinishedMax = formatStringToDate(dateFinishedMaxInput.val());
 
-          if (option.checked) {
-            checkedOptions.push(option.value);
-          }
-        }
+                    let activity = "{{ constant('App\\Utils\\Constant::PA_GLA') }}",
+                        statuses = "{{ constant('App\\Utils\\Constant::STATUS_FINISHED') }}" + "|" + "{{ constant('App\\Utils\\Constant::STATUS_CLOSED') }}";
 
-        return checkedOptions;
-      }
+                    return {
+                        'activity': activity,
+                        'statuses': statuses,
+                        'glaIds': glaIds,
+                        'volunteerIds': volunteerIds,
+                        'addressIds': addressIds,
+                        'descriptionSearch': descriptionSearch,
+                        'dateCreatedMin': dateCreatedMin,
+                        'dateCreatedMax': dateCreatedMax,
+                        'dateFinishedMin': dateFinishedMin,
+                        'dateFinishedMax': dateFinishedMax
+                    };
+                }
 
-      function dataCallback(data) {
-        // Split missions by status
-        let missions = data.missions,
-            finishedMissions = [],
-            closedMissions = [],
-            counter = 0;
+                function finishedMissionsCallback(data) {
+                    // Split missions by status
+                    let missions = data.missions,
+                        finishedMissions = [],
+                        closedMissions = [];
 
-        missions.forEach( mission => {
-          if (mission.status === "{{ constant('App\\Utils\\Constant::STATUS_FINISHED') }}") {
-            finishedMissions.push(mission);
-            counter ++;
-          } else {
-            closedMissions.push(mission);
-          }
-        });
+                    missions.forEach(mission => {
+                        if (mission.status === "{{ constant('App\\Utils\\Constant::STATUS_FINISHED') }}") {
+                            finishedMissions.push(mission);
+                        } else {
+                            closedMissions.push(mission);
+                        }
+                    });
 
-        let properties = ['id', 'dateCreated', 'dateFinished', 'gla', 'address', 'volunteer', 'description'],
-            shortDescription = true,
-            button = true;
-       
-        missions = finishedMissions.concat(closedMissions);
+                    let properties = ['id', 'dateCreated', 'dateFinished', 'gla', 'address', 'volunteer', 'description', 'button'];
 
-        return [missions, properties, shortDescription, button, counter];
-      }
+                    missions = finishedMissions.concat(closedMissions);
 
-      function myMissions(checkbox, table) {
-        // Retrieve table's rows
-        let rows = table.getElementsByTagName('tr');
+                    return [missions, properties];
+                }
 
-        // Loop through table rows (starts at i=1 because i=0 is thead)
-        for (let i = 1, c = rows.length; i < c; i++) {
-          // If checkbox is checked, show only user's missions
-          if (checkbox.checked) {
-            // Get cells Gla and Volunteer
-            tdGla = rows[i].querySelector('.gla');
-            tdVol = rows[i].querySelector('.volunteer');
-
-            // If Gla or Volunteer Id is user id (info in element's class) show row, hide it otherwise
-            if (tdGla.classList.contains('gla-' + userId) || tdVol.classList.contains('volunteer-' + userId)) {
-              rows[i].style.display = '';
-            } else {
-              rows[i].style.display = 'none';
-            }
-          } else {
-            // If checkbox is unchecked, show all rows
-            rows[i].style.display = '';
-          }
-        }
-      }
-    })();
-  </script>
+                function filterFinishedMissionsWithSearch() {
+                    $('#searchSubmitBtn').click(e => {
+                        e.preventDefault();
+                        fillFinishedMissionsTable();
+                    });
+                }
+            });
+        })();
+    </script>
 {% endblock %}

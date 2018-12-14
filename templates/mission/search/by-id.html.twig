@@ -1,0 +1,28 @@
+{# Search form by id #}
+{{ form_start(form) }}
+    <div class="d-flex align-items-center">
+        <div class="col-sm-auto">
+            <strong>Rechercher une FM par son n° :</strong>
+        </div>
+        <div class="col-sm-auto">
+            {{ form_widget(form.id, {'attr': {'required': 'true'}}) }}
+        </div>
+
+        <div class="col-sm-auto">
+            <input type="submit" class="btn btn-sm btn-secondary" value="Voir la FM"/>
+        </div>
+
+        {# Error messages #}
+        {% if form_errors(form.id) %}
+            <div class="col-sm-auto alert alert-danger mb-0 ml-5">
+                {{ form_errors(form.id) }}
+            </div>
+        {% endif %}
+
+        {% for message in app.flashes('error') %}
+            <div class="col-sm-auto alert alert-danger mb-0 ml-5">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{{ form_end(form) }}

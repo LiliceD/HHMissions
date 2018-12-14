@@ -21,7 +21,7 @@ class Constant
     const ROLE_VOLUNTEER = 'ROLE_VOLUNTEER';
 
     // User/Mission poles of activity (or divisions)
-    const PA_GLA = 'Appui GLA';
+    const PA_GLA = 'appui-gla';
     const PA_BRIC = 'Bricolage';
     const PA_ENRJ = 'Energie';
 
