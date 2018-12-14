@@ -91,31 +91,41 @@
   {{ parent() }}
 
   <script src="{{ asset('js/functions.js') }}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.0/js/jquery.tablesorter.js"></script>
  
   <script>
     (function() {
-      let table = document.querySelector('table'),
-          searchInput = document.getElementById('addressInput');
+      $(function() {
+        let table = $('table'),
+            searchInput = $('#addressInput');
 
+        addMissionsSorting([table]);
+        filterTableWithSearch();
 
-      // Add table sorting on clicking on one of its header (except last column)
-      sortTable(table, 1);
+        searchInput.on('input', () => {
+          filterTableWithSearch();
+        });
 
-      // Filter table on address search input
-      searchInput.addEventListener('input', () => {
-        let search = capitalizeText(searchInput.value.trim()),
-            rows = table.getElementsByTagName('tr');
+        function filterTableWithSearch() {
+          let search = capitalizeText(searchInput.val().trim());
 
-        // Row 0 is header
-        for (i = 1, iMax = rows.length; i < iMax; i++) {
-          let tr = rows[i];
+          $('tbody tr').each((index, row) => {
+            if (isAddressMatching(row, search)) {
+              $(row).show();
+            } else {
+              $(row).hide();
+            }
+          });
+        }
 
-          // Add or remove 'hidden' attribute based on cell value / search match
-          if (tr.getElementsByTagName('td')[0].innerHTML.indexOf(search) === -1) {
-            tr.setAttribute('hidden', 'true');
-          } else {
-            tr.removeAttribute('hidden');
+        function isAddressMatching(row, search) {
+          let addressMatching = true;
+
+          if (search) {
+            addressMatching = $('td:first', row).text().indexOf(search) > 1;
           }
+
+          return addressMatching;
         }
       });
     })();

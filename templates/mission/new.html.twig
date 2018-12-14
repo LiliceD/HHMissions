@@ -79,33 +79,26 @@
 {% block javascripts %}
   {{ parent() }}
 
-  <script src="{{ asset('js/ajax.js') }}"></script>
-
   <script>
     (function() {
-      // Prepopulate field GLA with user's name
-      document.addEventListener('DOMContentLoaded', setGla);
+      $(function() {
+        prepopulateGla();
+        prepopulateAddressInfo();
+        $('#mission_address').change(prepopulateAddressInfo);
 
-      // Prepopulate fields OwnerType and Mission's info with address selection
-      document.addEventListener('DOMContentLoaded', getAddressInfo);
-      document.getElementById('mission_address').addEventListener('change', getAddressInfo);
+        function prepopulateGla() {
+          $('#mission_gla').val("{{ app.user.id }}");
+        }
 
-      // Prepopulate field "Provenance GLA" with user's id
-      function setGla() {
-        document.getElementById('mission_gla').value = "{{ app.user.id }}";
-      }
+        function prepopulateAddressInfo() {
+          let addressId = encodeURIComponent($('#mission_address').val());
 
-      // Prepopulate fields "owner type" and "info" with selected address info
-      function getAddressInfo() {
-        const id = encodeURIComponent(document.getElementById('mission_address').value);
-        
-        ajaxPost("{{ path('app_address_info') }}", {'id': id}, function(JSONResponse) {
-          let data = JSON.parse(JSONResponse);
-
-          document.getElementById('address_ownerType').value = data.ownerType;
-          document.getElementById('mission_info').value = data.access;
-        });
-      }
+          $.post("{{ path('app_address_info') }}", {'id': addressId}, data => {
+            $('#address_ownerType').val(data.ownerType);
+            $('#mission_info').val(data.access);
+          });
+        }
+      });
     })();
   </script>
 {% endblock %}
