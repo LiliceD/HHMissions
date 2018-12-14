@@ -475,7 +475,7 @@ class Mission
      */
     public function getFormattedDateCreated(): string
     {
-        return $this->dateCreated->format('d/m/y');
+        return $this->dateCreated->format('d/m/Y');
     }
 
     /**
@@ -504,7 +504,7 @@ class Mission
     public function getFormattedDateAssigned(): ?string
     {
         if ($this->dateAssigned instanceof \DateTime) {
-            return $this->dateAssigned->format('d/m/y');
+            return $this->dateAssigned->format('d/m/Y');
         }
 
         return null;
@@ -536,7 +536,7 @@ class Mission
     public function getFormattedDateFinished(): ?string
     {
         if ($this->dateFinished instanceof \DateTime) {
-            return $this->dateFinished->format('d/m/y');
+            return $this->dateFinished->format('d/m/Y');
         }
 
         return null;

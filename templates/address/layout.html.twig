@@ -58,13 +58,13 @@
     (function() {
       // Remove accent and capitalize name, address and city
       document.getElementById("address_name").addEventListener("input", (e) => {
-        e.target.value = capitalizeInput(e.target.value);
+        e.target.value = capitalizeText(e.target.value);
       });
       document.getElementById("address_street").addEventListener("input", (e) => {
-        e.target.value = capitalizeInput(e.target.value);
+        e.target.value = capitalizeText(e.target.value);
       });
       document.getElementById("address_city").addEventListener("input", (e) => {
-        e.target.value = capitalizeInput(e.target.value);
+        e.target.value = capitalizeText(e.target.value);
       });
 
       // Replace with city name dynamic population

@@ -3,16 +3,16 @@
 namespace App\Controller;
 
 use App\Entity\Mission;
+use App\Form\MissionSearchByIdType;
 use App\Form\MissionType;
 use App\Form\MissionSearchType;
 use App\Manager\MissionManager;
-use App\Repository\MissionRepository;
-use App\Service\FileUploader; // to use FileUploader service in edit
+use App\Service\FileUploader;
 use App\Utils\Constant;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Config\Definition\Exception\Exception; // to throw new Exception()
-use Symfony\Component\HttpFoundation\File\File; // for new File() in edit
-use Symfony\Component\HttpFoundation\JsonResponse; // app_mission_filter
+use Symfony\Component\Config\Definition\Exception\Exception;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -215,7 +215,7 @@ class MissionController extends Controller
     {
         // Allow action only if user is admin or mission's gla
         $this->denyAccessUnlessGranted('edit', $mission);
-        
+
         // Delete attached file from server
         $fileName = $mission->getAttachment();
         if (!empty($fileName)) {
@@ -237,6 +237,82 @@ class MissionController extends Controller
     }
 
 
+//  █████╗      ██╗ █████╗ ██╗  ██╗
+// ██╔══██╗     ██║██╔══██╗╚██╗██╔╝
+// ███████║     ██║███████║ ╚███╔╝
+// ██╔══██║██   ██║██╔══██║ ██╔██╗
+// ██║  ██║╚█████╔╝██║  ██║██╔╝ ██╗
+// ╚═╝  ╚═╝ ╚════╝ ╚═╝  ╚═╝╚═╝  ╚═╝
+
+
+    /**
+     * @Route(
+     *     "/filter",
+     *     name="app_mission_filter",
+     * )
+     *
+     * @param Request $request
+     * @param MissionManager $missionManager
+     *
+     * @return JsonResponse
+     */
+    public function cGet(Request $request, MissionManager $missionManager): JsonResponse
+    {
+        // Get missions matching filters
+        $filters = $request->request->all();
+        $missions = $missionManager->getFilteredMissions($filters);
+
+        // Convert Missions to JSON
+        $missionsJson = [];
+
+        /** @var Mission $mission */
+        foreach ($missions as $mission) {
+            $missionJson = [
+                // Path to mission view
+                'url' => $this->generateUrl('app_mission_view', ['id' => $mission->getId()]),
+                // Mission properties
+                'id' => $mission->getId(),
+                'status' => $mission->getStatus(),
+                'dateCreated' => $mission->getFormattedDateCreated(),
+                'dateAssigned' => $mission->getDateAssigned() ? $mission->getFormattedDateAssigned() : null,
+                'dateFinished' => $mission->getDateFinished() ? $mission->getFormattedDateFinished() : null,
+                'description' => $mission->getDescription(),
+                'conclusions' => $mission->getConclusions(),
+                // Gla
+                'gla' => [
+                    'id' => $mission->getGla()->getId(),
+                    'name' => $mission->getGla()->getName()
+                ],
+                // Address
+                'address' => [
+                    'id' => $mission->getAddress()->getId(),
+                    'name' => $mission->getAddress()->getName(),
+                    'street' => $mission->getAddress()->getStreet(),
+                    'zipCode' => $mission->getAddress()->getZipCode(),
+                    'city' => $mission->getAddress()->getCity()
+                ]
+            ];
+
+            if ($mission->getVolunteer()) {
+                // Volunteer
+                $volunteerJson = ['volunteer' => [
+                    'id' => $mission->getVolunteer()->getId(),
+                    'name' => $mission->getVolunteer()->getName()
+                ]];
+
+                $missionJson = array_merge($missionJson, $volunteerJson);
+            }
+
+            array_push($missionsJson, $missionJson);
+        }
+
+        $data = ['missions' => $missionsJson];
+
+        // Return JSON response
+        return new JsonResponse($data);
+    }
+
+
 // ██████╗  █████╗  ██████╗ ███████╗███████╗
 // ██╔══██╗██╔══██╗██╔════╝ ██╔════╝██╔════╝
 // ██████╔╝███████║██║  ███╗█████╗  ███████╗
@@ -244,75 +320,55 @@ class MissionController extends Controller
 // ██║     ██║  ██║╚██████╔╝███████╗███████║
 // ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚══════╝
 
-
     /**
      * @Route(
-     *     "/",
-     *     name="app_mission_list",
+     *     "/{activity}",
+     *     name="app_mission_list"
      * )
      *
-     * @param Request $request
+     * @param Request        $request
+     * @param String         $activity
+     * @param MissionManager $missionManager
      *
      * @return RedirectResponse|Response
      */
-    public function list(Request $request)
+    public function list(Request $request, MissionManager $missionManager, String $activity = 'appui-gla')
     {
         // Create search by id form
-        $form = $this->createForm(MissionSearchType::class);
-        $form->handleRequest($request);
+        $searchFormById = $this->createForm(MissionSearchByIdType::class);
+        $searchFormById->handleRequest($request);
 
-        // Get Mission repository
-        /** @var MissionRepository $repository */
-        $repository = $this->getDoctrine()->getRepository(Mission::class);
-
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($searchFormById->isSubmitted() && $searchFormById->isValid()) {
             // Get id submitted
-            $data = $form->getData();
+            $data = $searchFormById->getData();
             $id = $data['id'];
 
-            // Retrieve mission
-            $mission = $repository->findOneBy(['id' => $id]);
-
-            if ($mission) {
+            // Redirect to mission
+            if ($missionManager->getById($id)) {
                 return $this->redirectToRoute('app_mission_view', [
-                    'id' => $mission->getId()
+                    'id' => $id(),
                 ]);
             }
 
-            // Set a "flash" error message
+            // If not mission found, set a "flash" error message and redirect to list
             $this->addFlash(
                 'error',
                 'Il n\'y a pas de fiche mission n°'.$id
             );
 
-            return $this->redirectToRoute('app_mission_list');
+            return $this->redirectToRoute('app_mission_list', [
+                'activity' => $activity,
+            ]);
         }
 
-        // Retrieve missions not finished
-        $missions = $repository->findByStatusJoined([Constant::STATUS_DEFAULT, Constant::STATUS_ASSIGNED]);
-        
-        // Split missions based on their status
-        $newMissions = [];
-        $assignedMissions = [];
-
-        /** @var Mission $mission */
-        foreach ($missions as $mission) {
-            switch ($mission->getStatus()) {
-                case Constant::STATUS_DEFAULT:
-                    array_push($newMissions, $mission);
-                    break;
-                case Constant::STATUS_ASSIGNED:
-                    array_push($assignedMissions, $mission);
-            }
-        }
+        $fullSearchForm = $this->createForm(MissionSearchType::class);
 
         return $this->render('mission/list.html.twig', [
-            'form' => $form->createView(),
-            'newMissions' => $newMissions,
-            'assignedMissions' => $assignedMissions,
-            'searchForm' => $form->createView()
+            'form' => $searchFormById->createView(),
+            'searchForm' => $fullSearchForm->createView()
         ]);
     }
+
 
     /**
      * Recap of opened (= any status but "closed") missions
@@ -342,7 +398,6 @@ class MissionController extends Controller
 // ██║  ██║╚██████╗   ██║   ██║╚██████╔╝██║ ╚████║███████║
 // ╚═╝  ╚═╝ ╚═════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝
 
-
     /**
      * Assign user as volunteer of the mission
      *
@@ -355,12 +410,14 @@ class MissionController extends Controller
      * @param Mission $mission
      *
      * @return RedirectResponse
+     *
+     * @throws \Exception
      */
     public function assign(Mission $mission): RedirectResponse
     {
         // Allow action only if user is a volunteer and mission is not assigned
         $this->denyAccessUnlessGranted('assign', $mission);
-        
+
         // Retrieve user
         $user = $this->getUser();
 
@@ -514,41 +571,33 @@ class MissionController extends Controller
             ]
         );
     }
-
     /**
      * Export recap of opened missions to PDF
      *
      * @Route(
-     *     "/recap/pdf/{dateMin}/{dateMax}",
+     *     "/recap/pdf/{activity}",
      *     name="app_mission_recap_pdf-export"
      * )
      *
-     * @param string $dateMin
-     * @param string $dateMax
+     * @param string         $activity
+     * @param Request        $request
+     * @param MissionManager $missionManager
      *
      * @return Response
      */
-    public function recapPdfExport(string $dateMin = '', string $dateMax = ''): Response
+    public function recapPdfExport(string $activity, Request $request, MissionManager $missionManager): Response
     {
-        // Create array of filters
-        $filters = [];
+        $dateMin = $request->query->get('dateMin');
+        $dateMax = $request->query->get('dateMax');
+        $statuses = Constant::STATUS_DEFAULT.'|'.Constant::STATUS_ASSIGNED.'|'.Constant::STATUS_FINISHED;
+        $filters = [
+            'activity' => $activity,
+            'statuses' => $statuses,
+            'dateCreatedMin' => $dateMin,
+            'dateCreatedMax' => $dateMax,
+        ];
 
-        if ($dateMin || $dateMax) {
-            $dateCreatedFilter = ['field' => 'm.dateCreated', 'value' => ['min' => $dateMin, 'max' => $dateMax]];
-            array_push($filters, $dateCreatedFilter);
-        }
-
-        // Add filter on status (can't manage to send it with JavaScript)
-        $statuses = array_values(Constant::getStatuses()); // Array of all statuses
-        array_pop($statuses); // Remove STATUS_CLOSED
-
-        $statusFilter = ['field' => 'm.status', 'value' => $statuses];
-        array_push($filters, $statusFilter);
-
-        // Retrieve Missions matching filters
-        /** @var MissionRepository $missionRepo */
-        $missionRepo = $this->getDoctrine()->getRepository(Mission::class);
-        $missions = $missionRepo->findByFiltersJoined($filters);
+        $missions = $missionManager->getFilteredMissions($filters);
 
         $html = $this->renderView('pdf/mission-recap.html.twig', [
             'missions' => $missions
@@ -567,156 +616,5 @@ class MissionController extends Controller
                 'Content-Disposition' => sprintf('attachment; filename="%s"', $filename),
             ]
         );
-    }
-
-
-//  █████╗      ██╗ █████╗ ██╗  ██╗
-// ██╔══██╗     ██║██╔══██╗╚██╗██╔╝
-// ███████║     ██║███████║ ╚███╔╝
-// ██╔══██║██   ██║██╔══██║ ██╔██╗
-// ██║  ██║╚█████╔╝██║  ██║██╔╝ ██╗
-// ╚═╝  ╚═╝ ╚════╝ ╚═╝  ╚═╝╚═╝  ╚═╝
-
-
-    /**
-     * @Route(
-     *     "/filter",
-     *     name="app_mission_filter",
-     * )
-     *
-     * @param Request $request
-     *
-     * @return JsonResponse
-     */
-    public function filter(Request $request): JsonResponse
-    {
-        // Get request referer
-        $referer = $request->headers->get('referer');
-        // Get filters from request parameters
-        $glaIds = $request->request->get('glaIds');
-        $volunteerIds = $request->request->get('volunteerIds');
-        $addressIds = $request->request->get('addressIds');
-        $descriptionSearch = $request->request->get('descriptionSearch');
-        $dateCreatedMin = $request->request->get('dateCreatedMin');
-        $dateCreatedMax = $request->request->get('dateCreatedMax');
-        $dateFinishedMin = $request->request->get('dateFinishedMin');
-        $dateFinishedMax = $request->request->get('dateFinishedMax');
-
-        // Create array of filters
-        $filters = [];
-
-        if ($glaIds) {
-            $glaFilter = ['field' => 'g.id', 'value' => $glaIds];
-            array_push($filters, $glaFilter);
-        }
-        
-        if ($volunteerIds) {
-            $volunteerFilter = ['field' => 'v.id', 'value' => $volunteerIds];
-            array_push($filters, $volunteerFilter);
-        }
-        
-        if ($addressIds) {
-            $addressFilter = ['field' => 'a.id', 'value' => $addressIds];
-            array_push($filters, $addressFilter);
-        }
-
-        if ($descriptionSearch) {
-            // Query will search for missions'whose description *contains* $descriptionSearch
-            $descriptionFilter = ['field' => 'm.description', 'value' => '%'.$descriptionSearch.'%'];
-            array_push($filters, $descriptionFilter);
-        }
-
-        if ($dateCreatedMin || $dateCreatedMax) {
-            $dateCreatedFilter = [
-                'field' => 'm.dateCreated',
-                'value' => ['min' => $dateCreatedMin, 'max' => $dateCreatedMax],
-            ];
-            array_push($filters, $dateCreatedFilter);
-        }
-
-        if ($dateFinishedMin || $dateFinishedMax) {
-            $dateFinishedFilter = [
-                'field' => 'm.dateFinished',
-                'value' => ['min' => $dateFinishedMin, 'max' => $dateFinishedMax],
-            ];
-            array_push($filters, $dateFinishedFilter);
-        }
-
-        // Add filter on status (can't manage to send it with JavaScript) and order
-        if (preg_match('/\/missions\/$/', $referer)) {
-            // From missions list : only finished and closed
-            $statuses = [Constant::STATUS_FINISHED, Constant::STATUS_CLOSED];
-
-            $statusFilter = ['field' => 'm.status', 'value' => $statuses];
-            array_push($filters, $statusFilter);
-        } elseif (preg_match('/\/recap\/$/', $referer)) {
-            // From mission recap : all but closed
-            $statuses = array_values(Constant::getStatuses()); // Array of all statuses
-            array_pop($statuses); // Remove STATUS_CLOSED
-
-            $statusFilter = ['field' => 'm.status', 'value' => $statuses];
-            array_push($filters, $statusFilter);
-        }
-        
-        // Retrieve Missions matching filters
-        /** @var MissionRepository $missionRepo */
-        $missionRepo = $this->getDoctrine()->getRepository(Mission::class);
-        $missions = $missionRepo->findByFiltersJoined($filters);
-
-        // Convert Missions to JSON
-        $missionsJson = [];
-
-        /** @var Mission $mission */
-        foreach ($missions as $mission) {
-            $missionJson = [
-                // Path to mission view
-                'url' => $this->generateUrl('app_mission_view', ['id' => $mission->getId()]),
-                // Mission properties
-                'id' => $mission->getId(),
-                'status' => $mission->getStatus(),
-                'dateCreated' => $mission->getFormattedDateCreated(),
-                'dateAssigned' => $mission->getDateAssigned() ? $mission->getFormattedDateAssigned() : null,
-                'dateFinished' => $mission->getDateFinished() ? $mission->getFormattedDateFinished() : null,
-                'description' => $mission->getDescription(),
-                'conclusions' => $mission->getConclusions(),
-                // Gla
-                'gla' => [
-                    'id' => $mission->getGla()->getId(),
-                    'name' => $mission->getGla()->getName()
-                ],
-                // Address
-                'address' => [
-                    'id' => $mission->getAddress()->getId(),
-                    'name' => $mission->getAddress()->getName(),
-                    'street' => $mission->getAddress()->getStreet(),
-                    'zipCode' => $mission->getAddress()->getZipCode(),
-                    'city' => $mission->getAddress()->getCity()
-                ]
-            ];
-
-            if ($mission->getVolunteer()) {
-                // Volunteer
-                $volunteerJson = ['volunteer' => [
-                    'id' => $mission->getVolunteer()->getId(),
-                    'name' => $mission->getVolunteer()->getName()
-                ]];
-
-                $missionJson = array_merge($missionJson, $volunteerJson);
-            }
-
-            array_push($missionsJson, $missionJson);
-        }
-
-        // Convert path to mission recap pdf export to JSON
-        $recapJson = ['url' => $this->generateUrl('app_mission_recap_pdf-export', [
-            'dateMin' => $dateCreatedMin,
-            'dateMax'=> $dateCreatedMax
-        ])];
-
-        // Combine recap and missions
-        $data = ['missions' => $missionsJson, 'recap' => $recapJson];
-
-        // Return JSON response
-        return new JsonResponse($data);
     }
 }

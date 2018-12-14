@@ -24,10 +24,6 @@ class MissionSearchType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('id', IntegerType::class, [
-                'constraints' => [new GreaterThan(0)],
-                'required' => false
-            ])
             ->add('gla', EntityType::class, [
                 // Multiple choice dropdown from User table, gla = true
                 'class' => User::class,

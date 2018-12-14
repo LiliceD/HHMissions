@@ -103,7 +103,7 @@
 
       // Filter table on address search input
       searchInput.addEventListener('input', () => {
-        let search = capitalizeInput(searchInput.value.trim()),
+        let search = capitalizeText(searchInput.value.trim()),
             rows = table.getElementsByTagName('tr');
 
         // Row 0 is header
