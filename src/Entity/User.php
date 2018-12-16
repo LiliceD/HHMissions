@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Utils\Constant;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -409,8 +410,8 @@ class User implements AdvancedUserInterface, \Serializable
 
         // ROLE_GLA (resp. ROLE_VOLUNTEER) is only in Gla list (resp. Volunteer list)
         // ROLE_ADMIN is in both lists
-        $this->gla = \in_array('ROLE_ADMIN', $roles) || \in_array('ROLE_GLA', $roles);
-        $this->volunteer = \in_array('ROLE_ADMIN', $roles) || \in_array('ROLE_VOLUNTEER', $roles);
+        $this->gla = \in_array(Constant::ROLE_ADMIN, $roles) || \in_array(Constant::ROLE_GLA, $roles);
+        $this->volunteer = \in_array(Constant::ROLE_ADMIN, $roles) || \in_array(Constant::ROLE_VOLUNTEER, $roles);
 
         return $this;
     }
@@ -509,6 +510,14 @@ class User implements AdvancedUserInterface, \Serializable
     public function isVolunteer(): bool
     {
         return $this->volunteer;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAdmin(): bool
+    {
+        return in_array(Constant::ROLE_ADMIN, $this->roles);
     }
 
     /**
