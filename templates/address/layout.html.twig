@@ -56,22 +56,26 @@
 
   <script>
     (function() {
-      // Remove accent and capitalize name, address and city
-      document.getElementById("address_name").addEventListener("input", (e) => {
-        e.target.value = capitalizeText(e.target.value);
+      let addressName = $('#address_name'),
+          addressStreet = $('#address_street'),
+          addressCity = $('#address_city');
+
+      addressName.on('input', () => {
+        addressName.val(capitalizeText(addressName.val()));
       });
-      document.getElementById("address_street").addEventListener("input", (e) => {
-        e.target.value = capitalizeText(e.target.value);
+      addressStreet.on('input', () => {
+        addressStreet.val(capitalizeText(addressStreet.val()));
       });
-      document.getElementById("address_city").addEventListener("input", (e) => {
-        e.target.value = capitalizeText(e.target.value);
+      addressCity.on('input', () => {
+        addressCity.val(capitalizeText(addressCity.val()));
       });
 
       // Replace with city name dynamic population
-      document.getElementById("address_zipCode").addEventListener("change", (e) => {
-        const input = e.target.value; 
+      let addressZipCode = $('#address_zipCode');
+      addressZipCode.change(() => {
+        const input = addressZipCode.val();
         if (input.match(/^6900\d$/)) {
-          document.getElementById("address_city").value = "LYON";
+          $('#address_city').val('LYON');
         }
       });
     })();
