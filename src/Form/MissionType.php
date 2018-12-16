@@ -55,7 +55,7 @@ class MissionType extends AbstractType
                 'class' => User::class,
                 'query_builder' => function (EntityRepository $er) {
                     /** @var UserRepository $er */
-                    return $er->qbActiveByCategory(Constant::CAT_GLA);
+                    return $er->qbActiveByCategory(User::CATEGORY_GLA);
                 },
                 'choice_label' => 'name',
                 'label' => 'Provenance GLA :',
@@ -66,7 +66,7 @@ class MissionType extends AbstractType
                 'class' => User::class,
                 'query_builder' => function (EntityRepository $er) {
                     /** @var UserRepository $er */
-                    return $er->qbActiveByCategory(Constant::CAT_VOLUNTEER);
+                    return $er->qbActiveByCategory(User::CATEGORY_VOLUNTEER);
                 },
                 'choice_label' => 'name',
                 'label' => 'Bénévole :',

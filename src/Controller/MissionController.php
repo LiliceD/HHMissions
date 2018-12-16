@@ -192,7 +192,7 @@ class MissionController extends Controller
      *
      * @return RedirectResponse|Response
      */
-    public function list(Request $request, MissionManager $missionManager, String $activity = 'appui-gla')
+    public function list(Request $request, MissionManager $missionManager, String $activity = Constant::ACTIVITY_GLA)
     {
         // Create search by id form
         $searchFormById = $this->createForm(MissionSearchByIdType::class);
@@ -385,7 +385,7 @@ class MissionController extends Controller
     {
         $dateMin = $request->query->get('dateMin');
         $dateMax = $request->query->get('dateMax');
-        $statuses = Constant::STATUS_DEFAULT.'|'.Constant::STATUS_ASSIGNED.'|'.Constant::STATUS_FINISHED;
+        $statuses = Mission::STATUS_DEFAULT.'|'.Mission::STATUS_ASSIGNED.'|'.Mission::STATUS_FINISHED;
         $filters = [
             'activity' => $activity,
             'statuses' => $statuses,

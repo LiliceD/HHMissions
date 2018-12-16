@@ -133,7 +133,7 @@ class UserAdminController extends Controller
             $userManager->setRolesFromCategory($user, $category);
 
             // An GLA belongs to all activities
-            if ($user->getCategory() === Constant::CAT_GLA) {
+            if ($user->getCategory() === User::CATEGORY_GLA) {
                 $user->setActivities(Constant::getActivities());
             }
 

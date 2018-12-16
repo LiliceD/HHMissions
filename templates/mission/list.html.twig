@@ -12,7 +12,7 @@
 
 {% block header_button %}
     {# new mission button only visible for gla (and admin) #}
-    {% if is_granted('ROLE_GLA') %}
+    {% if is_granted(constant('App\\Entity\\User::ROLE_GLA')) %}
         <a href="{{ path('app_mission_new') }}" class="btn btn-success">
             <i class="fas fa-plus"></i>
             Créer une fiche mission
@@ -203,8 +203,8 @@
                 }
 
                 function getNewMissionsFilters() {
-                    let activity = "{{ constant('App\\Utils\\Constant::PA_GLA') }}",
-                        status = "{{ constant('App\\Utils\\Constant::STATUS_DEFAULT') }}";
+                    let activity = "{{ constant('App\\Utils\\Constant::ACTIVITY_GLA') }}",
+                        status = "{{ constant('App\\Entity\\Mission::STATUS_DEFAULT') }}";
 
                     return {
                         'activity': activity,
@@ -230,8 +230,8 @@
                 }
 
                 function getAssignedMissionsFilters() {
-                    let activity = "{{ constant('App\\Utils\\Constant::PA_GLA') }}",
-                        status = "{{ constant('App\\Utils\\Constant::STATUS_ASSIGNED') }}";
+                    let activity = "{{ constant('App\\Utils\\Constant::ACTIVITY_GLA') }}",
+                        status = "{{ constant('App\\Entity\\Mission::STATUS_ASSIGNED') }}";
 
                     return {
                         'activity': activity,
@@ -273,8 +273,8 @@
                         dateFinishedMin = formatStringToDate(dateFinishedMinInput.val()),
                         dateFinishedMax = formatStringToDate(dateFinishedMaxInput.val());
 
-                    let activity = "{{ constant('App\\Utils\\Constant::PA_GLA') }}",
-                        statuses = "{{ constant('App\\Utils\\Constant::STATUS_FINISHED') }}" + "|" + "{{ constant('App\\Utils\\Constant::STATUS_CLOSED') }}";
+                    let activity = "{{ constant('App\\Utils\\Constant::ACTIVITY_GLA') }}",
+                        statuses = "{{ constant('App\\Entity\\Mission::STATUS_FINISHED') }}" + "|" + "{{ constant('App\\Entity\\Mission::STATUS_CLOSED') }}";
 
                     return {
                         'activity': activity,
@@ -297,7 +297,7 @@
                         closedMissions = [];
 
                     missions.forEach(mission => {
-                        if (mission.status === "{{ constant('App\\Utils\\Constant::STATUS_FINISHED') }}") {
+                        if (mission.status === "{{ constant('App\\Entity\\Mission::STATUS_FINISHED') }}") {
                             finishedMissions.push(mission);
                         } else {
                             closedMissions.push(mission);

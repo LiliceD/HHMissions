@@ -37,7 +37,7 @@
           {{ form_row(form.status, {'attr': {'readonly': 'true'}}) }}
           {{ form_row(form.gla, {'attr': {'disabled': 'true'}}) }}
           {# Volunteer is only editable by Admin #}
-          {% if is_granted('ROLE_ADMIN') %}
+          {% if is_granted(constant('App\\Entity\\User::ROLE_ADMIN')) %}
             {{ form_row(form.volunteer) }}
           {% else %}
             {{ form_row(form.volunteer, {'attr': {'disabled': 'true'}}) }}
@@ -48,12 +48,12 @@
         <div class="col-sm">
           {{ form_row(form.dateCreated, {'attr': {'readonly': 'true'}}) }}
           {# Date of assignment is only editable by Admin #}
-          {% if is_granted('ROLE_ADMIN') %}
+          {% if is_granted(constant('App\\Entity\\User::ROLE_ADMIN')) %}
             {{ form_row(form.dateAssigned, {'attr': {'placeholder': 'jj/mm/aaaa'}}) }}
           {% else %}
             {{ form_row(form.dateAssigned, {'attr': {'readonly': 'true'}}) }}
           {% endif %}
-          {% if is_granted('ROLE_VOLUNTEER') %}
+          {% if is_granted(constant('App\\Entity\\User::ROLE_VOLUNTEER')) %}
             {{ form_row(form.dateFinished, {'attr': {'placeholder': 'jj/mm/aaaa'}}) }}
           {% else %}
             {{ form_row(form.dateFinished, {'attr': {'readonly': 'true'}}) }}
