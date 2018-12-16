@@ -35,7 +35,7 @@ class UserType extends AbstractType
             ->add('username', TextType::class, ['label' => 'Identifiant :'])
             ->add('email', EmailType::class, ['label' => 'Email :'])
             ->add('category', ChoiceType::class, [
-                'choices' => Constant::getUserCategories(),
+                'choices' => User::getCategories(),
                 'label' => 'Catégorie :',
                 'placeholder' => '-',
             ])

@@ -35,13 +35,13 @@
         </div>
         {# Button to close / reopen a mission when finished #}
         {# only visible for admin #}
-        {% if is_granted('ROLE_ADMIN') %}
+        {% if is_granted(constant('App\\Entity\\User::ROLE_ADMIN')) %}
           <div class="col-sm-auto">
-            {% if mission.status == constant('App\\Utils\\Constant::STATUS_FINISHED') %}
+            {% if mission.status == constant('App\\Entity\\Mission::STATUS_FINISHED') %}
               <a href="{{ path('app_mission_close', {'id': mission.id}) }}" class="btn btn-sm btn-primary">
                 Fermer
               </a>
-            {% elseif mission.status == constant('App\\Utils\\Constant::STATUS_CLOSED') %}
+            {% elseif mission.status == constant('App\\Entity\\Mission::STATUS_CLOSED') %}
               <a href="{{ path('app_mission_close', {'id': mission.id}) }}" class="btn btn-sm btn-primary">
                 Rouvrir
               </a>
@@ -192,7 +192,7 @@
       {% endif %}
 
       {# edit button only visible if mission is not closed and if user is admin, mission's gla or mission's volunteer #}
-      {% if mission.status != constant('App\\Utils\\Constant::STATUS_CLOSED') and is_granted('simpleEdit', mission) %}
+      {% if mission.status != constant('App\\Entity\\Mission::STATUS_CLOSED') and is_granted('simpleEdit', mission) %}
         <a href="{{ path('app_mission_edit', {'id': mission.id}) }}" class="btn btn-outline-primary">
           <i class="fas fa-edit"></i>
           Modifier

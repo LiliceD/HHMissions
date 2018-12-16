@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use App\Entity\User;
-use App\Utils\Constant;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
@@ -30,10 +29,10 @@ class UserRepository extends ServiceEntityRepository
         
         // Possibly add filter on volunteer/gla
         switch ($category) {
-            case Constant::CAT_GLA:
+            case User::CATEGORY_GLA:
                 $qb->where('u.gla = true');
                 break;
-            case Constant::CAT_VOLUNTEER:
+            case User::CATEGORY_VOLUNTEER:
                 $qb->where('u.volunteer = true');
         }
 
@@ -50,10 +49,10 @@ class UserRepository extends ServiceEntityRepository
         
         // Possibly add filter on volunteer/gla
         switch ($category) {
-            case Constant::CAT_GLA:
+            case User::CATEGORY_GLA:
                 $qb->where('u.gla = true');
                 break;
-            case Constant::CAT_VOLUNTEER:
+            case User::CATEGORY_VOLUNTEER:
                 $qb->where('u.volunteer = true');
         }
 

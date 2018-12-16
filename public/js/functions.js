@@ -1,5 +1,5 @@
-const CAT_GLA = 'GLA';
-const STATUS_CLOSED = 'Fermée';
+const CATEGORY_GLA = "{{ constant('App\\Entity\\User::CATEGORY_GLA') }}";
+const STATUS_CLOSED = "{{ constant('App\\Entity\\Mission::STATUS_CLOSED') }}";
 const EMAIL_DOMAIN = '@'+'habitat-humanisme.org';
 
 /**
@@ -305,7 +305,7 @@ function createViewButton(url) {
  */
 function getNbOfMissions(missions) {
     return missions.filter(mission => {
-        return mission.status !== "{{ constant('App\\Utils\\Constant::STATUS_CLOSED') }}";
+        return mission.status !== STATUS_CLOSED;
     }).length
 }
 

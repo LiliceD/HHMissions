@@ -7,7 +7,6 @@ use App\Entity\User;
 use App\Model\FLashMessage;
 use App\Repository\MissionRepository;
 use App\Service\FileUploader;
-use App\Utils\Constant;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Response;
@@ -50,45 +49,24 @@ class MissionManager
         }
     }
 
-    /**
-     * Check whether a mission is assigned
-     *
-     * @param Mission $mission
-     *
-     * @return bool
-     */
     public static function isAssigned(Mission $mission): bool
     {
-        return $mission->getStatus() !== Constant::STATUS_DEFAULT;
+        return $mission->getStatus() !== Mission::STATUS_DEFAULT;
     }
 
-    /**
-     * Check whether a mission is closed
-     *
-     * @param Mission $mission
-     *
-     * @return bool
-     */
     public static function isClosed(Mission $mission): bool
     {
-        return $mission->getStatus() === Constant::STATUS_CLOSED;
+        return $mission->getStatus() === Mission::STATUS_CLOSED;
     }
 
-    /**
-     * Set a given Mission's status based on its dates
-     *
-     * @param Mission $mission
-     *
-     * @return Mission
-     */
     public static function updateStatus(Mission $mission)
     {
         if ($mission->getDateFinished()) {
-            $mission->setStatus(Constant::STATUS_FINISHED);
+            $mission->setStatus(Mission::STATUS_FINISHED);
         } elseif ($mission->getDateAssigned()) {
-            $mission->setStatus(Constant::STATUS_ASSIGNED);
+            $mission->setStatus(Mission::STATUS_ASSIGNED);
         } else {
-            $mission->setStatus(Constant::STATUS_DEFAULT);
+            $mission->setStatus(Mission::STATUS_DEFAULT);
         }
 
         return $mission;
@@ -159,11 +137,19 @@ class MissionManager
         $this->persist($mission);
     }
 
+    /**
+     * @param Mission $mission
+     * @param User    $user
+     *
+     * @return FLashMessage
+     *
+     * @throws \Exception
+     */
     public function assignVolunteer(Mission $mission, User $user): FLashMessage
     {
         $mission->setVolunteer($user)
             ->setDateAssigned(new \DateTime())
-            ->setStatus(Constant::STATUS_ASSIGNED);
+            ->setStatus(Mission::STATUS_ASSIGNED);
 
         self::updateStatus($mission);
 
@@ -172,23 +158,16 @@ class MissionManager
         return new FLashMessage('La mission vous a bien été attribuée.');
     }
 
-    /**
-     * Close or re-open and persist a mission
-     *
-     * @param Mission $mission
-     *
-     * @return FLashMessage
-     */
     public function close(Mission $mission): FLashMessage
     {
         $status = $mission->getStatus();
 
-        if ($status === Constant::STATUS_FINISHED) {
-            $mission->setStatus(Constant::STATUS_CLOSED);
+        if ($status === Mission::STATUS_FINISHED) {
+            $mission->setStatus(Mission::STATUS_CLOSED);
 
             $flash = new FLashMessage('La fiche mission a bien été fermée.');
-        } elseif ($status === Constant::STATUS_CLOSED) {
-            $mission->setStatus(Constant::STATUS_FINISHED);
+        } elseif ($status === Mission::STATUS_CLOSED) {
+            $mission->setStatus(Mission::STATUS_FINISHED);
 
             $flash = new FLashMessage('La fiche mission a bien été ré-ouverte.');
         } else {

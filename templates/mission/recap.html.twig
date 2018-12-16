@@ -11,8 +11,8 @@
 {% endblock %}
 
 {% block header_button %}
-  {#{% set url = path('app_mission_recap_pdf-export', {'activity': constant('App\\Utils\\Constant::PA_GLA')}) %}#}
-  <a id="exportBtn" href="{{ path('app_mission_recap_pdf-export', {'activity': constant('App\\Utils\\Constant::PA_GLA')}) }}" class="btn btn-primary">
+  {#{% set url = path('app_mission_recap_pdf-export', {'activity': constant('App\\Utils\\Constant::ACTIVITY_GLA')}) %}#}
+  <a id="exportBtn" href="{{ path('app_mission_recap_pdf-export', {'activity': constant('App\\Utils\\Constant::ACTIVITY_GLA')}) }}" class="btn btn-primary">
     <i class="fas fa-download"></i>
     Exporter au format PDF
   </a>
@@ -110,8 +110,8 @@
           let dateCreatedMinInput = $('#mission_search_dateCreatedMin'),
               dateCreatedMaxInput = $('#mission_search_dateCreatedMax');
 
-          let activity = "{{ constant('App\\Utils\\Constant::PA_GLA') }}",
-              statuses = "{{ constant('App\\Utils\\Constant::STATUS_DEFAULT') }}"+"|"+"{{ constant('App\\Utils\\Constant::STATUS_ASSIGNED') }}"+"|"+"{{ constant('App\\Utils\\Constant::STATUS_FINISHED') }}";
+          let activity = "{{ constant('App\\Utils\\Constant::ACTIVITY_GLA') }}",
+              statuses = "{{ constant('App\\Entity\\Mission::STATUS_DEFAULT') }}"+"|"+"{{ constant('App\\Entity\\Mission::STATUS_ASSIGNED') }}"+"|"+"{{ constant('App\\Entity\\Mission::STATUS_FINISHED') }}";
           let dateCreatedMin = formatStringToDate(dateCreatedMinInput.val()),
               dateCreatedMax = formatStringToDate(dateCreatedMaxInput.val());
 
@@ -124,7 +124,7 @@
         }
 
         function getRecapPdfUrl(filters) {
-          let url = "{{ path('app_mission_recap_pdf-export', {'activity': constant('App\\Utils\\Constant::PA_GLA')}) }}",
+          let url = "{{ path('app_mission_recap_pdf-export', {'activity': constant('App\\Utils\\Constant::ACTIVITY_GLA')}) }}",
               urlParams = [];
 
           if (filters.dateCreatedMin) {

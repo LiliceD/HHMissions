@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\Utils\Constant;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -31,6 +30,15 @@ use Symfony\Component\Security\Core\User\AdvancedUserInterface;
  */
 class User implements AdvancedUserInterface, \Serializable
 {
+    const ROLE_SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
+    const ROLE_ADMIN = 'ROLE_ADMIN';
+    const ROLE_GLA = 'ROLE_GLA';
+    const ROLE_VOLUNTEER = 'ROLE_VOLUNTEER';
+
+    const CATEGORY_ADMIN = 'Admin';
+    const CATEGORY_GLA = 'GLA';
+    const CATEGORY_VOLUNTEER = 'Bénévole';
+
     //  █████╗ ████████╗████████╗██████╗ ██╗██████╗ ██╗   ██╗████████╗███████╗███████╗
     // ██╔══██╗╚══██╔══╝╚══██╔══╝██╔══██╗██║██╔══██╗██║   ██║╚══██╔══╝██╔════╝██╔════╝
     // ███████║   ██║      ██║   ██████╔╝██║██████╔╝██║   ██║   ██║   █████╗  ███████╗
@@ -111,7 +119,7 @@ class User implements AdvancedUserInterface, \Serializable
      * @ORM\Column(type="string", length=50)
      *
      * @Assert\Choice(
-     *     callback={"App\Utils\Constant", "getUserCategories"}),
+     *     callback={"App\Entity\User", "getCategories"}),
      *     groups={"Default", "edit"},
      * )
      *
@@ -240,6 +248,35 @@ class User implements AdvancedUserInterface, \Serializable
     public function __toString(): ?string
     {
         return $this->name;
+    }
+
+    /**
+     * Callback for User->$category
+     * Category dropdown in UserType
+     *
+     * @return array
+     */
+    public static function getCategories(): array
+    {
+        return [
+            self::CATEGORY_VOLUNTEER => self::CATEGORY_VOLUNTEER,
+            self::CATEGORY_GLA => self::CATEGORY_GLA,
+            self::CATEGORY_ADMIN => self::CATEGORY_ADMIN,
+        ];
+    }
+
+    /**
+     * Category to role mapping
+     *
+     * @return array
+     */
+    public static function getRolesFromCategories(): array
+    {
+        return [
+            self::CATEGORY_VOLUNTEER => [self::ROLE_VOLUNTEER],
+            self::CATEGORY_GLA => [self::ROLE_GLA],
+            self::CATEGORY_ADMIN => [self::ROLE_ADMIN],
+        ];
     }
 
     /**
@@ -410,8 +447,8 @@ class User implements AdvancedUserInterface, \Serializable
 
         // ROLE_GLA (resp. ROLE_VOLUNTEER) is only in Gla list (resp. Volunteer list)
         // ROLE_ADMIN is in both lists
-        $this->gla = \in_array(Constant::ROLE_ADMIN, $roles) || \in_array(Constant::ROLE_GLA, $roles);
-        $this->volunteer = \in_array(Constant::ROLE_ADMIN, $roles) || \in_array(Constant::ROLE_VOLUNTEER, $roles);
+        $this->gla = \in_array(self::ROLE_ADMIN, $roles) || \in_array(self::ROLE_GLA, $roles);
+        $this->volunteer = \in_array(self::ROLE_ADMIN, $roles) || \in_array(self::ROLE_VOLUNTEER, $roles);
 
         return $this;
     }
@@ -517,7 +554,7 @@ class User implements AdvancedUserInterface, \Serializable
      */
     public function isAdmin(): bool
     {
-        return in_array(Constant::ROLE_ADMIN, $this->roles);
+        return in_array(User::ROLE_ADMIN, $this->roles);
     }
 
     /**

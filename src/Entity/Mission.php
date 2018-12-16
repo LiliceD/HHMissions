@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\Utils\Constant;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -20,6 +19,11 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  */
 class Mission
 {
+    const STATUS_DEFAULT = 'Créée';
+    const STATUS_ASSIGNED = 'Prise en charge';
+    const STATUS_FINISHED = 'Terminée';
+    const STATUS_CLOSED = 'Fermée';
+
     //  █████╗ ████████╗████████╗██████╗ ██╗██████╗ ██╗   ██╗████████╗███████╗███████╗
     // ██╔══██╗╚══██╔══╝╚══██╔══╝██╔══██╗██║██╔══██╗██║   ██║╚══██╔══╝██╔════╝██╔════╝
     // ███████║   ██║      ██║   ██████╔╝██║██████╔╝██║   ██║   ██║   █████╗  ███████╗
@@ -283,8 +287,27 @@ class Mission
      */
     public function __construct()
     {
-        $this->status = Constant::getStatuses()[Constant::STATUS_DEFAULT];
+        $this->status = self::getStatuses()[self::STATUS_DEFAULT];
         $this->dateCreated = new \DateTime();
+    }
+
+    /**
+     * Callback for Mission->$status
+     *
+     * @return array
+     */
+    public static function getStatuses()
+    {
+        return array(
+            // Default status when mission is created (cf Mission::__construct())
+            self::STATUS_DEFAULT => self::STATUS_DEFAULT,
+            // When a volunteer got assigned to the mission (cf dateAssigned)
+            self::STATUS_ASSIGNED => self::STATUS_ASSIGNED,
+            // When the mission has been done (cf dateFinished, conclusions)
+            self::STATUS_FINISHED => self::STATUS_FINISHED,
+            // When Admin reviewed conclusions and officially closed mission
+            self::STATUS_CLOSED => self::STATUS_CLOSED,
+        );
     }
 
     //  █████╗  ██████╗ ██████╗███████╗███████╗███████╗ ██████╗ ██████╗ ███████╗

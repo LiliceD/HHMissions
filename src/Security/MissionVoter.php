@@ -5,7 +5,6 @@ namespace App\Security;
 use App\Entity\Mission;
 use App\Entity\User;
 use App\Manager\MissionManager;
-use App\Utils\Constant;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\Authorization\AccessDecisionManagerInterface;
@@ -53,7 +52,7 @@ class MissionVoter extends Voter
         }
 
         // Super Admin can do anything
-        if ($this->decisionManager->decide($token, [Constant::ROLE_SUPER_ADMIN])) {
+        if ($this->decisionManager->decide($token, [User::ROLE_SUPER_ADMIN])) {
             return true;
         }
 
@@ -86,18 +85,18 @@ class MissionVoter extends Voter
         }
 
         // only the volunteer assigned to the mission can simple edit it
-        return $this->decisionManager->decide($token, [Constant::ROLE_VOLUNTEER]) && $user === $mission->getVolunteer();
+        return $this->decisionManager->decide($token, [User::ROLE_VOLUNTEER]) && $user === $mission->getVolunteer();
     }
 
     private function canEdit(Mission $mission, User $user, TokenInterface $token): bool
     {
         // ROLE_ADMIN can edit any mission
-        if ($this->decisionManager->decide($token, [Constant::ROLE_ADMIN])) {
+        if ($this->decisionManager->decide($token, [User::ROLE_ADMIN])) {
             return true;
         }
 
         // only the GLA who created the mission can edit it
-        return $this->decisionManager->decide($token, [Constant::ROLE_GLA]) && $user === $mission->getGla();
+        return $this->decisionManager->decide($token, [User::ROLE_GLA]) && $user === $mission->getGla();
     }
 
     private function canAssign(Mission $mission, TokenInterface $token): bool
@@ -108,6 +107,6 @@ class MissionVoter extends Voter
         }
 
         // only a Volunteer can assign themselves a mission
-        return $this->decisionManager->decide($token, [Constant::ROLE_VOLUNTEER]);
+        return $this->decisionManager->decide($token, [User::ROLE_VOLUNTEER]);
     }
 }

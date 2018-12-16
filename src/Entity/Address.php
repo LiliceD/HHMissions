@@ -24,6 +24,11 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Address
 {
+    const OWNER_FFH_BUILDING = "FHH - Immeuble";
+    const OWNER_FFH_DIFFUSE = "FHH - Logement isolé";
+    const OWNER_PRIVATE_BUILDING = "Privé - Immeuble";
+    const OWNER_PRIVATE_DIFFUSE = "Privé - Logement isolé";
+
     /**
      * Address's id
      *
@@ -77,7 +82,7 @@ class Address
      * Address's type (building / single apartment) and owner (FHH / private)
      *
      * @ORM\Column(type="string", nullable=true)
-     * @Assert\Choice(callback={"App\Utils\Constant", "getOwnerTypes"})
+     * @Assert\Choice(callback={"App\Entity\Address", "getOwnerTypes"})
      */
     private $ownerType;
 
@@ -115,6 +120,21 @@ class Address
         return $this->street . ' '
             . ($this->name ? '(' . $this->name . ') ' : '')
             . $this->zipCode . ' ' . $this->city ?? '';
+    }
+
+    /**
+     * Callback for Address->$ownerType
+     *
+     * @return array
+     */
+    public static function getOwnerTypes()
+    {
+        return array(
+            self::OWNER_FFH_BUILDING => self::OWNER_FFH_BUILDING,
+            self::OWNER_FFH_DIFFUSE => self::OWNER_FFH_DIFFUSE,
+            self::OWNER_PRIVATE_BUILDING => self::OWNER_PRIVATE_BUILDING,
+            self::OWNER_PRIVATE_DIFFUSE => self::OWNER_PRIVATE_DIFFUSE
+        );
     }
 
     /**

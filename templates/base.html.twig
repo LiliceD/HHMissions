@@ -51,7 +51,7 @@
                      href="{{ path('app_mission_recap') }}">
                     Récap FM ouvertes
                   </a>
-                  {% if is_granted('ROLE_GLA') %}
+                  {% if is_granted(constant('App\\Entity\\User::ROLE_GLA')) %}
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item {{ app.request.pathinfo == '/missions/ajouter' ? 'active' }}" 
                        href="{{ path('app_mission_new') }}">
@@ -66,7 +66,7 @@
                   Logements
                 </a>
               </li>
-              {% if is_granted('ROLE_ADMIN') %}
+              {% if is_granted(constant('App\\Entity\\User::ROLE_ADMIN')) %}
                 <li class="nav-item">
                   <a class="nav-link {{ app.request.pathinfo starts with '/admin' ? 'active' }}"
                      href="{{ path('app_user_list') }}">
