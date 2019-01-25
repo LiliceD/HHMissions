@@ -4,20 +4,34 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\ResetPasswordType;
-use App\Controller\MailController;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
+/**
+ * Class SecurityController
+ *
+ * @author Alice Dahan <lilice.dhn@gmail.com>
+ */
 class SecurityController extends Controller
 {
     /**
-     * @Route("/login", name="login")
+     * @Route(
+     *     "/login/",
+     *     name="login"
+     * )
+     *
+     * @param AuthenticationUtils           $authUtils
+     * @param AuthorizationCheckerInterface $authChecker
+     *
+     * @return RedirectResponse|Response
      */
-    public function login(Request $request, AuthenticationUtils $authenticationUtils, AuthorizationCheckerInterface $authChecker)
+    public function login(AuthenticationUtils $authUtils, AuthorizationCheckerInterface $authChecker)
     {
         if ($authChecker->isGranted('IS_AUTHENTICATED_FULLY')) {
             // If user is connected, redirect to mission list
@@ -25,10 +39,10 @@ class SecurityController extends Controller
         }
 
         // get the login error if there is one
-        $error = $authenticationUtils->getLastAuthenticationError();
+        $error = $authUtils->getLastAuthenticationError();
 
         // last username entered by the user
-        $lastUsername = $authenticationUtils->getLastUsername();
+        $lastUsername = $authUtils->getLastUsername();
 
         return $this->render('security/login.html.twig', array(
             'last_username' => $lastUsername,
@@ -37,9 +51,17 @@ class SecurityController extends Controller
     }
 
     /**
-     * @Route("/reinitialisermdp", name="app.reset-pwd")
+     * @Route(
+     *     "/reinitialisermdp/",
+     *     name="app.reset-pwd"
+     * )
      *
-     * @throws \Exception
+     * @param Request                       $request
+     * @param AuthorizationCheckerInterface $authChecker
+     * @param MailController                $mailController
+     * @param UserPasswordEncoderInterface  $passwordEncoder
+     *
+     * @return RedirectResponse|Response
      */
     public function resetPassword(Request $request, AuthorizationCheckerInterface $authChecker, MailController $mailController, UserPasswordEncoderInterface $passwordEncoder)
     {
@@ -63,27 +85,17 @@ class SecurityController extends Controller
 
             if ($user) {
                 // Reset and encode password
-                $newPassword = bin2hex(random_bytes(10));
-
-                $password = $passwordEncoder->encodePassword($user, $newPassword);
+                $password = $passwordEncoder->encodePassword($user, $user->getUsername());
                 $user->setPassword($password);
 
-                // Set mail parameters
+                // Send email
                 $mailParams = [
                     'subject' => 'Alors, on est tête en l\'air ? 😉',
-                    'to' => [
-                        'email' => $user->getEmail(),
-                        'name' => $user->getName(),
-                    ],
+                    'to' => $user->getEmail()
                 ];
 
-                // Generate mail HTML body
-                $view = $this->renderView('emails/reset-pwd.html.twig', [
-                    'name' => $mailParams['to']['name'],
-                    'password' => $newPassword,
-                ]);
+                $view = $this->renderView('emails/reset-pwd.html.twig', ['name' => $user->getName()]);
 
-                // Send mail
                 $mailController->send($mailParams['subject'], $mailParams['to'], $view);
 
                 // Persist changes to DB
@@ -110,27 +122,6 @@ class SecurityController extends Controller
             // Stay on same page
             return $this->redirectToRoute('app.reset-pwd');
         }
-
-        return $this->render('security/reset-pwd.html.twig', [
-            'form' => $form->createView()
-        ]);
-    }
-
-    /**
-     * @Route("/reinitialisermdp2", name="app.reset-pwd2")
-     */
-    public function resetPassword2(Request $request, AuthorizationCheckerInterface $authChecker, MailController $mailController, UserPasswordEncoderInterface $passwordEncoder)
-    {
-        if ($authChecker->isGranted('IS_AUTHENTICATED_FULLY')) {
-            // If user is connected, redirect to mission list
-            // return $this->redirectToRoute('app_mission_list');
-        }
-
-        // Create form
-        $form = $this->createForm(ResetPasswordType::class);
-        $form->handleRequest($request);
-
-        $mailController->validate();
 
         return $this->render('security/reset-pwd.html.twig', [
             'form' => $form->createView()

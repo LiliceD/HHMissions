@@ -20,9 +20,7 @@
     {% set btnClass = 'btn-primary' %}
     {% set btnValue = 'Activer' %}
   {% endif %}
-
   {% set btnPath = path('app_user_deactivate', {'id': user.id}) %}
-  
   {{ modal('deactivate', modalHeader, modalBody, btnPath, btnClass, btnValue) }}
 
   {# Alert inactive account #}
@@ -58,7 +56,7 @@
 
 {% block card_footer_right %}
   {# edit and deactivation buttons only visible for admin #}
-  {% if is_granted('ROLE_ADMIN') and not (app.request.pathinfo ends with '/profil') %}
+  {% if is_granted(constant('App\\Entity\\User::ROLE_ADMIN')) and not (app.request.pathinfo ends with '/profil') %}
     {# Edit #}
     <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-sm btn-outline-primary">
       <i class="fas fa-edit"></i>

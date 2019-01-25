@@ -2,67 +2,56 @@
 
 namespace App\Controller;
 
-use App\Entity\Accomodation;
 use App\Entity\Mission;
+use App\Form\MissionSearchByIdType;
 use App\Form\MissionType;
 use App\Form\MissionSearchType;
-use App\Service\FileUploader; // to use FileUploader service in edit
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security; // for @Security annotations
+use App\Manager\MissionManager;
+use App\Utils\Constant;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Config\Definition\Exception\Exception; // to throw new Exception()
-use Symfony\Component\HttpFoundation\File\File; // for new File() in edit
-use Symfony\Component\HttpFoundation\JsonResponse; // app_mission_filter
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
+ * Class MissionController
+ *
  * @Route("/missions")
+ *
+ * @author Alice Dahan <lilice.dhn@gmail.com>
  */
 class MissionController extends Controller
 {
     
-    //  ██████╗██████╗ ██╗   ██╗██████╗ 
+    //  ██████╗██████╗ ██╗   ██╗██████╗
     // ██╔════╝██╔══██╗██║   ██║██╔══██╗
     // ██║     ██████╔╝██║   ██║██║  ██║
     // ██║     ██╔══██╗██║   ██║██║  ██║
     // ╚██████╗██║  ██║╚██████╔╝██████╔╝
-    //  ╚═════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ 
+    //  ╚═════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝
 
     /**
      * @Route(
-     *  "/ajouter",
-     *  name="app_mission_new"
+     *     "/ajouter",
+     *     name="app_mission_new"
      * )
+     *
+     * @param Request        $request
+     * @param MissionManager $missionManager
+     *
+     * @return RedirectResponse|Response
      */
-    public function new(Request $request, FileUploader $fileUploader)
+    public function new(Request $request, MissionManager $missionManager)
     {
-        $mission = new Mission();
-
-        // Create form
-        $form = $this->createForm(MissionType::class, $mission);
+        $form = $this->createForm(MissionType::class, new Mission());
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            
-            // Manage attachment
-            $file = $mission->getAttachment();
-
-            if ($file) {
-                $fileName = $fileUploader->upload($file);
-
-                $mission->setAttachment($fileName);
-            }
-
-            // Persist to DB
-            $em = $this->getDoctrine()->getManager();
-
             $mission = $form->getData();
+            $missionManager->create($mission);
 
-            $em->persist($mission);
-            $em->flush();
-
-            // Redirect to mission view
             return $this->redirectToRoute('app_mission_view', [
                 'id' => $mission->getId()
             ]);
@@ -75,14 +64,16 @@ class MissionController extends Controller
 
     /**
      * @Route(
-     *  "/voir/{id}",
-     *  name="app_mission_view",
-     *  requirements={
-     *      "id"="\d+"
-     *  }
+     *     "/{id}/voir/",
+     *     name="app_mission_view",
+     *     requirements={"id"="\d+"}
      * )
+     *
+     * @param Mission $mission
+     *
+     * @return Response
      */
-    public function view(Mission $mission)
+    public function view(Mission $mission): Response
     {
         return $this->render('mission/view.html.twig', [
             'mission' => $mission
@@ -91,84 +82,31 @@ class MissionController extends Controller
 
     /**
      * @Route(
-     *  "/modifier/{id}",
-     *  name="app_mission_edit",
-     *  requirements={
-     *      "id"="\d+"
-     *  }
+     *     "/{id}/modifier/",
+     *     name="app_mission_edit",
+     *     requirements={"id"="\d+"}
      * )
+     *
+     * @param Mission        $mission
+     * @param Request        $request
+     * @param MissionManager $missionManager
+     *
+     * @return RedirectResponse|Response
      */
-    public function edit(Mission $mission, Request $request, FileUploader $fileUploader)
+    public function edit(Mission $mission, Request $request, MissionManager $missionManager)
     {
-        // Retrieve user and allow action only if user is admin, mission's gla or mission's volunteer
         $this->denyAccessUnlessGranted('simpleEdit', $mission);
         
-        // Copy all previous data
-        $oldMission = $mission;
-
-        // Save previous attachment file name to avoid delete by edit with no changes
-        $oldFileName = $oldMission->getAttachment();
-
-        // Set file from file name
-        if ($oldFileName) {
-            $mission->setAttachment(
-                new File($this->getParameter('app_attachment_directory').'/'.$oldFileName)
-            );
-        }
+        $oldMission = clone $mission;
+        $mission = $missionManager->setAttachmentAsFile($mission);
 
         // Create form
         $form = $this->createForm(MissionType::class, $mission);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Retrieve user to check authorizations
-            $user = $this->getUser();
+            $missionManager->update($mission, $oldMission, $this->getUser());
 
-            // DateCreated, accomodation and GLA can't be changed
-            $mission->setDateCreated($oldMission->getDateCreated());
-            $mission->setAccomodation($oldMission->getAccomodation());
-            $mission->setGla($oldMission->getGla());
-
-            // DateAssigned and Volunteer can only be changed by admin
-            if (!$this->isGranted('ROLE_ADMIN', $user)) {
-                $mission->setDateAssigned($oldMission->getDateAssigned());
-                $mission->setVolunteer($oldMission->getVolunteer());
-            }
-
-            // DateFinished can only be changed by volunteer assigned or admin
-            if (!$this->isGranted('ROLE_VOLUNTEER', $user)) {
-                $mission->setDateFinished($oldMission->getDateFinished());
-            }
-
-            // Description and Info can only be changed by GLA or admin
-            if (!$this->isGranted('ROLE_GLA', $user)) {
-                $mission->setDescription($oldMission->getDescription());
-                $mission->setInfo($oldMission->getInfo());
-            }
-
-            // Update status
-            $mission->updateStatus();
-
-            // Manage attachment
-            $file = $mission->getAttachment();
-
-            if ($file && $this->isGranted('ROLE_GLA', $user)) {
-                $fileName = $fileUploader->upload($file);
-
-                $mission->setAttachment($fileName);
-            } else if ($oldFileName) {
-                $mission->setAttachment($oldFileName);
-            }
-
-            // Persist to DB
-            $em = $this->getDoctrine()->getManager();
-
-            $mission = $form->getData();
-
-            $em->persist($mission);
-            $em->flush();
-
-            // Redirect to mission view
             return $this->redirectToRoute('app_mission_view', [
                 'id' => $mission->getId()
             ]);
@@ -177,42 +115,61 @@ class MissionController extends Controller
         return $this->render('mission/edit.html.twig', [
             'form' => $form->createView(),
             'mission' => $mission,
-            'attachmentUrl' => $oldFileName
+            'attachmentUrl' => $oldMission->getAttachment(),
         ]);
     }
 
     /**
      * @Route(
-     *  "/supprimer/{id}",
-     *  name="app_mission_delete",
-     *  requirements={
-     *      "id"="\d+"
-     *  }
+     *     "/{id}/supprimer/",
+     *     name="app_mission_delete",
+     *     requirements={"id"="\d+"}
      * )
+     *
+     * @param Mission        $mission
+     * @param MissionManager $missionManager
+     *
+     * @return RedirectResponse
      */
-    public function delete(Mission $mission, FileUploader $fileUploader)
+    public function delete(Mission $mission, MissionManager $missionManager): RedirectResponse
     {
-        // Allow action only if user is admin or mission's gla
         $this->denyAccessUnlessGranted('edit', $mission);
-        
-        // Delete attached file from server
-        $fileName = $mission->getAttachment();
-        if (!empty($fileName)) {
-            $fileUploader->delete($fileName);
-        }
 
-        // Persist changes to DB
-        $em = $this->getDoctrine()->getManager();
-        $em->remove($mission);
-        $em->flush();
+        $flash = $missionManager->delete($mission);
 
-        // Set a "flash" success message
-        $this->addFlash(
-            'notice',
-            'La fiche mission a bien été supprimée.'
-        );
+        $this->addFlash($flash->getType(), $flash->getMessage());
 
         return $this->redirectToRoute('app_mission_list');
+    }
+
+
+//  █████╗      ██╗ █████╗ ██╗  ██╗
+// ██╔══██╗     ██║██╔══██╗╚██╗██╔╝
+// ███████║     ██║███████║ ╚███╔╝
+// ██╔══██║██   ██║██╔══██║ ██╔██╗
+// ██║  ██║╚█████╔╝██║  ██║██╔╝ ██╗
+// ╚═╝  ╚═╝ ╚════╝ ╚═╝  ╚═╝╚═╝  ╚═╝
+
+
+    /**
+     * @Route(
+     *     "/filter",
+     *     name="app_mission_filter"
+     * )
+     *
+     * @param Request        $request
+     * @param MissionManager $missionManager
+     *
+     * @return JsonResponse
+     */
+    public function cGet(Request $request, MissionManager $missionManager): JsonResponse
+    {
+        $filters = $request->request->all();
+        $missions = $missionManager->getFilteredMissions($filters);
+        $missionsJson = $missionManager->getJsonMissions($missions);
+        $data = ['missions' => $missionsJson];
+
+        return new JsonResponse($data);
     }
 
 
@@ -223,85 +180,72 @@ class MissionController extends Controller
 // ██║     ██║  ██║╚██████╔╝███████╗███████║
 // ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚══════╝
 
-
     /**
      * @Route(
-     *  "/",
-     *  name="app_mission_list",
+     *     "/{activity}",
+     *     name="app_mission_list"
      * )
+     *
+     * @param Request        $request
+     * @param String         $activity
+     * @param MissionManager $missionManager
+     *
+     * @return RedirectResponse|Response
      */
-    public function list(Request $request)
-    {    
+    public function list(Request $request, MissionManager $missionManager, String $activity = Constant::ACTIVITY_GLA)
+    {
         // Create search by id form
-        $form = $this->createForm(MissionSearchType::class);
-        $form->handleRequest($request);
+        $searchFormById = $this->createForm(MissionSearchByIdType::class);
+        $searchFormById->handleRequest($request);
 
-        // Get Mission repository
-        $repository = $this->getDoctrine()->getRepository(Mission::class);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            // Get id submitted 
-            $data = $form->getData();
+        if ($searchFormById->isSubmitted() && $searchFormById->isValid()) {
+            // Get id submitted
+            $data = $searchFormById->getData();
             $id = $data['id'];
 
-            // Retrieve mission
-            $mission = $repository->findOneBy(['id' => $id]);
-
-            if ($mission) {
+            // Redirect to mission
+            if ($missionManager->getById($id)) {
                 return $this->redirectToRoute('app_mission_view', [
-                    'id' => $mission->getId()
+                    'id' => $id,
                 ]);
             }
 
-            // Set a "flash" error message
+            // If not mission found, set a "flash" error message and redirect to list
             $this->addFlash(
                 'error',
                 'Il n\'y a pas de fiche mission n°'.$id
             );
 
-            return $this->redirectToRoute('app_mission_list');
+            return $this->redirectToRoute('app_mission_list', [
+                'activity' => $activity,
+            ]);
         }
 
-        // Retrieve missions not finished
-        $missions = $repository->findByStatusJoined([Mission::STATUS_DEFAULT, Mission::STATUS_ASSIGNED]);
-        
-        // Split missions based on their status
-        $newMissions = [];
-        $assignedMissions = [];
-
-        foreach($missions as $mission) {
-            switch ($mission->getStatus()) {
-                case Mission::STATUS_DEFAULT:
-                    array_push($newMissions, $mission);
-                    break;
-                case Mission::STATUS_ASSIGNED:
-                    array_push($assignedMissions, $mission);
-            }
-        }
+        $fullSearchForm = $this->createForm(MissionSearchType::class);
 
         return $this->render('mission/list.html.twig', [
-            'form' => $form->createView(),
-            'newMissions' => $newMissions,
-            'assignedMissions' => $assignedMissions,
-            'searchForm' => $form->createView()
+            'form' => $searchFormById->createView(),
+            'searchForm' => $fullSearchForm->createView(),
         ]);
     }
+
 
     /**
      * Recap of opened (= any status but "closed") missions
      *
      * @Route(
-     *  "/recap/",
-     *  name="app_mission_recap",
+     *     "/recap/",
+     *     name="app_mission_recap",
      * )
+     *
+     * @return Response
      */
-    public function recap()
-    {    
-        // Create search form
+    public function recap(): Response
+    {
         $searchForm = $this->createForm(MissionSearchType::class);
 
         return $this->render('mission/recap.html.twig', [
-            'form' => $searchForm->createView()
+            'form' => $searchForm->createView(),
         ]);
     }
 
@@ -313,351 +257,158 @@ class MissionController extends Controller
 // ██║  ██║╚██████╗   ██║   ██║╚██████╔╝██║ ╚████║███████║
 // ╚═╝  ╚═╝ ╚═════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝
 
-
     /**
      * Assign user as volunteer of the mission
-     * 
+     *
      * @Route(
-     *  "/assigner/{id}",
-     *  name="app_mission_assign",
-     *  requirements={
-     *      "id"="\d+"
-     *  }
+     *     "/{id}/assigner/",
+     *     name="app_mission_assign",
+     *     requirements={"id"="\d+"}
      * )
+     *
+     * @param Mission        $mission
+     * @param MissionManager $missionManager
+     *
+     * @return RedirectResponse
+     *
+     * @throws \Exception
      */
-    public function assign(Mission $mission)
+    public function assign(Mission $mission, MissionManager $missionManager): RedirectResponse
     {
-        // Allow action only if user is a volunteer and mission is not assigned
         $this->denyAccessUnlessGranted('assign', $mission);
-        
-        // Retrieve user
-        $user = $this->getUser();
 
-        // Set volunteer, dateAssigned and status
-        $mission->setVolunteer($user);
-        $mission->setDateAssigned(new \DateTime());
-        $mission->setStatus(Mission::STATUS_ASSIGNED);
+        $flash = $missionManager->assignVolunteer($mission, $this->getUser());
 
-        // Persist changes to DB
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($mission);
-        $em->flush();
+        $this->addFlash($flash->getType(), $flash->getMessage());
 
-        // Set a "flash" success message
-        $this->addFlash(
-            'notice',
-            'La mission vous a bien été attribuée.'
-        );
-
-        // Redirect to Mission view
         return $this->redirectToRoute('app_mission_view', [
-            'id' => $mission->getId()
+            'id' => $mission->getId(),
         ]);
     }
 
     /**
      * Close / re-open a mission if its current status is finished / closed respectively
-     * 
+     *
      * @Route(
-     *  "/fermer/{id}",
-     *  name="app_mission_close",
-     *  requirements={
-     *      "id"="\d+"
-     *  }
+     *     "/{id}/fermer/",
+     *     name="app_mission_close",
+     *     requirements={"id"="\d+"}
      * )
+     *
+     * @param Mission        $mission
+     * @param MissionManager $missionManager
+     *
+     * @return RedirectResponse
      */
-    public function close(Mission $mission)
+    public function close(Mission $mission, MissionManager $missionManager): RedirectResponse
     {
-        $status = $mission->getStatus();
+        $flash = $missionManager->close($mission);
 
-        // Change status and set a "flash" success message
-        if ($status === Mission::STATUS_FINISHED) {
-            $mission->setStatus(Mission::STATUS_CLOSED);
+        $this->addFlash($flash->getType(), $flash->getMessage());
 
-            $this->addFlash(
-                'notice',
-                'La fiche mission a bien été fermée.'
-            );
-        } else if ($status === Mission::STATUS_CLOSED) {
-            $mission->setStatus(Mission::STATUS_FINISHED);
-
-            $this->addFlash(
-                'notice',
-                'La fiche mission a bien été ré-ouverte.'
-            );
-        } else {
-            throw new Exception('Une mission doit être terminée pour être fermée.');
-        }
-
-        // Persist changes to DB
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($mission);
-        $em->flush();
-
-        // Redirect to Mission view
         return $this->redirectToRoute('app_mission_view', [
-            'id' => $mission->getId()
+            'id' => $mission->getId(),
         ]);
     }
 
     /**
      * Empty field "attachment" and delete file
-     * 
+     *
      * @Route(
-     *  "/supprimer-pj/{id}",
-     *  name="app_mission_attachment-delete",
-     *  requirements={
-     *      "id"="\d+"
-     *  }
+     *     "/{id}/supprimer-pj/",
+     *     name="app_mission_attachment-delete",
+     *     requirements={"id"="\d+"}
      * )
+     *
+     * @param Mission        $mission
+     * @param MissionManager $missionManager
+     *
+     * @return RedirectResponse
      */
-    public function deleteAttachment(Mission $mission, FileUploader $fileUploader)
-    { 
-        // Allow action only if user is admin or mission's gla
+    public function deleteAttachment(Mission $mission, MissionManager $missionManager): RedirectResponse
+    {
         $this->denyAccessUnlessGranted('edit', $mission);
 
-        // Delete file from server
-        $fileName = $mission->getAttachment();
-        if (!empty($fileName)) {
-            $fileUploader->delete($fileName);
-        }
+        $flash = $missionManager->deleteAttachment($mission);
 
-        // Empty field in database
-        $em = $this->getDoctrine()->getManager();
-        
-        $mission->setAttachment(null);
-
-        $em->persist($mission);
-        $em->flush();
-
-        // Set a "flash" success message
-        $this->addFlash(
-            'notice',
-            'La pièce jointe a bien été supprimée.'
-        );
+        $this->addFlash($flash->getType(), $flash->getMessage());
 
         return $this->redirectToRoute('app_mission_view', [
-                'id' => $mission->getId()
+                'id' => $mission->getId(),
         ]);
     }
 
     /**
      * Export a given mission to PDF
-     * 
+     *
      * @Route(
-     *  "/pdf/{id}",
-     *  name="app_mission_pdf-export",
-     *  requirements={
-     *      "id"="\d+"
-     *  }
+     *     "/{id}/pdf/",
+     *     name="app_mission_pdf-export",
+     *     requirements={"id"="\d+"}
      * )
+     *
+     * @param Mission $mission
+     *
+     * @return Response
      */
-    public function pdfExport(Mission $mission)
+    public function pdfExport(Mission $mission): Response
     {
         $html = $this->renderView('pdf/mission-view.html.twig', [
             'mission' => $mission
         ]);
-
         $filename = sprintf('fm-%s__%s.pdf', $mission->getId(), $mission->getFormattedDateCreated());
 
         return new Response(
             $this->get('knp_snappy.pdf')->getOutputFromHtml($html),
-            200,
+            Response::HTTP_OK,
             [
                 'Content-Type'        => 'application/pdf',
                 'Content-Disposition' => sprintf('attachment; filename="%s"', $filename),
             ]
         );
     }
-
     /**
      * Export recap of opened missions to PDF
-     * 
+     *
      * @Route(
-     *  "/recap/pdf/{dateMin}/{dateMax}",
-     *  name="app_mission_recap_pdf-export"
+     *     "/recap/pdf/{activity}",
+     *     name="app_mission_recap_pdf-export"
      * )
+     *
+     * @param string         $activity
+     * @param Request        $request
+     * @param MissionManager $missionManager
+     *
+     * @return Response
      */
-    public function recapPdfExport($dateMin = '', $dateMax = '')
+    public function recapPdfExport(string $activity, Request $request, MissionManager $missionManager): Response
     {
-        // Create array of filters
-        $filters = [];
+        $dateMin = $request->query->get('dateMin');
+        $dateMax = $request->query->get('dateMax');
+        $statuses = Mission::STATUS_DEFAULT.'|'.Mission::STATUS_ASSIGNED.'|'.Mission::STATUS_FINISHED;
+        $filters = [
+            'activity' => $activity,
+            'statuses' => $statuses,
+            'dateCreatedMin' => $dateMin,
+            'dateCreatedMax' => $dateMax,
+        ];
 
-        if ($dateMin || $dateMax) {
-            $dateCreatedFilter = ['field' => 'm.dateCreated', 'value' => ['min' => $dateMin, 'max' => $dateMax]];
-            array_push($filters, $dateCreatedFilter);
-        }
-
-        // Add filter on status (can't manage to send it with JavaScript)
-        $statuses = array_values(Mission::getStatuses()); // Array of all statuses
-        array_pop($statuses); // Remove STATUS_CLOSED
-
-        $statusFilter = ['field' => 'm.status', 'value' => $statuses];
-        array_push($filters, $statusFilter);
-
-        // Retrieve Missions matching filters
-        $missions = $this->getDoctrine()
-            ->getRepository(Mission::class)
-            ->findByFiltersJoined($filters)
-        ;
-
+        $missions = $missionManager->getFilteredMissions($filters);
         $html = $this->renderView('pdf/mission-recap.html.twig', [
             'missions' => $missions
         ]);
-
         $filename = sprintf('fm-recap_%s.pdf', date('Y-m-d'));
 
         return new Response(
             $this->get('knp_snappy.pdf')->getOutputFromHtml($html, [
                 'page-size' => 'A3',
-                'orientation' => 'Landscape'
+                'orientation' => 'Landscape',
             ]),
-            200,
+            Response::HTTP_OK,
             [
                 'Content-Type'        => 'application/pdf',
                 'Content-Disposition' => sprintf('attachment; filename="%s"', $filename),
             ]
         );
-    }
-
-
-//  █████╗      ██╗ █████╗ ██╗  ██╗
-// ██╔══██╗     ██║██╔══██╗╚██╗██╔╝
-// ███████║     ██║███████║ ╚███╔╝ 
-// ██╔══██║██   ██║██╔══██║ ██╔██╗ 
-// ██║  ██║╚█████╔╝██║  ██║██╔╝ ██╗
-// ╚═╝  ╚═╝ ╚════╝ ╚═╝  ╚═╝╚═╝  ╚═╝
-
-
-    /**
-     * @Route(
-     *  "/filter",
-     *  name="app_mission_filter",
-     * )
-     */
-    public function filter(Request $request)
-    {
-        // Get request referer
-        $referer = $request->headers->get('referer');
-        // Get filters from request parameters
-        $glaIds = $request->request->get('glaIds');
-        $volunteerIds = $request->request->get('volunteerIds');
-        $accomodationIds = $request->request->get('accomodationIds');
-        $descriptionSearch = $request->request->get('descriptionSearch');
-        $dateCreatedMin = $request->request->get('dateCreatedMin');
-        $dateCreatedMax = $request->request->get('dateCreatedMax');
-        $dateFinishedMin = $request->request->get('dateFinishedMin');
-        $dateFinishedMax = $request->request->get('dateFinishedMax');
-
-        // Create array of filters
-        $filters = [];
-
-        if ($glaIds) {
-            $glaFilter = ['field' => 'g.id', 'value' => $glaIds];
-            array_push($filters, $glaFilter);
-        }
-        
-        if ($volunteerIds) {
-            $volunteerFilter = ['field' => 'v.id', 'value' => $volunteerIds];
-            array_push($filters, $volunteerFilter);
-        }
-        
-        if ($accomodationIds) {
-            $accomodationFilter = ['field' => 'a.id', 'value' => $accomodationIds];
-            array_push($filters, $accomodationFilter);
-        }
-
-        if ($descriptionSearch) {
-            // Query will search for missions'whose description *contains* $descriptionSearch
-            $descriptionFilter = ['field' => 'm.description', 'value' => '%'.$descriptionSearch.'%'];
-            array_push($filters, $descriptionFilter);
-        }
-
-        if ($dateCreatedMin || $dateCreatedMax) {
-            $dateCreatedFilter = ['field' => 'm.dateCreated', 'value' => ['min' => $dateCreatedMin, 'max' => $dateCreatedMax]];
-            array_push($filters, $dateCreatedFilter);
-        }
-
-        if ($dateFinishedMin || $dateFinishedMax) {
-            $dateFinishedFilter = ['field' => 'm.dateFinished', 'value' => ['min' => $dateFinishedMin, 'max' => $dateFinishedMax]];
-            array_push($filters, $dateFinishedFilter);
-        }
-
-        // Add filter on status (can't manage to send it with JavaScript) and order
-        if (preg_match('/\/missions\/$/', $referer)) {
-            // From missions list : only finished and closed
-            $statuses = [Mission::STATUS_FINISHED, Mission::STATUS_CLOSED];
-
-            $statusFilter = ['field' => 'm.status', 'value' => $statuses];
-            array_push($filters, $statusFilter);
-        } else if (preg_match('/\/recap\/$/', $referer)) {
-            // From mission recap : all but closed
-            $statuses = array_values(Mission::getStatuses()); // Array of all statuses
-            array_pop($statuses); // Remove STATUS_CLOSED
-
-            $statusFilter = ['field' => 'm.status', 'value' => $statuses];
-            array_push($filters, $statusFilter);
-        }
-        
-        // Retrieve Missions matching filters
-        $missions = $this->getDoctrine()
-            ->getRepository(Mission::class)
-            ->findByFiltersJoined($filters)
-        ;
-
-        // Convert Missions to JSON
-        $missionsJson = [];
-
-        foreach ($missions as $mission) {
-            $missionJson = [
-                // Path to mission view
-                'url' => $this->generateUrl('app_mission_view', ['id' => $mission->getId()]),
-                // Mission properties
-                'id' => $mission->getId(),
-                'status' => $mission->getStatus(),
-                'dateCreated' => $mission->getFormattedDateCreated(),
-                'dateAssigned' => $mission->getDateAssigned() ? $mission->getFormattedDateAssigned() : null,
-                'dateFinished' => $mission->getDateFinished() ? $mission->getFormattedDateFinished() : null,
-                'description' => $mission->getDescription(),
-                'conclusions' => $mission->getConclusions(),
-                // Gla
-                'gla' => [
-                    'id' => $mission->getGla()->getId(),
-                    'name' => $mission->getGla()->getName()
-                ],
-                // Accomodation
-                'accomodation' => [
-                    'id' => $mission->getAccomodation()->getId(),
-                    'name' => $mission->getAccomodation()->getName(),
-                    'street' => $mission->getAccomodation()->getStreet(),
-                    'postalCode' => $mission->getAccomodation()->getPostalCode(),
-                    'city' => $mission->getAccomodation()->getCity()
-                ]
-            ];
-
-            if ($mission->getVolunteer()) {
-                // Volunteer
-                $volunteerJson = ['volunteer' => [
-                    'id' => $mission->getVolunteer()->getId(),
-                    'name' => $mission->getVolunteer()->getName()
-                ]];
-
-                $missionJson = array_merge($missionJson, $volunteerJson);
-            }
-
-            array_push($missionsJson, $missionJson);
-        }
-
-        // Convert path to mission recap pdf export to JSON
-        $recapJson = ['url' => $this->generateUrl('app_mission_recap_pdf-export', [
-            'dateMin' => $dateCreatedMin,
-            'dateMax'=> $dateCreatedMax
-        ])];
-
-        // Combine recap and missions
-        $data = ['missions' => $missionsJson, 'recap' => $recapJson]; 
-
-        // Return JSON response
-        return new JsonResponse($data);
     }
 }

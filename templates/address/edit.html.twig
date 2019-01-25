@@ -1,4 +1,4 @@
-{% extends 'accomodation/layout.html.twig' %}
+{% extends 'address/layout.html.twig' %}
 
 
 {% block header_h2 %}
@@ -7,14 +7,14 @@
 
 
 {% block card_body %}
-  {# Modal to confirm accomodation delete #}
+  {# Modal to confirm address delete #}
   {# only visible for admin #}
-  {% if is_granted('ROLE_ADMIN') %}
+  {% if is_granted(constant('App\\Entity\\User::ROLE_ADMIN')) %}
     {% from 'macros.html.twig' import modal as modal %}
 
     {% set modalHeader = 'Supprimer le logement' %}
     {% set modalBody = '<p>Confirmez-vous la suppression de ce logement ?</p>' %}
-    {% set btnPath = path("app_accomodation_delete", {"id": accomodation.id}) %}
+    {% set btnPath = path("app_address_delete", {"id": address.id}) %}
     
     {{ modal('delete', modalHeader, modalBody, btnPath, 'btn-danger', 'Supprimer') }}
   {% endif %}
@@ -26,7 +26,7 @@
 {% block card_footer_left %}
   {# Delete button opening a modal #}
   {# only visible for admin #}
-  {% if is_granted('ROLE_ADMIN') %}
+  {% if is_granted(constant('App\\Entity\\User::ROLE_ADMIN')) %}
     <button class="btn btn-sm btn-outline-danger" data-toggle="modal" data-target="#deleteModal">
       <i class="fas fa-trash-alt"></i>
       Supprimer le logement

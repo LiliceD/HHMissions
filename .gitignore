@@ -22,3 +22,8 @@ phpunit.xml
 ###> attachment ###
 /public/uploads
 ###< attachment ###
+
+###> symfony/phpunit-bridge ###
+.phpunit
+/phpunit.xml
+###< symfony/phpunit-bridge ###

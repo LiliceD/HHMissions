@@ -14,9 +14,20 @@
     {{ form_widget(form.dateAssigned, {'attr': {'hidden': 'true'}}) }}
     {{ form_widget(form.dateFinished, {'attr': {'hidden': 'true'}}) }}
     {{ form_widget(form.volunteer, {'attr': {'hidden': 'true'}}) }}
+    {{ form_widget(form.activity, {'attr': {'hidden': 'true'}}) }}
 
-    {# User role passed to JS through data attributes #}
-    <div id="appUserData" data-user-id="{{ app.user.id }}" class="row justify-content-between">
+    {#<div class="d-sm-flex align-items-center">#}
+      {#<div class="col-sm-4 col-md-3 col-xl-3 mt-2 text-center">#}
+        {#{{ form_label(form.activity) }}#}
+        {#</div>#}
+      {#<div class="col-12 col-sm-6 col-md-4">#}
+        {#{{ form_widget(form.activity) }}#}
+      {#</div>#}
+    {#</div>#}
+
+    {#<hr>#}
+
+    <div class="row justify-content-between">
       <div class="d-flex">
         <div class="col-sm">
         {{ form_row(form.gla) }}
@@ -27,11 +38,11 @@
       </div>
     </div>
 
-    {{ form_row(form.accomodation) }}
+    {{ form_row(form.address) }}
 
     <div class="row justify-content-between">
       <div class="col-sm order-sm-2 d-flex justify-content-end align-items-start">
-        <a href="{{ path('app_accomodation_new') }}" class="btn btn-sm btn-outline-secondary">
+        <a href="{{ path('app_address_new') }}" class="btn btn-sm btn-outline-secondary">
           <i class="fas fa-plus"></i>
           Ajouter une adresse
         </a>
@@ -40,8 +51,8 @@
       {# Owner type #}
       <div class="d-flex">
         <div class="col-sm form-group">
-          <label for="accomodation_ownerType" class="form-control-label">Propriétaire :</label>
-          <input type="text" id="accomodation_ownerType" name="accomodation[ownerType]" readonly="true" class="form-control"/>
+          <label for="address_ownerType" class="form-control-label">Propriétaire :</label>
+          <input type="text" id="address_ownerType" name="address[ownerType]" readonly class="form-control"/>
         </div>
       </div>
     </div>
@@ -69,41 +80,26 @@
 {% block javascripts %}
   {{ parent() }}
 
-  <script src="{{ asset('js/ajax.js') }}"></script>
-
   <script>
     (function() {
-      // Prepopulate field GLA with user's name
-      document.addEventListener('DOMContentLoaded', setGla);
+      $(function() {
+        prepopulateGla();
+        prepopulateAddressInfo();
+        $('#mission_address').change(prepopulateAddressInfo);
 
-      // Prepopulate fields OwnerType and Mission's info with accomodation selection
-      document.addEventListener('DOMContentLoaded', getAccomodationInfo);
-      document.getElementById('mission_accomodation').addEventListener('change', getAccomodationInfo);
-
-
-      // Get user's id from Twig and prepopulate field "Provenance GLA"
-      function setGla() {
-        let appUserDataElt = document.getElementById('appUserData'),
-            userId;
-
-        if (appUserDataElt) {
-          userId = appUserDataElt.getAttribute('data-user-id');
-          
-          document.getElementById('mission_gla').value = userId;
+        function prepopulateGla() {
+          $('#mission_gla').val("{{ app.user.id }}");
         }
-      }
 
-      // Prepopulate fields "owner type" and "info" with selected accomodation info
-      function getAccomodationInfo() {
-        const id = encodeURIComponent(document.getElementById('mission_accomodation').value);
-        
-        ajaxPost("{{ path('app_accomodation_info') }}", {'id': id}, function(JSONResponse) {
-          let data = JSON.parse(JSONResponse);
+        function prepopulateAddressInfo() {
+          let addressId = encodeURIComponent($('#mission_address').val());
 
-          document.getElementById('accomodation_ownerType').value = data.ownerType;
-          document.getElementById('mission_info').value = data.access;
-        });
-      }
+          $.post("{{ path('app_address_info') }}", {'id': addressId}, data => {
+            $('#address_ownerType').val(data.ownerType);
+            $('#mission_info').val(data.access);
+          });
+        }
+      });
     })();
   </script>
 {% endblock %}

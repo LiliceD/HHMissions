@@ -7,11 +7,12 @@
 
 
 {% block header_h2 %}
-  Récapitulatif des fiches mission ouvertes <span id="recapMissionsBadge" class="badge badge-pill badge-danger"></span>
+  Récapitulatif des fiches mission ouvertes <span class="nbOfMissions badge badge-pill badge-success"></span>
 {% endblock %}
 
 {% block header_button %}
-  <a id="exportBtn" href="{{ path('app_mission_recap_pdf-export') }}" class="btn btn-primary" download hidden>
+  {#{% set url = path('app_mission_recap_pdf-export', {'activity': constant('App\\Utils\\Constant::ACTIVITY_GLA')}) %}#}
+  <a id="exportBtn" href="{{ path('app_mission_recap_pdf-export', {'activity': constant('App\\Utils\\Constant::ACTIVITY_GLA')}) }}" class="btn btn-primary">
     <i class="fas fa-download"></i>
     Exporter au format PDF
   </a>
@@ -19,74 +20,37 @@
 
 
 {% block content %}
-  {# Search form #}
-  {{ form_start(form) }}
-  <div class="row justify-content-center">
-    <div class="col-11 card bg-light py-3 mb-3">
-      <div class="d-flex justify-content-between">
-        {# Filter date created #}
-        <div class="d-flex align-items-center">
-          <small>Date demande entre le</small>
-          <div class="input-group-sm input-date mx-2">
-            {{ form_widget(form.dateCreatedMin, {'attr': {'placeholder': 'jj/mm/aaaa'}}) }}
-          </div>
-          <small>et le</small>
-          <div class="input-group-sm input-date mx-2">
-            {{ form_widget(form.dateCreatedMax, {'attr': {'placeholder': 'jj/mm/aaaa'}}) }}
-          </div>
-        </div>
+  <div>
+    {% include 'mission/search/by-created-date.html.twig' %}
 
-        {# Form buttons #}
-        <div >
-          <input type="submit" class="btn btn-sm btn-outline-primary mr-2" id="searchSubmitBtn" value="Filtrer" />
-          <button class="btn btn-sm btn-outline-secondary" id="searchResetBtn">Réinitialiser</button>
-        </div>
-      </div>
+    <div class="table-responsive">
+      {% include 'loading.html.twig' %}
+
+      <table class="table table-sm table-hover table-recap">
+        <thead class="thead-light">
+          <tr>
+            <th scope="col" class="table-recap-id"># <i class="fas fa-sort"></i></th>
+            <th scope="col" class="table-recap-date">Date demande <i class="fas fa-sort"></i></th>
+            <th scope="col" class="table-recap-date">Provenance GLA <i class="fas fa-sort"></i></th>
+            <th scope="col" class="table-recap-date">Date prise en charge <i class="fas fa-sort"></i></th>
+            <th scope="col" class="table-recap-date">Date fin mission <i class="fas fa-sort"></i></th>
+            <th scope="col" class="table-recap-address">Adresse <i class="fas fa-sort"></i></th>
+            <th scope="col" class="table-recap-description">Description mission <i class="fas fa-sort"></i></th>
+            <th scope="col" class="table-recap-date">Bénévole <i class="fas fa-sort"></i></th>
+            <th scope="col" class="table-recap-description">Retour mission et conclusions <i class="fas fa-sort"></i></th>
+            <th scope="col" class="table-recap-statut">Statut <i class="fas fa-sort"></i></th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {# Filled by JavaScript #}
+          {# id, dateCreated, GLA, dateAssigned, dateFinished, address, description, volunteer, conclusions, status #}
+        </tbody>
+      </table>
+
+      {% include 'mission/no-mission-div.html.twig' %}
     </div>
   </div>
-
-  {{ form_widget(form.id, {'attr': {'hidden': 'true'}}) }}
-  {{ form_widget(form.gla, {'attr': {'hidden': 'true'}}) }}
-  {{ form_widget(form.volunteer, {'attr': {'hidden': 'true'}}) }}
-  {{ form_widget(form.accomodation, {'attr': {'hidden': 'true'}}) }}
-  {{ form_widget(form.description, {'attr': {'hidden': 'true'}}) }}
-  {{ form_widget(form.dateFinishedMin, {'attr': {'hidden': 'true'}}) }}
-  {{ form_widget(form.dateFinishedMax, {'attr': {'hidden': 'true'}}) }}
-  
-  {{ form_end(form) }}
-
-  {# Loading alert #}
-  <div id="loadingAlert" class="alert alert-info text-center" role="alert">
-    <i class="fas fa-spinner fa-spin"></i>
-    Chargement en cours ...
-  </div>
-
-  {# Table #}
-  <div class="table-responsive">
-    <table class="table table-sm table-hover table-recap" hidden>
-      <thead class="thead-light">
-        <tr>
-          <th scope="col" class="table-recap-id"># <i class="fas fa-sort"></i></th>
-          <th scope="col" class="table-recap-date">Date demande <i class="fas fa-sort"></i></th>
-          <th scope="col" class="table-recap-date">Provenance GLA <i class="fas fa-sort"></i></th>
-          <th scope="col" class="table-recap-date">Date prise en charge <i class="fas fa-sort"></i></th>
-          <th scope="col" class="table-recap-date">Date fin mission <i class="fas fa-sort"></i></th>
-          <th scope="col" class="table-recap-address">Adresse <i class="fas fa-sort"></i></th>
-          <th scope="col" class="table-recap-description">Description mission <i class="fas fa-sort"></i></th>
-          <th scope="col" class="table-recap-date">Bénévole <i class="fas fa-sort"></i></th>
-          <th scope="col" class="table-recap-description">Retour mission et conclusions <i class="fas fa-sort"></i></th>
-          <th scope="col" class="table-recap-statut">Statut <i class="fas fa-sort"></i></th>
-        </tr>
-      </thead>
-
-      <tbody>
-        {# Filled by JavaScript #}
-        {# id, dateCreated, GLA, dateAssigned, dateFinished, accomodation, description, volunteer, conclusions, status #}
-      </tbody>
-    </table>
-  </div>
-
-  <div id="noMissions" class="text-center font-weight-bold"></div>
 {% endblock %}
 
 
@@ -94,75 +58,89 @@
   {{ parent() }}
 
   <script src="{{ asset('js/functions.js') }}"></script>
-  <script src="{{ asset('js/ajax.js') }}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.0/js/jquery.tablesorter.js"></script>
  
   <script>
     (function() {
-      let table = document.querySelector('table'),
-          dateCreatedMinInput = document.getElementById('mission_search_dateCreatedMin'),
-          dateCreatedMaxInput = document.getElementById('mission_search_dateCreatedMax');
+      $(function() {
+        let recapTable = $('table');
 
-      // Add table sorting on clicking on one of its header
-      sortTable(table);
-
-      // Fill recap missions table on load
-      document.addEventListener('DOMContentLoaded', () => {
+        addMissionsSorting([recapTable]);
+        displayNumberOfCheckedOptionsInBadges();
         fillRecapMissionsTable();
+        filterRecapdMissionsWithSearch();
+
+        function fillRecapMissionsTable() {
+          let url = "{{ path('app_mission_filter') }}",
+              filters = getRecapMissionsFilters();
+
+          fillMissionsTable(recapTable, filters, url, recapMissionsCallback).then(nbOfMissions => {
+            updateNumberOfMissions(nbOfMissions);
+          });
+        }
+
+        function recapMissionsCallback(data) {
+          let missions = data.missions,
+              properties = ['id', 'dateCreated', 'gla', 'dateAssigned', 'dateFinished', 'address', 'description', 'volunteer', 'conclusions', 'status'];
+
+          return [missions, properties];
+        }
+
+        function updateNumberOfMissions(nbOfMissions) {
+          let badge = $('.nbOfMissions');
+          badge.html(nbOfMissions);
+        }
+
+        function filterRecapdMissionsWithSearch() {
+          $('#searchSubmitBtn').click(e => {
+            e.preventDefault();
+            fillRecapMissionsTable();
+            updatePdfExportLink();
+          });
+        }
+
+        function updatePdfExportLink() {
+          let filters = getRecapMissionsFilters(),
+              url = getRecapPdfUrl(filters);
+
+          $('#exportBtn').attr('href', url);
+        }
+
+        function getRecapMissionsFilters() {
+          let dateCreatedMinInput = $('#mission_search_dateCreatedMin'),
+              dateCreatedMaxInput = $('#mission_search_dateCreatedMax');
+
+          let activity = "{{ constant('App\\Utils\\Constant::ACTIVITY_GLA') }}",
+              statuses = "{{ constant('App\\Entity\\Mission::STATUS_DEFAULT') }}"+"|"+"{{ constant('App\\Entity\\Mission::STATUS_ASSIGNED') }}"+"|"+"{{ constant('App\\Entity\\Mission::STATUS_FINISHED') }}";
+          let dateCreatedMin = formatStringToDate(dateCreatedMinInput.val()),
+              dateCreatedMax = formatStringToDate(dateCreatedMaxInput.val());
+
+          return {
+            'activity': activity,
+            'statuses': statuses,
+            'dateCreatedMin': dateCreatedMin,
+            'dateCreatedMax': dateCreatedMax,
+          }
+        }
+
+        function getRecapPdfUrl(filters) {
+          let url = "{{ path('app_mission_recap_pdf-export', {'activity': constant('App\\Utils\\Constant::ACTIVITY_GLA')}) }}",
+              urlParams = [];
+
+          if (filters.dateCreatedMin) {
+            urlParams.push('dateMin='+filters.dateCreatedMin);
+          }
+          if (filters.dateCreatedMax) {
+            urlParams.push('dateMax='+filters.dateCreatedMax);
+          }
+
+          if (filters.dateCreatedMin || filters.dateCreatedMax) {
+            url += '?'+urlParams.join('&');
+          }
+
+          return url;
+        }
       });
-
-      // Filter recap missions table on search form submit
-      document.getElementById('searchSubmitBtn').addEventListener('click', (e) => {
-        e.preventDefault();
-        fillRecapMissionsTable();
-      });
-
-      // Reset recap missions table on reset button click
-      document.getElementById('searchResetBtn').addEventListener('click', (e) => {
-        e.preventDefault();
-
-        // Reset date inputs
-        dateCreatedMinInput.value = '';
-        dateCreatedMaxInput.value = '';
-
-        // Reset table
-        fillRecapMissionsTable();
-      });
-
-
-      // Retrieve filters from search form, get matching missions from backend, fill in table, update number of missions and update link to pdf export
-      function fillRecapMissionsTable() {
-        // Retrieve filters
-        let dateCreatedMin = formatStringToDate(dateCreatedMinInput.value),
-            dateCreatedMax = formatStringToDate(dateCreatedMaxInput.value);
-
-        let filters = {
-              'dateCreatedMin': dateCreatedMin, 
-              'dateCreatedMax': dateCreatedMax
-            },
-            url = "{{ path('app_mission_filter') }}",
-            noMissionsDiv = document.getElementById('noMissions'),
-            loadingAlert = document.getElementById('loadingAlert'),
-            badge = document.getElementById('recapMissionsBadge');
-
-        // Retrieve matching missions and add them to table
-        fillMissionsTable(table, filters, url, dataCallback, noMissionsDiv, loadingAlert, badge);
-      }
-
-      function dataCallback(data) {
-        // Unhide export button and update link to pdf export
-        let exportBtn = document.getElementById('exportBtn')
-
-        exportBtn.removeAttribute('hidden');
-        exportBtn.href = data.recap.url;
-
-        let missions = data.missions,
-            counter = missions.length,
-            properties = ['id', 'dateCreated', 'gla', 'dateAssigned', 'dateFinished', 'accomodation', 'description', 'volunteer', 'conclusions', 'status'],
-            shortDescription = false,
-            button = false;
-
-        return [missions, properties, shortDescription, button, counter];
-      }
     })();
   </script>
 {% endblock %}

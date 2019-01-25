@@ -20,13 +20,26 @@
   {# Form #}
   {{ form_start(form) }}
 
+    {{ form_widget(form.activity, {'attr': {'hidden': 'true'}}) }}
+
+    {#<div class="d-sm-flex align-items-center">#}
+      {#<div class="col-sm-4 col-md-3 col-xl-3 mt-2 text-center">#}
+          {#{{ form_label(form.activity) }}#}
+      {#</div>#}
+      {#<div class="col-12 col-sm-6 col-md-4">#}
+          {#{{ form_widget(form.activity, {'attr': {'disabled': 'true'}}) }}#}
+      {#</div>#}
+    {#</div>#}
+
+    {#<hr>#}
+
     <div class="row justify-content-between">
       <div class="d-flex">
         <div class="col-sm">
           {{ form_row(form.status, {'attr': {'readonly': 'true'}}) }}
           {{ form_row(form.gla, {'attr': {'disabled': 'true'}}) }}
           {# Volunteer is only editable by Admin #}
-          {% if is_granted('ROLE_ADMIN') %}
+          {% if is_granted(constant('App\\Entity\\User::ROLE_ADMIN')) %}
             {{ form_row(form.volunteer) }}
           {% else %}
             {{ form_row(form.volunteer, {'attr': {'disabled': 'true'}}) }}
@@ -37,12 +50,12 @@
         <div class="col-sm">
           {{ form_row(form.dateCreated, {'attr': {'readonly': 'true'}}) }}
           {# Date of assignment is only editable by Admin #}
-          {% if is_granted('ROLE_ADMIN') %}
+          {% if is_granted(constant('App\\Entity\\User::ROLE_ADMIN')) %}
             {{ form_row(form.dateAssigned, {'attr': {'placeholder': 'jj/mm/aaaa'}}) }}
           {% else %}
             {{ form_row(form.dateAssigned, {'attr': {'readonly': 'true'}}) }}
           {% endif %}
-          {% if is_granted('ROLE_VOLUNTEER') %}
+          {% if is_granted(constant('App\\Entity\\User::ROLE_VOLUNTEER')) %}
             {{ form_row(form.dateFinished, {'attr': {'placeholder': 'jj/mm/aaaa'}}) }}
           {% else %}
             {{ form_row(form.dateFinished, {'attr': {'readonly': 'true'}}) }}
@@ -51,13 +64,13 @@
       </div>
     </div>
 
-    {{ form_row(form.accomodation, {'attr': {'disabled': 'true'}}) }}
+    {{ form_row(form.address, {'attr': {'disabled': 'true'}}) }}
     
     {# Owner type #}
     <div class="d-flex">
       <div class="form-group">
-        <label for="accomodation_ownerType" class="form-control-label">Propriétaire :</label>
-        <input type="text" id="accomodation_ownerType" name="accomodation[ownerType]" readonly="true" class="form-control" value="{{ mission.accomodation.ownerType }}" />
+        <label for="address_ownerType" class="form-control-label">Propriétaire :</label>
+        <input type="text" id="address_ownerType" name="address[ownerType]" readonly class="form-control" value="{{ mission.address.ownerType }}" />
       </div>
     </div>
 
@@ -130,6 +143,8 @@
 
   <script>
     (function() {
+      let caca = "{{ mission.activity }}";
+        console.log(caca);
       // Show / hide alert if conclusions has / not text
       function showConclusionsAlert() {
         let conclusionsAlertElt = document.getElementById('conclusionsAlert');
@@ -146,11 +161,12 @@
       document.getElementById('mission_conclusions').addEventListener('change', showConclusionsAlert);
       document.getElementById('mission_dateFinished').addEventListener('change', showConclusionsAlert);
 
-      // Un-disable accomodation, GLA and volunteer select to post data on form submit
+      // Un-disable address, GLA and volunteer select to post data on form submit
       document.querySelector('form').addEventListener('submit', () => {
-        document.getElementById('mission_accomodation').disabled = false;
+        document.getElementById('mission_address').disabled = false;
         document.getElementById('mission_gla').disabled = false;
         document.getElementById('mission_volunteer').disabled = false;
+        document.getElementById('mission_activity').disabled = false;
       });
     })();
   </script>

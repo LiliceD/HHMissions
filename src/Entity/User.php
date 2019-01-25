@@ -2,176 +2,309 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection; // mapping user to missions
-use Doctrine\Common\Collections\Collection; // mapping user to missions
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Context\ExecutionContextInterface; // to use Callback validation
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 
 /**
- * @ORM\Table(name="users")
+ * Class User
+ *
+ * @ORM\Table(name="user")
+ *
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
- * @UniqueEntity(fields="email", message="Adresse email déjà utilisée")
- * @UniqueEntity(fields="username", message="Nom d'utilisateur déjà utilisé")
+ *
+ * @UniqueEntity(
+ *     fields="email",
+ *     message="Adresse email déjà utilisée"
+ * )
+ * @UniqueEntity(
+ *     fields="username",
+ *     message="Nom d'utilisateur déjà utilisé"
+ * )
+ *
+ * @author Alice Dahan <lilice.dhn@gmail.com>
  */
 class User implements AdvancedUserInterface, \Serializable
 {
-    // Categories (cf getCategory() to see relation to roles)
-    const CAT_ADMIN = 'Admin';
-    const CAT_GLA = 'GLA';
-    const CAT_VOLUNTEER = 'Bénévole';
+    const ROLE_SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
+    const ROLE_ADMIN = 'ROLE_ADMIN';
+    const ROLE_GLA = 'ROLE_GLA';
+    const ROLE_VOLUNTEER = 'ROLE_VOLUNTEER';
+
+    const CATEGORY_ADMIN = 'Admin';
+    const CATEGORY_GLA = 'GLA';
+    const CATEGORY_VOLUNTEER = 'Bénévole';
+
+    //  █████╗ ████████╗████████╗██████╗ ██╗██████╗ ██╗   ██╗████████╗███████╗███████╗
+    // ██╔══██╗╚══██╔══╝╚══██╔══╝██╔══██╗██║██╔══██╗██║   ██║╚══██╔══╝██╔════╝██╔════╝
+    // ███████║   ██║      ██║   ██████╔╝██║██████╔╝██║   ██║   ██║   █████╗  ███████╗
+    // ██╔══██║   ██║      ██║   ██╔══██╗██║██╔══██╗██║   ██║   ██║   ██╔══╝  ╚════██║
+    // ██║  ██║   ██║      ██║   ██║  ██║██║██████╔╝╚██████╔╝   ██║   ███████╗███████║
+    // ╚═╝  ╚═╝   ╚═╝      ╚═╝   ╚═╝  ╚═╝╚═╝╚═════╝  ╚═════╝    ╚═╝   ╚══════╝╚══════╝
 
     /**
+     * User's id
+     *
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @var int
      */
     private $id;
 
     /**
+     * User's username to login
+     *
      * @ORM\Column(type="string", length=25, unique=true)
+     *
      * @Assert\NotBlank()
      * @Assert\Length(max=25)
+     *
+     * @var string
      */
     private $username;
 
     /**
+     * User's plain password before encrypting
+     *
      * @Assert\NotBlank(groups={"Default", "change_password"})
-     * @Assert\Length(min=8, max=4096, groups={"Default", "change_password"})
+     * @Assert\Length(
+     *     min=8,
+     *     max=4096,
+     *     groups={"Default", "change_password"},
+     * )
+     *
+     * @var string
      */
     private $plainPassword;
 
     /**
+     * User's encrypted password
+     *
      * @ORM\Column(type="string", length=64)
+     *
+     * @var string
      */
     private $password;
 
     /**
+     * User's email address
+     *
      * @ORM\Column(type="string", length=254, unique=true)
+     *
      * @Assert\NotBlank()
      * @Assert\Email()
+     *
+     * @var string
      */
     private $email;
 
     /**
+     * User's authorization roles
+     *
      * @ORM\Column(type="simple_array")
+     *
+     * @var array
      */
-    private $roles;
+    private $roles = [];
 
     /**
+     * User's category (admin, volunteer, gla...)
+     *
      * @ORM\Column(type="string", length=50)
+     *
+     * @Assert\Choice(
+     *     callback={"App\Entity\User", "getCategories"}),
+     *     groups={"Default", "edit"},
+     * )
+     *
+     * @var string
+     */
+    private $category;
+
+    /**
+     * User's pole(s) of activity(ies)
+     *
+     * @ORM\Column(type="simple_array")
+     *
+     * @Assert\Choice(
+     *     callback={"App\Utils\Constant", "getActivities"},
+     *     multiple=true,
+     *     groups={"Default", "edit"},
+     * )
+     *
+     * @var array
+     */
+    private $activities = [];
+
+    /**
+     * User's full name
+     *
+     * @ORM\Column(type="string", length=50)
+     *
      * @Assert\NotBlank(groups={"Default", "edit"})
      * @Assert\Length(max=50)
+     *
+     * @var string
      */
     private $name;
 
     /**
+     * Is the User active?
+     *
      * @ORM\Column(name="is_active", type="boolean")
+     *
+     * @var bool
      */
-    private $active;
+    private $active = true;
 
     /**
+     * Can the User create missions?
+     *
      * Adds (or not) user to suggestions of gla in 'new mission' form
+     *
      * @ORM\Column(name="is_gla", type="boolean")
+     *
+     * @var bool
      */
-    private $gla;
+    private $gla = false;
 
     /**
+     * Is the User a volunteer?
+     *
      * Adds (or not) user to suggestions of volunteer in 'edit mission' form
+     *
      * @ORM\Column(name="is_volunteer", type="boolean")
+     *
+     * @var bool
      */
-    private $volunteer;
+    private $volunteer = false;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Mission", mappedBy="gla")
+     * All the Missions the User has created
+     *
+     * @ORM\OneToMany(
+     *     targetEntity="App\Entity\Mission",
+     *     mappedBy="gla",
+     * )
+     *
+     * @var Collection
      */
     private $missionsAsGla;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Mission", mappedBy="volunteer")
+     * All the Missions the User is assigned to
+     *
+     * @ORM\OneToMany(
+     *     targetEntity="App\Entity\Mission",
+     *     mappedBy="volunteer",
+     * )
+     *
+     * @var Collection
      */
     private $missionsAsVolunteer;
 
+    // ███╗   ███╗███████╗████████╗██╗  ██╗ ██████╗ ██████╗ ███████╗
+    // ████╗ ████║██╔════╝╚══██╔══╝██║  ██║██╔═══██╗██╔══██╗██╔════╝
+    // ██╔████╔██║█████╗     ██║   ███████║██║   ██║██║  ██║███████╗
+    // ██║╚██╔╝██║██╔══╝     ██║   ██╔══██║██║   ██║██║  ██║╚════██║
+    // ██║ ╚═╝ ██║███████╗   ██║   ██║  ██║╚██████╔╝██████╔╝███████║
+    // ╚═╝     ╚═╝╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝
 
     /**
+     * Entity validation function
+     *
      * @Assert\Callback
+     *
+     * @param ExecutionContextInterface $context
      */
-    public function validate(ExecutionContextInterface $context, $payload)
+    public function validate(ExecutionContextInterface $context)
     {
         // Check if email is username@habitat-humanisme.org
         if ($this->getEmail() !== $this->getUsername().'@habitat-humanisme.org') {
-            $context->buildViolation('L\'adresse email doit être égale à identifiant@habitat-humanisme.org.')
+            $context->buildViolation('L\'adresse email doit être de la forme votre.identifiant@habitat-humanisme.org.')
                 ->atPath('email')
                 ->addViolation();
         }
     }
 
-    /************** Public methods *****************/
-
-    // Category dropdown in UserType
-    public static function getCategories()
-    {
-        return [
-            Self::CAT_VOLUNTEER => 'ROLE_VOLUNTEER',
-            Self::CAT_GLA => 'ROLE_GLA',
-            Self::CAT_ADMIN => 'ROLE_ADMIN'
-        ];
-    }
-
-    // Mapping roles to category
-    public function getCategory() {
-        $roles = $this->roles;
-
-        if (in_array('ROLE_ADMIN', $roles)) {
-            $category = Self::CAT_ADMIN;
-        } else if (in_array('ROLE_VOLUNTEER', $roles)) {
-            // User with ROLE_VOLUNTEER and ROLE_GLA is in Volunteers category
-            $category = Self::CAT_VOLUNTEER;
-        } else if (in_array('ROLE_GLA', $roles)) {
-            $category = Self::CAT_GLA;
-        }
-
-        return $category;
-    }
-
-    public function setRolesFromCategory($category)
-    {
-        $roles = [$category];
-
-        $this->setRoles($roles);
-    }
-
-
+    /**
+     * User constructor.
+     */
     public function __construct()
     {
-        $this->active = true;
         $this->missionsAsGla = new ArrayCollection();
         $this->missionsAsVolunteer = new ArrayCollection();
     }
 
-    public function __toString()
+    /**
+     * @return string|null
+     */
+    public function __toString(): ?string
     {
         return $this->name;
     }
 
+    /**
+     * Callback for User->$category
+     * Category dropdown in UserType
+     *
+     * @return array
+     */
+    public static function getCategories(): array
+    {
+        return [
+            self::CATEGORY_VOLUNTEER => self::CATEGORY_VOLUNTEER,
+            self::CATEGORY_GLA => self::CATEGORY_GLA,
+            self::CATEGORY_ADMIN => self::CATEGORY_ADMIN,
+        ];
+    }
 
-    // Mandatory function
+    /**
+     * Category to role mapping
+     *
+     * @return array
+     */
+    public static function getRolesFromCategories(): array
+    {
+        return [
+            self::CATEGORY_VOLUNTEER => [self::ROLE_VOLUNTEER],
+            self::CATEGORY_GLA => [self::ROLE_GLA],
+            self::CATEGORY_ADMIN => [self::ROLE_ADMIN],
+        ];
+    }
+
+    /**
+     * Mandatory function
+     *
+     * @return null
+     */
     public function getSalt()
     {
         // The bcrypt algorithm doesn't require a separate salt.
         return null;
     }
 
-    // Mandatory function
+    /**
+     * Mandatory function
+     */
     public function eraseCredentials()
     {
     }
 
-    // Mandatory function
-    /** @see \Serializable::serialize() */
-    public function serialize()
+    /**
+     * Mandatory function
+     *
+     * @see \Serializable::serialize()
+     *
+     * @return string
+     */
+    public function serialize(): string
     {
         return serialize(array(
             $this->id,
@@ -181,8 +314,13 @@ class User implements AdvancedUserInterface, \Serializable
         ));
     }
 
-    // Mandatory function
-    /** @see \Serializable::unserialize() */
+    /**
+     * Mandatory function
+     *
+     * @see \Serializable::unserialize()
+     *
+     * @param string $serialized
+     */
     public function unserialize($serialized)
     {
         list (
@@ -193,150 +331,278 @@ class User implements AdvancedUserInterface, \Serializable
         ) = unserialize($serialized);
     }
 
+    //  █████╗  ██████╗ ██████╗███████╗███████╗███████╗ ██████╗ ██████╗ ███████╗
+    // ██╔══██╗██╔════╝██╔════╝██╔════╝██╔════╝██╔════╝██╔═══██╗██╔══██╗██╔════╝
+    // ███████║██║     ██║     █████╗  ███████╗███████╗██║   ██║██████╔╝███████╗
+    // ██╔══██║██║     ██║     ██╔══╝  ╚════██║╚════██║██║   ██║██╔══██╗╚════██║
+    // ██║  ██║╚██████╗╚██████╗███████╗███████║███████║╚██████╔╝██║  ██║███████║
+    // ╚═╝  ╚═╝ ╚═════╝ ╚═════╝╚══════╝╚══════╝╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝
 
-    /********** Private functions *************/
-
-    private function setGlaVolunteer()
-    {
-        $roles = $this->getRoles();
-        
-        // ROLE_GLA (resp. ROLE_VOLUNTEER) is only in Gla list (resp. Volunteer list)
-        // ROLE_ADMIN is in both lists
-        $this->gla = in_array('ROLE_ADMIN', $roles) || in_array('ROLE_GLA', $roles);
-        $this->volunteer = in_array('ROLE_ADMIN', $roles) || in_array('ROLE_VOLUNTEER', $roles);
-    }
-
-
-    /********** Getters and setters *************/
-
-    public function getId()
+    /**
+     * @return int
+     */
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getUsername()
+    /**
+     * @return string
+     */
+    public function getUsername(): ?string
     {
         return $this->username;
     }
 
-    public function setUsername($username)
+    /**
+     * @param string $username
+     *
+     * @return User
+     */
+    public function setUsername(string $username): User
     {
         $this->username = $username;
+
+        return $this;
     }
 
-
-    public function getPlainPassword()
+    /**
+     * @return string
+     */
+    public function getPlainPassword(): ?string
     {
         return $this->plainPassword;
     }
 
-    public function setPlainPassword($password)
+    /**
+     * @param string $password
+     *
+     * @return User
+     */
+    public function setPlainPassword(string $password): User
     {
         $this->plainPassword = $password;
+
+        return $this;
     }
 
-    public function getPassword()
+    /**
+     * @return string
+     */
+    public function getPassword(): ?string
     {
         return $this->password;
     }
 
-    public function setPassword($password)
+    /**
+     * @param string $password
+     *
+     * @return User
+     */
+    public function setPassword(string $password): User
     {
         $this->password = $password;
+
+        return $this;
     }
 
-
-    public function getEmail()
+    /**
+     * @return string
+     */
+    public function getEmail(): ?string
     {
         return $this->email;
     }
 
-    public function setEmail($email)
+    /**
+     * @param string $email
+     *
+     * @return User
+     */
+    public function setEmail(string $email): User
     {
         $this->email = $email;
+
+        return $this;
     }
 
-
-    // Mandatory function
-    public function getRoles()
+    /**
+     * Mandatory function
+     *
+     * @return array
+     */
+    public function getRoles(): array
     {
         return $this->roles;
     }
 
-    public function setRoles($roles)
+    /**
+     * @param array $roles
+     *
+     * @return User
+     */
+    public function setRoles(array $roles): User
     {
         $this->roles = $roles;
-        $this->setGlaVolunteer();
+
+        // ROLE_GLA (resp. ROLE_VOLUNTEER) is only in Gla list (resp. Volunteer list)
+        // ROLE_ADMIN is in both lists
+        $this->gla = \in_array(self::ROLE_ADMIN, $roles) || \in_array(self::ROLE_GLA, $roles);
+        $this->volunteer = \in_array(self::ROLE_ADMIN, $roles) || \in_array(self::ROLE_VOLUNTEER, $roles);
+
+        return $this;
     }
 
+    /**
+     * @return array
+     */
+    public function getActivities(): array
+    {
+        return $this->activities;
+    }
 
-    public function getName()
+    /**
+     * @param array $activities
+     *
+     * @return User
+     */
+    public function setActivities(array $activities): User
+    {
+        $this->activities = $activities;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCategory(): ?string
+    {
+        return $this->category;
+    }
+
+    /**
+     * @param string $category
+     *
+     * @return User
+     */
+    public function setCategory(string $category): User
+    {
+        $this->category = $category;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    public function setName($name)
+    /**
+     * @param string $name
+     *
+     * @return User
+     */
+    public function setName(string $name): User
     {
         $this->name = $name;
+
+        return $this;
     }
 
-
-    public function isActive()
+    /**
+     * @return bool
+     */
+    public function isActive(): bool
     {
         return $this->active;
     }
 
-    public function setActive($active)
+    /**
+     * @param bool $active
+     *
+     * @return User
+     */
+    public function setActive(bool $active): User
     {
         $this->active = $active;
+
+        return $this;
     }
 
-
-    public function isGla()
+    /**
+     * @return bool
+     */
+    public function isGla(): bool
     {
         return $this->gla;
     }
 
-    public function isVolunteer()
+    /**
+     * @return bool
+     */
+    public function isVolunteer(): bool
     {
         return $this->volunteer;
     }
 
+    /**
+     * @return bool
+     */
+    public function isAdmin(): bool
+    {
+        return in_array(User::ROLE_ADMIN, $this->roles);
+    }
 
     /**
-     * @return Collection|Mission[]
+     * @return Collection
      */
-    public function getMissionsAsGla():Collection
+    public function getMissionsAsGla(): Collection
     {
         return $this->missionsAsGla;
     }
 
     /**
-     * @return Collection|Mission[]
+     * @return Collection
      */
-    public function getMissionsAsVolunteer():Collection
+    public function getMissionsAsVolunteer(): Collection
     {
         return $this->missionsAsVolunteer;
     }
 
-
     // Below are required functions for AdvancedUserInterface to prevent inactive users from logging in
-    public function isAccountNonExpired()
+
+    /**
+     * @return bool
+     */
+    public function isAccountNonExpired(): bool
     {
         return true;
     }
 
-    public function isAccountNonLocked()
+    /**
+     * @return bool
+     */
+    public function isAccountNonLocked(): bool
     {
         return true;
     }
 
-    public function isCredentialsNonExpired()
+    /**
+     * @return bool
+     */
+    public function isCredentialsNonExpired(): bool
     {
         return true;
     }
 
-    public function isEnabled()
+    /**
+     * @return bool
+     */
+    public function isEnabled(): bool
     {
         return $this->active;
     }

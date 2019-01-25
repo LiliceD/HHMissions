@@ -55,3 +55,4 @@ security:
 
     role_hierarchy:
         ROLE_ADMIN: [ROLE_GLA, ROLE_VOLUNTEER]
+        ROLE_SUPER_ADMIN: [ROLE_ADMIN]

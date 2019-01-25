@@ -32,10 +32,15 @@
     </div>
     
     {# Category / roles #}
-    <div class="form-row align-items-end">
+    <div class="form-row align-items-start">
       <div class="form-group col-sm-4">
         {{ form_row(form.category) }}
       </div>
+      {#<div class="form-group col-sm d-flex justify-content-sm-center">#}
+        {#<div>#}
+          {#{{ form_row(form.activities) }}#}
+        {#</div>#}
+      {#</div>#}
     </div>
 
     {# Password #}
@@ -53,6 +58,7 @@
     
 
     {{ form_widget(form.name, {'attr': {'hidden': 'true'}}) }}
+    {{ form_widget(form.activities, {'attr': {'hidden': 'true'}}) }}
 
     <br>
 
@@ -69,86 +75,111 @@
 
   <script>
     (function() {
-      let firstNameElt = document.getElementById('user_firstName'),
-          lastNameElt = document.getElementById('user_lastName'),
-          nameElt = document.getElementById('user_name'),
-          usernameElt = document.getElementById('user_username'),
-          emailElt = document.getElementById('user_email'),
-          pwd1Elt = document.getElementById('user_plainPassword_first'),
-          pwd2Elt = document.getElementById('user_plainPassword_second');
+      let firstNameInput = $('#user_firstName'),
+          lastNameInput = $('#user_lastName'),
+          nameInput = $('#user_name'),
+          usernameInput = $('#user_username'),
+          emailInput = $('#user_email'),
+          categorySelect = $('#user_category'),
+          activities = $('#user_activities .form-check-input'),
+          firstPasswordInput = $('#user_plainPassword_first'),
+          secondPasswordInput = $('#user_plainPassword_second');
 
 
-      // Convert spaces to "-" and first letter to uppercase in first name
-      firstNameElt.addEventListener("input", (e) => {
-        e.target.value = standardizeFirstName(e.target.value);
+      firstNameInput.on('input', formatFirstName);
+      lastNameInput.on('input', formatLastName);
+
+      firstNameInput.change(updateAllFields);
+      lastNameInput.change(updateAllFields);
+      usernameInput.change(updateEmailAndPassword);
+      categorySelect.change(updateActivity);
+
+      // Un-disable address, GLA and volunteer select to post data on form submit
+      $('form').on('submit', () => {
+        activities.removeAttr('disabled');
       });
 
-      // Remove accent and capitalize last name
-      lastNameElt.addEventListener("input", (e) => {
-        e.target.value = capitalizeInput(e.target.value);
-      });
 
-      // Update username and email with first and last name changes
-      firstNameElt.addEventListener('change', namesUpdate);
-      lastNameElt.addEventListener('change', namesUpdate);
-      
-      // Update email with username changes
-      usernameElt.addEventListener('change', usernameUpdate);
+      function formatFirstName() {
+        let value = firstNameInput.val();
+        value.replace(/\s+/g, '-');
+        value = capitalizeFirstLetters(value);
 
+        firstNameInput.val(value);
+      }
 
-      function namesUpdate() {
+      function formatLastName() {
+        let value = lastNameInput.val();
+        value = capitalizeText(value);
+
+        lastNameInput.val(value);
+      }
+
+      function updateAllFields() {
         // Get first and last name
-        let firstName = firstNameElt.value,
-            lastName = lastNameElt.value;
+        let firstName = firstNameInput.val(),
+            lastName = lastNameInput.val();
 
         if (firstName && lastName) {
           firstName = firstName.trim().replace(/\s+/g, '-');
           lastName = lastName.trim();
 
-          // Set name to "Firstname LASTNAME"
-          nameElt.value = capitalizeFirstLetter(firstName) + ' ' + lastName.toUpperCase();
-
-          let username,
-              hyphenIndex = firstName.indexOf('-');
-
-          if (hyphenIndex > -1) {
-            // If first name is hyphenated (e.g. Jean-Michel), set username to jm.lastname
-            username = firstName.toLowerCase().slice(0, 1) + firstName.toLowerCase().slice(hyphenIndex + 1, hyphenIndex + 2) + '.' + lastName.toLowerCase();;
-          } else {
-            // Set username to f.lastname where f is first letter of first name
-            username = firstName.toLowerCase().slice(0, 1) + '.' + lastName.toLowerCase().replace(/-|\s/g, '');
-          }
-          usernameElt.value = username;
-          
-          // Update email and passwords
-          usernameUpdate();
+          updateName(firstName, lastName);
+          updateUsername(firstName, lastName);
+          updateEmailAndPassword();
         }
       }
 
-      function usernameUpdate() {
-        let username = usernameElt.value;
+      function updateName(firstName, lastName) {
+        nameInput.val(capitalizeFirstLetters(firstName) + ' ' + lastName.toUpperCase());
+      }
 
-        if (usernameElt.value) {
-          // Set email to username@domain
-          emailElt.value = username + '@habitat-humanisme.org';
+      function updateUsername(firstName, lastName) {
+        let usernameParts = [],
+            hyphenIndex = firstName.indexOf('-');
 
-          // Set initial password to username
-          pwd1Elt.value = pwd2Elt.value = username;
+        if (hyphenIndex > -1) {
+          // If first name is hyphenated (e.g. Jean-Michel), set username to jm.lastname
+          usernameParts.push(firstName.toLowerCase().slice(0, 1) + firstName.toLowerCase().slice(hyphenIndex + 1, hyphenIndex + 2));
+        } else {
+          // Set username to f.lastname where f is first letter of first name
+          usernameParts.push(firstName.toLowerCase().slice(0, 1));
+        }
+        usernameParts.push(lastName.toLowerCase().replace(/-|\s/g, ''));
+
+        usernameInput.val(usernameParts.join('.'));
+      }
+
+      function updateEmailAndPassword() {
+        let username = usernameInput.val();
+
+        if (username) {
+          emailInput.val(username + EMAIL_DOMAIN);
+
+          firstPasswordInput.val(username);
+          secondPasswordInput.val(username);
         }
       }
 
-      function standardizeFirstName(string) {
-        return capitalizeFirstLetter(string.replace(/\s+/g, '-'));
+      function updateActivity() {
+        if (getSelectedValue(categorySelect) === CATEGORY_GLA) {
+          console.log(activities);
+          activities.prop('checked', true)
+                    .attr('disabled', true);
+        } else {
+          activities.prop('checked', false)
+                    .removeAttr('disabled');
+        }
       }
 
-      function capitalizeFirstLetter(string) {
+      function capitalizeFirstLetters(string) {
         let finalString,
             hyphenIndex = string.indexOf('-');
 
         if (hyphenIndex > -1) {
           let string1 = string.slice(0, hyphenIndex),
               string2 = string.slice(hyphenIndex + 1);
-          finalString = capitalizeFirstLetter(string1) + '-' + capitalizeFirstLetter(string2);
+          finalString = capitalizeFirstLetters(string1) + '-' + capitalizeFirstLetters(string2);
         } else {
           finalString = string.charAt(0).toUpperCase() + string.slice(1);
         }

@@ -2,26 +2,32 @@
 
 namespace App\Controller;
 
-use App\Entity\User;
 use App\Form\UserPasswordType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 /**
+ * Class UserProfileController
+ *
  * @Route("/monprofil")
+ *
+ * @author Alice Dahan <lilice.dhn@gmail.com>
  */
 class UserProfileController extends Controller
 {
     /**
      * @Route(
-     *  "",
+     *  "/",
      *  name="app_profile_view",
      * )
+     *
+     * @return Response
      */
-    public function view()
+    public function view(): Response
     {
         // Retrieve app user
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
@@ -35,9 +41,13 @@ class UserProfileController extends Controller
 
     /**
      * @Route(
-     *  "/changermdp",
+     *  "/changermdp/",
      *  name="app_profile_change-pwd",
      * )
+     * @param Request                      $request
+     * @param UserPasswordEncoderInterface $passwordEncoder
+     *
+     * @return RedirectResponse|Response
      */
     public function changePassword(Request $request, UserPasswordEncoderInterface $passwordEncoder)
     {

@@ -4,10 +4,16 @@ namespace App\Security;
 
 use App\Entity\Mission;
 use App\Entity\User;
+use App\Manager\MissionManager;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
-use Symfony\Component\Security\Core\Authorization\AccessDecisionManagerInterface; // to check roles
+use Symfony\Component\Security\Core\Authorization\AccessDecisionManagerInterface;
 
+/**
+ * Class MissionVoter
+ *
+ * @author Alice Dahan <lilice.dhn@gmail.com>
+ */
 class MissionVoter extends Voter
 {
     const SIMPLE_EDIT = 'simpleEdit';
@@ -21,10 +27,10 @@ class MissionVoter extends Voter
         $this->decisionManager = $decisionManager;
     }
 
-    protected function supports($attribute, $subject)
+    protected function supports($attribute, $subject): bool
     {
         // if the attribute isn't one we support, return false
-        if (!in_array($attribute, array(self::SIMPLE_EDIT, self::EDIT, self::ASSIGN))) {
+        if (!\in_array($attribute, array(self::SIMPLE_EDIT, self::EDIT, self::ASSIGN))) {
             return false;
         }
 
@@ -36,13 +42,18 @@ class MissionVoter extends Voter
         return true;
     }
 
-    protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
+    protected function voteOnAttribute($attribute, $subject, TokenInterface $token): bool
     {
         $user = $token->getUser();
 
         if (!$user instanceof User) {
             // the user must be logged in; if not, deny access
             return false;
+        }
+
+        // Super Admin can do anything
+        if ($this->decisionManager->decide($token, [User::ROLE_SUPER_ADMIN])) {
+            return true;
         }
 
         // you know $subject is a Mission object, thanks to supports
@@ -55,13 +66,13 @@ class MissionVoter extends Voter
             case self::EDIT:
                 return $this->canEdit($mission, $user, $token);
             case self::ASSIGN:
-                return $this->canAssign($mission, $user, $token);
+                return $this->canAssign($mission, $token);
         }
 
         throw new \LogicException('This code should not be reached!');
     }
 
-    private function canSimpleEdit(Mission $mission, User $user, TokenInterface $token)
+    private function canSimpleEdit(Mission $mission, User $user, TokenInterface $token): bool
     {
         // if they can edit, they can "simple edit"
         if ($this->canEdit($mission, $user, $token)) {
@@ -69,33 +80,33 @@ class MissionVoter extends Voter
         }
 
         // if mission is closed it can't be simple edited
-        if ($mission->getStatus() === Mission::STATUS_CLOSED) {
+        if (MissionManager::isClosed($mission)) {
             return false;
         }
 
         // only the volunteer assigned to the mission can simple edit it
-        return $this->decisionManager->decide($token, array('ROLE_VOLUNTEER')) && $user === $mission->getVolunteer();
+        return $this->decisionManager->decide($token, [User::ROLE_VOLUNTEER]) && $user === $mission->getVolunteer();
     }
 
-    private function canEdit(Mission $mission, User $user, TokenInterface $token)
+    private function canEdit(Mission $mission, User $user, TokenInterface $token): bool
     {
         // ROLE_ADMIN can edit any mission
-        if ($this->decisionManager->decide($token, array('ROLE_ADMIN'))) {
+        if ($this->decisionManager->decide($token, [User::ROLE_ADMIN])) {
             return true;
         }
 
         // only the GLA who created the mission can edit it
-        return $this->decisionManager->decide($token, array('ROLE_GLA')) && $user === $mission->getGla();
+        return $this->decisionManager->decide($token, [User::ROLE_GLA]) && $user === $mission->getGla();
     }
 
-    private function canAssign(Mission $mission, User $user, TokenInterface $token)
+    private function canAssign(Mission $mission, TokenInterface $token): bool
     {
         // if mission is already assigned it can't be assigned
-        if ($mission->getStatus() !== Mission::STATUS_DEFAULT) {
+        if (MissionManager::isAssigned($mission)) {
             return false;
         }
 
         // only a Volunteer can assign themselves a mission
-        return $this->decisionManager->decide($token, array('ROLE_VOLUNTEER'));
+        return $this->decisionManager->decide($token, [User::ROLE_VOLUNTEER]);
     }
 }

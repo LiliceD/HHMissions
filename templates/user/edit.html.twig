@@ -12,12 +12,10 @@
   {% set modalHeader = 'Supprimer le compte de cet·te utilisateur·trice' %}
   {% set modalBody = 'Confirmez-vous la suppression de ce compte ?' %}
   {% set btnPath = path('app_user_delete', {'id': user.id}) %}
-  
   {{ macros.modal('delete', modalHeader, modalBody, btnPath, 'btn-danger', 'Supprimer') }}
 
   {# Form #}
   {{ form_start(form) }}
-    
     {{ form_row(form.name) }}
 
     <div class="form-row">
@@ -29,10 +27,20 @@
       </div>
     </div>
     
-    <div class="form-row align-items-end">
+    <div class="form-row align-items-start">
       <div class="form-group col-sm-4">
-        {{ form_row(form.category) }}
+          {{ form_row(form.category) }}
       </div>
+      {#<div class="form-group col-sm d-flex justify-content-sm-center">#}
+        {#<div class="">#}
+          {#{% if (user.category != constant('App\\Entity\\User::CATEGORY_GLA')) %}#}
+            {#{{ form_label(form.activities) }}#}
+            {#{{ form_widget(form.activities) }}#}
+          {#{% else %}#}
+            {{ form_widget(form.activities, {'attr': {'hidden': 'true'}}) }}
+          {#{% endif %}#}
+        {#</div>#}
+      {#</div>#}
     </div>
 
     {# Buttons Submit / Cancel #}

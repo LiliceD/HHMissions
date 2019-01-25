@@ -64,11 +64,11 @@
   {{ parent() }}
 
   <script src="{{ asset('js/functions.js') }}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.0/js/jquery.tablesorter.js"></script>
  
   <script>
     (function() {
-      // Add table sorting on clicking on one of its header (except last 2 ones)
-      sortTable(document.querySelector('table'), 2);
+      addMissionsSorting([$('table')]);
     })();
   </script>
 {% endblock %}

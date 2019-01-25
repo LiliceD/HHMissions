@@ -2,32 +2,31 @@
 
 namespace App\Form;
 
-use App\Entity\Accomodation;
+use App\Entity\Address;
 use App\Entity\User;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormInterface;
-use Symfony\Component\Validator\Constraints\GreaterThan;
 
+/**
+ * Class MissionSearchType
+ *
+ * @author Alice Dahan <lilice.dhn@gmail.com>
+ */
 class MissionSearchType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('id', IntegerType::class, [
-                'constraints' => [new GreaterThan(0)],
-                'required' => false
-            ])
             ->add('gla', EntityType::class, [
                 // Multiple choice dropdown from User table, gla = true
                 'class' => User::class,
                 'query_builder' => function (EntityRepository $er) {
-                    return $er->qbAllByCategory('gla');
+                    /** @var UserRepository $er */
+                    return $er->qbAllByCategory(User::CATEGORY_GLA);
                 },
                 'choice_label' => 'name',
                 'required' => false,
@@ -38,16 +37,17 @@ class MissionSearchType extends AbstractType
                 // Multiple choice dropdown from User table, volunteer = true
                 'class' => User::class,
                 'query_builder' => function (EntityRepository $er) {
-                    return $er->qbAllByCategory('volunteer');
+                    /** @var UserRepository $er */
+                    return $er->qbAllByCategory(User::CATEGORY_VOLUNTEER);
                 },
                 'choice_label' => 'name',
                 'required' => false,
                 'multiple' => true,
-                'expanded' => true           
+                'expanded' => true,
             ])
-            ->add('accomodation', EntityType::class, [
-                // Dropdown from Accomodation table
-                'class' => Accomodation::class,
+            ->add('address', EntityType::class, [
+                // Dropdown from Address table
+                'class' => Address::class,
                 'query_builder' => function (EntityRepository $er) {
                     return $er->createQueryBuilder('a')
                         ->orderBy('a.street', 'ASC');

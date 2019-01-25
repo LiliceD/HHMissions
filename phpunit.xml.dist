@@ -1,45 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.1/phpunit.xsd"
+         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/6.5/phpunit.xsd"
          backupGlobals="false"
          colors="true"
          bootstrap="vendor/autoload.php"
-         failOnRisky="true"
-         failOnWarning="true"
 >
     <php>
         <ini name="error_reporting" value="-1" />
         <env name="KERNEL_CLASS" value="App\Kernel" />
-        <env name="DATABASE_URL" value="mysql://USERNAME:PASSWORD@127.0.0.1/DB_NAME" />
-
+        <env name="APP_ENV" value="test" />
+        <env name="APP_DEBUG" value="1" />
+        <env name="APP_SECRET" value="s$cretf0rt3st" />
+        <env name="SHELL_VERBOSITY" value="-1" />
+        <!-- define your env variables for the test env here -->
         <!-- ###+ sendgrid/sendgrid ### -->
         <env name="SENDGRID_API_KEY" value="&quot;replace_me&quot;"/>
         <!-- ###- sendgrid/sendgrid ### -->
     </php>
 
     <testsuites>
-        <testsuite name="Symfony PHPUnit Bridge Test Suite">
-            <directory>./Tests/</directory>
-            <directory suffix=".phpt">./Tests/DeprecationErrorHandler/</directory>
+        <testsuite name="Project Test Suite">
+            <directory>tests/</directory>
         </testsuite>
     </testsuites>
 
     <filter>
         <whitelist>
-            <directory>./</directory>
-            <exclude>
-                <directory>./Tests</directory>
-                <directory>./vendor</directory>
-            </exclude>
+            <directory>./src/</directory>
         </whitelist>
     </filter>
 
-    <groups>
-      <include>
-        <group>url</group>
-        <group>mission</group>
-        <group>accomodation</group>
-      </include>
-    </groups>
+    <listeners>
+        <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener" />
+    </listeners>
 </phpunit>

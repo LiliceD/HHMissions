@@ -28,13 +28,14 @@
         "symfony/twig-bundle": "^4.0",
         "symfony/validator": "^4.0",
         "symfony/web-link": "^4.0",
-        "symfony/webpack-encore-pack": "*"
+        "symfony/webpack-encore-pack": "*",
+        "ext-json": "*"
     },
     "require-dev": {
         "symfony/browser-kit": "^4.0",
         "symfony/css-selector": "^4.0",
         "symfony/dotenv": "^4.0",
-        "symfony/phpunit-bridge": "^4.0",
+        "symfony/phpunit-bridge": "*",
         "symfony/profiler-pack": "^1.0",
         "symfony/web-server-bundle": "^4.0"
     },

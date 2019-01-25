@@ -1,0 +1,75 @@
+{# Search form #}
+{{ form_start(searchForm) }}
+<div class="row justify-content-center" id="searchForm" xmlns="http://www.w3.org/1999/html"
+     xmlns="http://www.w3.org/1999/html">
+        <div class="col-11 card bg-light py-3">
+            <div class="d-flex justify-content-between my-1">
+                {# Filter GLA #}
+                <div class="dropdown mr-2">
+                    <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="dropdownGlaButton" data-toggle="dropdown" data-flip="false" aria-haspopup="true" aria-expanded="false">
+                        Provenance GLA
+                        <span id="searchGlaNb" class="badge badge-secondary"></span>
+                    </button>
+                    <div class="dropdown-menu dropdown-select px-3 mb-3" aria-labelledby="dropdownGlaButton">
+                        {{ form_widget(searchForm.gla) }}
+                    </div>
+                </div>
+
+                {# Filter Volunteer #}
+                <div class="dropdown mr-2">
+                    <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="dropdownVolunteerButton" data-toggle="dropdown" data-flip="false" aria-haspopup="true" aria-expanded="false">
+                        Bénévole
+                        <span id="searchVolunteerNb" class="badge badge-secondary"></span>
+                    </button>
+                    <div class="dropdown-menu dropdown-select px-3 mb-3" aria-labelledby="dropdownVolunteerButton">
+                        {{ form_widget(searchForm.volunteer) }}
+                    </div>
+                </div>
+
+                {# Filter Address #}
+                <div class="dropdown mr-2">
+                    <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="dropdownAddressButton" data-toggle="dropdown" data-flip="false" aria-haspopup="true" aria-expanded="false">
+                        Adresse d'intervention
+                        <span id="searchAddressNb" class="badge badge-secondary"></span>
+                    </button>
+                    <div class="dropdown-menu dropdown-select px-3 mb-3" aria-labelledby="dropdownAddressButton">
+                        {{ form_widget(searchForm.address) }}
+                    </div>
+                </div>
+
+                {# Search description #}
+                <div class="input-group-sm w-50" >
+                    {{ form_widget(searchForm.description, {'attr': {'placeholder': 'Description'}}) }}
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between my-1">
+                {# Filter date created #}
+                <div class="d-flex align-items-center">
+                    <small>Date demande entre le</small>
+                    <div class="input-group-sm input-date mx-2">
+                        {{ form_widget(searchForm.dateCreatedMin, {'attr': {'placeholder': 'jj/mm/aaaa'}}) }}
+                    </div>
+                    <small>et le</small>
+                    <div class="input-group-sm input-date mx-2">
+                        {{ form_widget(searchForm.dateCreatedMax, {'attr': {'placeholder': 'jj/mm/aaaa'}}) }}
+                    </div>
+                </div>
+
+                {# Filter date finished #}
+                <div class="d-flex align-items-center">
+                    <small>Fin de mission entre le</small>
+                    <div class="input-group-sm input-date mx-2">
+                        {{ form_widget(searchForm.dateFinishedMin, {'attr': {'placeholder': 'jj/mm/aaaa'}}) }}
+                    </div>
+                    <small>et le</small>
+                    <div class="input-group-sm input-date ml-2">
+                        {{ form_widget(searchForm.dateFinishedMax, {'attr': {'placeholder': 'jj/mm/aaaa'}}) }}
+                    </div>
+                </div>
+            </div>
+
+            {% include 'mission/search/buttons.html.twig' with {'buttonText': 'Rechercher'} %}
+        </div>
+    </div>
+{{ form_end(searchForm) }}
