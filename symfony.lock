@@ -77,20 +77,8 @@
             "ref": "70062abc2cd58794d2a90274502f81b55cd9951b"
         }
     },
-    "egulias/email-validator": {
-        "version": "2.1.4"
-    },
     "fig/link-util": {
         "version": "1.0.0"
-    },
-    "guzzlehttp/guzzle": {
-        "version": "6.3.3"
-    },
-    "guzzlehttp/promises": {
-        "version": "v1.3.1"
-    },
-    "guzzlehttp/psr7": {
-        "version": "1.4.2"
     },
     "h4cc/wkhtmltopdf-amd64": {
         "version": "0.12.4"
@@ -133,9 +121,6 @@
     },
     "psr/container": {
         "version": "1.0.0"
-    },
-    "psr/http-message": {
-        "version": "1.0.1"
     },
     "psr/link": {
         "version": "1.0.0"
@@ -202,6 +187,9 @@
             "version": "3.3",
             "ref": "9f94d3ea453cd8a3b95db7f82592d7344fe3a76a"
         }
+    },
+    "symfony/contracts": {
+        "version": "v1.0.2"
     },
     "symfony/css-selector": {
         "version": "v4.0.4"
@@ -350,9 +338,6 @@
             "ref": "cda8b550123383d25827705d05a42acf6819fe4e"
         }
     },
-    "symfony/security": {
-        "version": "v4.0.4"
-    },
     "symfony/security-bundle": {
         "version": "3.3",
         "recipe": {
@@ -362,8 +347,17 @@
             "ref": "03f21d01e3f41a095a43e0e7b2f7fbd9dbd33cf8"
         }
     },
+    "symfony/security-core": {
+        "version": "v4.2.2"
+    },
     "symfony/security-csrf": {
         "version": "v4.0.6"
+    },
+    "symfony/security-guard": {
+        "version": "v4.2.2"
+    },
+    "symfony/security-http": {
+        "version": "v4.2.2"
     },
     "symfony/serializer": {
         "version": "v4.0.4"
@@ -373,15 +367,6 @@
     },
     "symfony/stopwatch": {
         "version": "v4.0.4"
-    },
-    "symfony/translation": {
-        "version": "3.3",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "master",
-            "version": "3.3",
-            "ref": "6bcd6c570c017ea6ae5a7a6a027c929fd3542cd8"
-        }
     },
     "symfony/twig-bridge": {
         "version": "v4.0.4"
@@ -400,6 +385,9 @@
     },
     "symfony/var-dumper": {
         "version": "v4.0.4"
+    },
+    "symfony/var-exporter": {
+        "version": "v4.2.2"
     },
     "symfony/web-link": {
         "version": "v4.0.4"
