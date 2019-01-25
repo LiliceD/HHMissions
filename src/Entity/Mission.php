@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Utils\Constant;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -48,7 +49,7 @@ class Mission
      * @ORM\Column(type="string", length=25)
      *
      * @Assert\NotBlank()
-     * @Assert\Choice(callback={"App\Utils\Constant", "getStatuses"})
+     * @Assert\Choice(callback={"App\Entity\Mission", "getStatuses"})
      *
      * @var string
      */
@@ -284,11 +285,14 @@ class Mission
 
     /**
      * Mission constructor.
+     *
+     * @throws \Exception
      */
     public function __construct()
     {
         $this->status = self::getStatuses()[self::STATUS_DEFAULT];
         $this->dateCreated = new \DateTime();
+        $this->activity = Constant::ACTIVITY_GLA;
     }
 
     /**

@@ -31,16 +31,16 @@
       <div class="form-group col-sm-4">
           {{ form_row(form.category) }}
       </div>
-      <div class="form-group col-sm d-flex justify-content-sm-center">
-        <div class="">
-          {% if (user.category != constant('App\\Entity\\User::CATEGORY_GLA')) %}
-            {{ form_label(form.activities) }}
-            {{ form_widget(form.activities) }}
-          {% else %}
+      {#<div class="form-group col-sm d-flex justify-content-sm-center">#}
+        {#<div class="">#}
+          {#{% if (user.category != constant('App\\Entity\\User::CATEGORY_GLA')) %}#}
+            {#{{ form_label(form.activities) }}#}
+            {#{{ form_widget(form.activities) }}#}
+          {#{% else %}#}
             {{ form_widget(form.activities, {'attr': {'hidden': 'true'}}) }}
-          {% endif %}
-        </div>
-      </div>
+          {#{% endif %}#}
+        {#</div>#}
+      {#</div>#}
     </div>
 
     {# Buttons Submit / Cancel #}
