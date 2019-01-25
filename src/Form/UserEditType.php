@@ -41,7 +41,7 @@ class UserEditType extends AbstractType
     {
         $resolver->setDefaults(array(
             'data_class' => User::class,
-            'validation_groups' => ['edit'] // constraints on 'name' only
+            'validation_groups' => ['edit']
         ));
     }
 }
