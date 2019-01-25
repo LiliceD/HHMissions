@@ -14,17 +14,18 @@
     {{ form_widget(form.dateAssigned, {'attr': {'hidden': 'true'}}) }}
     {{ form_widget(form.dateFinished, {'attr': {'hidden': 'true'}}) }}
     {{ form_widget(form.volunteer, {'attr': {'hidden': 'true'}}) }}
+    {{ form_widget(form.activity, {'attr': {'hidden': 'true'}}) }}
 
-    <div class="d-sm-flex align-items-center">
-      <div class="col-sm-4 col-md-3 col-xl-3 mt-2 text-center">
-        {{ form_label(form.activity) }}
-        </div>
-      <div class="col-12 col-sm-6 col-md-4">
-        {{ form_widget(form.activity) }}
-      </div>
-    </div>
+    {#<div class="d-sm-flex align-items-center">#}
+      {#<div class="col-sm-4 col-md-3 col-xl-3 mt-2 text-center">#}
+        {#{{ form_label(form.activity) }}#}
+        {#</div>#}
+      {#<div class="col-12 col-sm-6 col-md-4">#}
+        {#{{ form_widget(form.activity) }}#}
+      {#</div>#}
+    {#</div>#}
 
-    <hr>
+    {#<hr>#}
 
     <div class="row justify-content-between">
       <div class="d-flex">
@@ -51,7 +52,7 @@
       <div class="d-flex">
         <div class="col-sm form-group">
           <label for="address_ownerType" class="form-control-label">Propriétaire :</label>
-          <input type="text" id="address_ownerType" name="address[ownerType]" readonly="true" class="form-control"/>
+          <input type="text" id="address_ownerType" name="address[ownerType]" readonly class="form-control"/>
         </div>
       </div>
     </div>

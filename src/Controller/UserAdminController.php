@@ -61,6 +61,8 @@ class UserAdminController extends Controller
             $category = $form->get('category')->getData();
             $userManager->setRolesFromCategory($user, $category);
 
+            $user->setActivities([Constant::ACTIVITY_GLA]);
+
             // Persist to DB
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
