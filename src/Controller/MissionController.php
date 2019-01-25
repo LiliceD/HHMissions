@@ -197,7 +197,9 @@ class MissionController extends Controller
         
         // Delete attached file from server
         $fileName = $mission->getAttachment();
-        $fileUploader->delete($fileName);
+        if (!empty($fileName)) {
+            $fileUploader->delete($fileName);
+        }
 
         // Persist changes to DB
         $em = $this->getDoctrine()->getManager();
@@ -416,7 +418,9 @@ class MissionController extends Controller
 
         // Delete file from server
         $fileName = $mission->getAttachment();
-        $fileUploader->delete($fileName);
+        if (!empty($fileName)) {
+            $fileUploader->delete($fileName);
+        }
 
         // Empty field in database
         $em = $this->getDoctrine()->getManager();
