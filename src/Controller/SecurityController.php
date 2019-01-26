@@ -85,8 +85,9 @@ class SecurityController extends Controller
 
             if ($user) {
                 // Reset and encode password
-                $password = $passwordEncoder->encodePassword($user, random_bytes(10));
-                $user->setPassword($password);
+                $password = random_bytes(10);
+                $encodedPassword = $passwordEncoder->encodePassword($user, $password);
+                $user->setPassword($encodedPassword);
 
                 // Send email
                 $mailParams = [
