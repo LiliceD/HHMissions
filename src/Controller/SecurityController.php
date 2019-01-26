@@ -85,16 +85,19 @@ class SecurityController extends Controller
 
             if ($user) {
                 // Reset and encode password
-                $password = $passwordEncoder->encodePassword($user, $user->getUsername());
+                $password = $passwordEncoder->encodePassword($user, random_bytes(10));
                 $user->setPassword($password);
 
                 // Send email
                 $mailParams = [
                     'subject' => 'Alors, on est tête en l\'air ? 😉',
-                    'to' => $user->getEmail()
+                    'to' => $user->getEmail(),
                 ];
 
-                $view = $this->renderView('emails/reset-pwd.html.twig', ['name' => $user->getName()]);
+                $view = $this->renderView('emails/reset-pwd.html.twig', [
+                    'name' => $user->getName(),
+                    'password' => $password,
+                ]);
 
                 $mailController->send($mailParams['subject'], $mailParams['to'], $view);
 
