@@ -2,8 +2,8 @@
 
 namespace DoctrineMigrations;
 
+use Doctrine\DBAL\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
-use Doctrine\Migrations\AbstractMigration;
 
 /**
  * Updates current users to fill in category and divisions fields

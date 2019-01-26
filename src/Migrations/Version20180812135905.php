@@ -2,8 +2,8 @@
 
 namespace DoctrineMigrations;
 
+use Doctrine\DBAL\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
-use Doctrine\Migrations\AbstractMigration;
 
 /**
  * Renames tables accomodations, missions and users to address, mission and user respectively
