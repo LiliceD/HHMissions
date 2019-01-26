@@ -4,6 +4,7 @@
     "require": {
         "php": "^7.1.3",
         "ext-iconv": "*",
+        "ext-json": "*",
         "h4cc/wkhtmltopdf-amd64": "^0.12.4",
         "knplabs/knp-snappy-bundle": "^1.5",
         "sendgrid/sendgrid": "^7.0",
@@ -21,15 +22,14 @@
         "symfony/lts": "^4@dev",
         "symfony/maker-bundle": "^1.0",
         "symfony/monolog-bundle": "^3.1",
-        "symfony/orm-pack": "^1.0",
+        "symfony/orm-pack": "1.0.5",
         "symfony/security-bundle": "^4.0",
         "symfony/security-csrf": "^4.0",
         "symfony/serializer-pack": "*",
         "symfony/twig-bundle": "^4.0",
         "symfony/validator": "^4.0",
         "symfony/web-link": "^4.0",
-        "symfony/webpack-encore-pack": "*",
-        "ext-json": "*"
+        "symfony/webpack-encore-pack": "*"
     },
     "require-dev": {
         "symfony/browser-kit": "^4.0",
