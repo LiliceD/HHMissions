@@ -284,4 +284,14 @@ class Address
     {
         return $this->missions;
     }
+
+    /**
+     * Is the Accommodation an entire building?
+     *
+     * @return bool
+     */
+    public function isBuilding(): bool
+    {
+        return in_array($this->ownerType, [self::OWNER_FFH_BUILDING, self::OWNER_PRIVATE_BUILDING]);
+    }
 }
