@@ -2,8 +2,8 @@
 
 namespace DoctrineMigrations;
 
-use Doctrine\DBAL\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
+use Doctrine\Migrations\AbstractMigration;
 
 /**
  * Updates current missions to fill in division field
@@ -18,7 +18,7 @@ final class Version20180717205522 extends AbstractMigration
 
     	$this->addSql('UPDATE missions SET division = "Appui GLA"');
 
-    	$this->addSql('ALTER TABLE missions CHANGE division division VARCHAR(50) NOT NULL');
+    	$this->addSql('ALTER TABLE missions CHANGE division activity VARCHAR(50) NOT NULL');
     }
 
     public function down(Schema $schema) : void
@@ -26,6 +26,6 @@ final class Version20180717205522 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
     	$this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-    	 $this->addSql('ALTER TABLE missions CHANGE division division VARCHAR(50) DEFAULT NULL COLLATE utf8_unicode_ci');
+    	 $this->addSql('ALTER TABLE missions CHANGE activity division VARCHAR(50) DEFAULT NULL COLLATE utf8_unicode_ci');
     }
 }

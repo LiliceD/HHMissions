@@ -2,8 +2,8 @@
 
 namespace DoctrineMigrations;
 
-use Doctrine\DBAL\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
+use Doctrine\Migrations\AbstractMigration;
 
 /**
  * Updates current users to fill in category and divisions fields
@@ -23,7 +23,7 @@ class Version20180531191700 extends AbstractMigration
         $this->addSql('UPDATE users SET divisions = "Appui GLA"');
         $this->addSql('UPDATE users SET divisions = "Appui GLA, Bricolage, Energie" WHERE category = "GLA"');
 
-        $this->addSql('ALTER TABLE users CHANGE category category VARCHAR(50) NOT NULL, CHANGE divisions divisions LONGTEXT NOT NULL COMMENT \'(DC2Type:simple_array)\'');
+        $this->addSql('ALTER TABLE users CHANGE category category VARCHAR(50) NOT NULL, CHANGE divisions activities LONGTEXT NOT NULL COMMENT \'(DC2Type:simple_array)\'');
     }
 
     public function down(Schema $schema)
@@ -31,6 +31,6 @@ class Version20180531191700 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE users CHANGE category category VARCHAR(50) DEFAULT NULL COLLATE utf8_unicode_ci, CHANGE divisions divisions LONGTEXT DEFAULT NULL COLLATE utf8_unicode_ci COMMENT \'(DC2Type:simple_array)\'');
+        $this->addSql('ALTER TABLE users CHANGE category category VARCHAR(50) DEFAULT NULL COLLATE utf8_unicode_ci, CHANGE activities divisions LONGTEXT DEFAULT NULL COLLATE utf8_unicode_ci COMMENT \'(DC2Type:simple_array)\'');
     }
 }
