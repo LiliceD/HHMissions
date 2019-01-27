@@ -119,7 +119,7 @@ class User implements AdvancedUserInterface, \Serializable
      * @ORM\Column(type="string", length=50)
      *
      * @Assert\Choice(
-     *     callback={"App\Entity\User", "getCategories"}),
+     *     callback="getCategories"),
      *     groups={"Default", "edit"},
      * )
      *

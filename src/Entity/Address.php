@@ -82,7 +82,7 @@ class Address
      * Address's type (building / single apartment) and owner (FHH / private)
      *
      * @ORM\Column(type="string", nullable=true)
-     * @Assert\Choice(callback={"App\Entity\Address", "getOwnerTypes"})
+     * @Assert\Choice(callback="getOwnerTypes")
      */
     private $ownerType;
 
