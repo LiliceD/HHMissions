@@ -38,10 +38,12 @@ class MissionController extends Controller
      *     name="app_mission_new"
      * )
      *
-     * @param Request        $request
+     * @param Request $request
      * @param MissionManager $missionManager
      *
      * @return RedirectResponse|Response
+     *
+     * @throws \Exception
      */
     public function new(Request $request, MissionManager $missionManager)
     {
@@ -142,6 +144,25 @@ class MissionController extends Controller
         return $this->redirectToRoute('app_mission_list');
     }
 
+    /**
+     * Recap of opened (= any status but "closed") missions
+     *
+     * @Route(
+     *     "/recap/",
+     *     name="app_mission_recap",
+     * )
+     *
+     * @return Response
+     */
+    public function recap(): Response
+    {
+        $searchForm = $this->createForm(MissionSearchType::class);
+
+        return $this->render('mission/recap.html.twig', [
+            'form' => $searchForm->createView(),
+        ]);
+    }
+
 
 //  █████╗      ██╗ █████╗ ██╗  ██╗
 // ██╔══██╗     ██║██╔══██╗╚██╗██╔╝
@@ -226,26 +247,6 @@ class MissionController extends Controller
         return $this->render('mission/list.html.twig', [
             'form' => $searchFormById->createView(),
             'searchForm' => $fullSearchForm->createView(),
-        ]);
-    }
-
-
-    /**
-     * Recap of opened (= any status but "closed") missions
-     *
-     * @Route(
-     *     "/recap/",
-     *     name="app_mission_recap",
-     * )
-     *
-     * @return Response
-     */
-    public function recap(): Response
-    {
-        $searchForm = $this->createForm(MissionSearchType::class);
-
-        return $this->render('mission/recap.html.twig', [
-            'form' => $searchForm->createView(),
         ]);
     }
 
