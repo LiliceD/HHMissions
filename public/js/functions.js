@@ -1,5 +1,5 @@
-const CATEGORY_GLA = "{{ constant('App\\Entity\\User::CATEGORY_GLA') }}";
-const STATUS_CLOSED = "{{ constant('App\\Entity\\Mission::STATUS_CLOSED') }}";
+const CATEGORY_GLA = 'GLA';
+const STATUS_CLOSED = 'Fermée';
 const EMAIL_DOMAIN = '@'+'habitat-humanisme.org';
 
 /**
@@ -157,46 +157,8 @@ function addMissionsToTable(table, missions, properties) {
 
         // Create cells
         properties.forEach( prop => {
-            if (mission[prop]) {
-                let cell,
-                    text = '',
-                    classes = [];
-
-                if ('description' === prop || 'conclusions' === prop) {
-                    cell = createDescriptionCell(mission[prop]);
-                } else {
-                    switch (prop) {
-                        case 'gla':
-                        case 'volunteer':
-                            text = mission[prop].name;
-                            classes = [
-                                prop,
-                                prop + '-' + mission[prop].id
-                            ];
-                            break;
-                        case 'address':
-                            text = getFullAddress(mission);
-                            break;
-                        default:
-                            text = mission[prop];
-                    }
-
-                    if ('dateCreated' === prop) {
-                        classes.push('font-weight-bold');
-                    }
-
-                    cell = createCell(text, classes);
-                }
-
-                row.append(cell);
-            } else if ('button' === prop) {
-                let button = createViewButton(mission.url);
-                row.append(button);
-            } else {
-                row.append(createCell(''));
-            }
+            applyPropertyToMissionRow(mission, prop, row);
         });
-
 
         tableBody.append(row);
     });
@@ -220,6 +182,47 @@ function createMissionRow(mission) {
 
     return row;
 
+}
+
+function applyPropertyToMissionRow(mission, prop, row) {
+    if (mission[prop]) {
+        let cell,
+            text = '',
+            classes = [];
+
+        if ('description' === prop || 'conclusions' === prop) {
+            cell = createDescriptionCell(mission[prop]);
+        } else {
+            switch (prop) {
+                case 'gla':
+                case 'volunteer':
+                    text = mission[prop].name;
+                    classes = [
+                        prop,
+                        prop + '-' + mission[prop].id
+                    ];
+                    break;
+                case 'address':
+                    text = getFullAddress(mission);
+                    break;
+                default:
+                    text = mission[prop];
+            }
+
+            if ('dateCreated' === prop) {
+                classes.push('font-weight-bold');
+            }
+
+            cell = createCell(text, classes);
+        }
+
+        row.append(cell);
+    } else if ('button' === prop) {
+        let button = createViewButton(mission.url);
+        row.append(button);
+    } else {
+        row.append(createCell(''));
+    }
 }
 
 /**
