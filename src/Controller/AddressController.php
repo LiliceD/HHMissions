@@ -72,6 +72,24 @@ class AddressController extends AbstractController
 
     /**
      * @Route(
+     *     "/{id}/voir/",
+     *     name="app_address_view",
+     *     requirements={"id"="\d+"}
+     * )
+     *
+     * @param Address $address
+     *
+     * @return Response
+     */
+    public function view(Address $address): Response
+    {
+        return $this->render('address/view.html.twig', [
+            'address' => $address
+        ]);
+    }
+
+    /**
+     * @Route(
      *  "/{id}/modifier/",
      *  name="app_address_edit",
      *  requirements={
@@ -104,7 +122,9 @@ class AddressController extends AbstractController
                 'Les modifications ont bien été enregistrées.'
             );
 
-            return $this->redirectToRoute('app_address_list');
+            return $this->redirectToRoute('app_address_view', [
+                'id' => $address->getId()
+            ]);
         }
 
         return $this->render('address/edit.html.twig', [

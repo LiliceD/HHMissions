@@ -73,15 +73,12 @@
           <td>{{ address.ownerType }}</td>
           <td>{{ address.gla }}</td>
           <td>{{ address.referent }}</td>
-          {# edit button only visible for gla and admin #}
-          {% if is_granted(constant('App\\Entity\\User::ROLE_GLA')) %}
-            <td>
-              <a href="{{ path('app_address_edit', {'id': address.id}) }}" class="btn btn-sm btn-xs btn-outline-primary">
-                <i class="fas fa-edit"></i>
-                Modifier
-              </a>
-            </td>
-          {% endif %}    
+          <td>
+            <a href="{{ path('app_address_view', {'id': address.id}) }}" class="btn btn-sm btn-xs btn-primary">
+              <i class="fas fa-eye"></i>
+              Voir
+            </a>
+          </td>
         </tr>
       {% endfor %}
     </tbody>

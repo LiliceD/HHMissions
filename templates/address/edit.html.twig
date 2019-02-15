@@ -1,4 +1,5 @@
 {% extends 'address/layout.html.twig' %}
+{% from 'macros.html.twig' import formButtons as formButtons %}
 
 
 {% block header_h2 %}
@@ -21,6 +22,10 @@
 
   {# Edit form #}
   {{ parent() }}
+{% endblock %}
+
+{% block formButtons %}
+  {{ formButtons(path('app_address_view', {'id': address.id})) }}
 {% endblock %}
 
 {% block card_footer_left %}

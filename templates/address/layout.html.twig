@@ -46,7 +46,10 @@
     <br>
     
     {# Buttons Submit / Cancel #}
+  {% block formButtons %}
     {{ formButtons(path('app_address_list')) }}
+  {% endblock %}
+
   {{ form_end(form) }}
 {% endblock %}
 
