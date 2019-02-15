@@ -209,6 +209,24 @@ class User implements AdvancedUserInterface, \Serializable
      */
     private $missionsAsVolunteer;
 
+    /**
+     * All the Addresses the User is in charge of if they are a GLA
+     *
+     * @ORM\OneToMany(targetEntity="App\Entity\Address", mappedBy="gla")
+     *
+     * @var Collection
+     */
+    private $addressesAsGla;
+
+    /**
+     * All the buildings'Addresses the User is referent for if they are a volunteer
+     *
+     * @ORM\OneToMany(targetEntity="App\Entity\Address", mappedBy="buildingManager")
+     *
+     * @var Collection
+     */
+    private $buildingsAsReferent;
+
     // ███╗   ███╗███████╗████████╗██╗  ██╗ ██████╗ ██████╗ ███████╗
     // ████╗ ████║██╔════╝╚══██╔══╝██║  ██║██╔═══██╗██╔══██╗██╔════╝
     // ██╔████╔██║█████╗     ██║   ███████║██║   ██║██║  ██║███████╗
@@ -240,6 +258,8 @@ class User implements AdvancedUserInterface, \Serializable
     {
         $this->missionsAsGla = new ArrayCollection();
         $this->missionsAsVolunteer = new ArrayCollection();
+        $this->addressesAsGla = new ArrayCollection();
+        $this->buildingsAsReferent = new ArrayCollection();
     }
 
     /**
@@ -571,6 +591,68 @@ class User implements AdvancedUserInterface, \Serializable
     public function getMissionsAsVolunteer(): Collection
     {
         return $this->missionsAsVolunteer;
+    }
+
+    /**
+     * @return Collection|Address[]
+     */
+    public function getAddressesAsGla(): Collection
+    {
+        return $this->addressesAsGla;
+    }
+
+    public function addAddressesAsGla(Address $addressesAsGla): self
+    {
+        if (!$this->addressesAsGla->contains($addressesAsGla)) {
+            $this->addressesAsGla[] = $addressesAsGla;
+            $addressesAsGla->setGla($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAddressesAsGla(Address $addressesAsGla): self
+    {
+        if ($this->addressesAsGla->contains($addressesAsGla)) {
+            $this->addressesAsGla->removeElement($addressesAsGla);
+            // set the owning side to null (unless already changed)
+            if ($addressesAsGla->getGla() === $this) {
+                $addressesAsGla->setGla(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Address[]
+     */
+    public function getBuildingsAsReferent(): Collection
+    {
+        return $this->buildingsAsReferent;
+    }
+
+    public function addBuildingsAsReferent(Address $buildingsAsReferent): self
+    {
+        if (!$this->buildingsAsReferent->contains($buildingsAsReferent)) {
+            $this->buildingsAsReferent[] = $buildingsAsReferent;
+            $buildingsAsReferent->setReferent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBuildingsAsReferent(Address $buildingsAsReferent): self
+    {
+        if ($this->buildingsAsReferent->contains($buildingsAsReferent)) {
+            $this->buildingsAsReferent->removeElement($buildingsAsReferent);
+            // set the owning side to null (unless already changed)
+            if ($buildingsAsReferent->getReferent() === $this) {
+                $buildingsAsReferent->setReferent(null);
+            }
+        }
+
+        return $this;
     }
 
     // Below are required functions for AdvancedUserInterface to prevent inactive users from logging in

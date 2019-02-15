@@ -101,6 +101,37 @@ class Address
      */
     private $missions;
 
+    /**
+     * GLA in charge of this Address
+     *
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="addressesAsGla")
+     * @ORM\JoinColumn(nullable=false)
+     *
+     * @Assert\NotBlank()
+     * @Assert\Expression(
+     *     "value.isGla() and value.isActive()",
+     *     message="Un logement doit être associé à un·e GLA actif·ve.",
+     * )
+     *
+     * @var User
+     */
+    private $gla;
+
+    /**
+     * If this Address is a building, volunteer who is referent
+     *
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="buildingsAsReferent")
+     * @ORM\JoinColumn(nullable=true)
+     *
+     * @Assert\Expression(
+     *     "!this.isBuilding() or (value and value.isVolunteer() and value.isActive())",
+     *     message="Un immeuble doit avoir un·e bénévole référent·e.",
+     * )
+     *
+     * @var User
+     */
+    private $referent;
+
 
     /************** Methods *****************/
 
@@ -293,5 +324,45 @@ class Address
     public function isBuilding(): bool
     {
         return in_array($this->ownerType, [self::OWNER_FFH_BUILDING, self::OWNER_PRIVATE_BUILDING]);
+    }
+
+    /**
+     * @return User
+     */
+    public function getGla(): ?User
+    {
+        return $this->gla;
+    }
+
+    /**
+     * @param User $gla
+     *
+     * @return Address
+     */
+    public function setGla(User $gla): Address
+    {
+        $this->gla = $gla;
+
+        return $this;
+    }
+
+    /**
+     * @return User
+     */
+    public function getReferent(): ?User
+    {
+        return $this->referent;
+    }
+
+    /**
+     * @param User|null $referent
+     *
+     * @return Address
+     */
+    public function setReferent(?User $referent): Address
+    {
+        $this->referent = $referent;
+
+        return $this;
     }
 }

@@ -32,6 +32,10 @@ class BuildingInspection
      * @var User
      *
      * @Assert\NotNull()
+     * @Assert\Expression(
+     *     "value.isGla() and value.isActive()",
+     *     message="Cette personne n'est pas dans la catégorie des GLA actifs.",
+     * )
      */
     private $gla;
 
@@ -42,6 +46,10 @@ class BuildingInspection
      * @var User
      *
      * @Assert\NotNull()
+     * @Assert\Expression(
+     *     "value.isVolunteer() and value.isActive()",
+     *     message="Cette personne n'est pas dans la catégorie des bénévoles actifs.",
+     * )
      */
     private $referent;
 
@@ -52,6 +60,10 @@ class BuildingInspection
      * @var User
      *
      * @Assert\NotNull()
+     * @Assert\Expression(
+     *     "value.isVolunteer() and value.isActive()",
+     *     message="Cette personne n'est pas dans la catégorie des bénévoles actifs.",
+     * )
      */
     private $inspector;
 
@@ -62,6 +74,10 @@ class BuildingInspection
      * @var Address
      *
      * @Assert\NotNull()
+     * @Assert\Expression(
+     *     "value.isBuilding()",
+     *     message="Ce logement n'est pas un immeuble.",
+     * )
      */
     private $address;
 
@@ -69,11 +85,17 @@ class BuildingInspection
      * @ORM\Column(type="datetime")
      *
      * @var \DateTime
+     *
+     * @Assert\NotNull()
      */
     private $created;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\BuildingInspectionItem", mappedBy="inspection", orphanRemoval=true)
+     *
+     * @var ArrayCollection|Collection|array
+     *
+     * @Assert\Valid()
      */
     private $items;
 
@@ -84,8 +106,8 @@ class BuildingInspection
      */
     public function __construct()
     {
-        $this->items = new ArrayCollection();
         $this->created = new \DateTime();
+        $this->items = new ArrayCollection();
     }
 
     /**
@@ -134,6 +156,27 @@ class BuildingInspection
     public function getReferent(): ?User
     {
         return $this->referent;
+    }
+
+    /**
+     * @return string
+     */
+    public function getReferentInitials(): string
+    {
+        $initials = '';
+
+        if ($this->referent instanceof User) {
+            $nameWithoutHyphens = str_replace('-', ' ', $this->referent->getName());
+            $nameAsArray = explode(' ', $nameWithoutHyphens);
+            $initialsAsArray = (new ArrayCollection($nameAsArray))
+                ->map(function ($word): string {
+                    return strtoupper(substr($word, 0, 1));
+                })
+                ->getValues();
+            $initials = implode('', $initialsAsArray);
+        }
+
+        return $initials;
     }
 
     /**
@@ -191,7 +234,7 @@ class BuildingInspection
     /**
      * @return \DateTime
      */
-    public function getCreated(): \DateTime
+    public function getCreated(): ?\DateTime
     {
         return $this->created;
     }
@@ -214,5 +257,37 @@ class BuildingInspection
     public function getItems(): Collection
     {
         return $this->items;
+    }
+
+    /**
+     * @param BuildingInspectionItem $item
+     *
+     * @return BuildingInspection
+     */
+    public function addItem(BuildingInspectionItem $item): BuildingInspection
+    {
+        if (!$this->items->contains($item)) {
+            $this->items[] = $item;
+            $item->setInspection($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param BuildingInspectionItem $item
+     *
+     * @return BuildingInspection
+     */
+    public function removeItem(BuildingInspectionItem $item): BuildingInspection
+    {
+        if ($this->items->contains($item)) {
+            $this->items->removeElement($item);
+            if ($item->getInspection() === $this) {
+                $item->setInspection(null);
+            }
+        }
+
+        return $this;
     }
 }

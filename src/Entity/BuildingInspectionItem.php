@@ -30,7 +30,7 @@ class BuildingInspectionItem
     public static function getActions(): array
     {
         return [
-            null => '',
+            '' => null,
             self::ACTION_URGENT => self::ACTION_URGENT,
             self::ACTION_FOLLOW => self::ACTION_FOLLOW,
             self::ACTION_REMEMBER => self::ACTION_REMEMBER,
@@ -45,7 +45,7 @@ class BuildingInspectionItem
     public static function getDecisionMakers(): array
     {
         return [
-            null => '',
+            '' => null,
             self::DECISION_GLA => self::DECISION_GLA,
             self::DECISION_DIY => self::DECISION_DIY,
             self::DECISION_VOLUNTEER => self::DECISION_VOLUNTEER,
@@ -94,7 +94,7 @@ class BuildingInspectionItem
      *
      * @var string
      *
-     * @Assert\Choice(callback="getDecisionMaker")
+     * @Assert\Choice(callback="getDecisionMakers")
      * @Assert\Expression(
      *     "value or !this.getAction()",
      *     message="Une action nécessite de choisir des décisionnaires.",
@@ -225,7 +225,7 @@ class BuildingInspectionItem
      *
      * @return BuildingInspectionItem
      */
-    public function setInspection(BuildingInspection $inspection): BuildingInspectionItem
+    public function setInspection(?BuildingInspection $inspection): BuildingInspectionItem
     {
         $this->inspection = $inspection;
 

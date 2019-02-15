@@ -3,6 +3,10 @@
 namespace App\Form;
 
 use App\Entity\Address;
+use App\Entity\User;
+use App\Repository\UserRepository;
+use Doctrine\ORM\EntityRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType; // for 'gla' drop-down;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -32,6 +36,29 @@ class AddressType extends AbstractType
                 'placeholder' => '-'
             ))
             ->add('access', null, array('label' => 'Accès à l\'immeuble (facultatif) :', 'required' => false))
+            ->add('gla', EntityType::class, [
+                // Dropdown from User table, gla = true, active = true
+                'class' => User::class,
+                'query_builder' => function (EntityRepository $er) {
+                    /** @var UserRepository $er */
+                    return $er->qbActiveByCategory(User::CATEGORY_GLA);
+                },
+                'choice_label' => 'name',
+                'label' => 'Responsable GLA :',
+                'placeholder' => '-',
+            ])
+            ->add('referent', EntityType::class, [
+                // Dropdown from User table, volunteer = true, active = true
+                'class' => User::class,
+                'query_builder' => function (EntityRepository $er) {
+                    /** @var UserRepository $er */
+                    return $er->qbActiveByCategory(User::CATEGORY_VOLUNTEER);
+                },
+                'choice_label' => 'name',
+                'label' => 'Référent immeuble :',
+                'placeholder' => '-',
+                'required' => false,
+            ])
         ;
     }
 

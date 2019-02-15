@@ -19,7 +19,7 @@ final class Version20190127152344 extends AbstractMigration
             INSERT INTO building_inspection_item_headers (name, theme, description, `rank`)
             VALUES
             ('Bâti / façades', '3_Etat général', 'Contrôle visuel de l''extérieur du bâtiment\nStores / volets / balcons', 1),
-            ('Porte allée Contrôle d''accès', '1_Sécurité', 'Bon fonctionnement de la fermeture', 2),
+            ('Porte allée / Contrôle d''accès', '1_Sécurité', 'Bon fonctionnement de la fermeture', 2),
             ('Etat Hall d''accès', '2_Hygiène_Propreté', '', 3),
             ('Plan d''évacuation', '1_Sécurité', '', 4),
             ('Panneau d''affichage HH', '5_Divers', 'Fermeture / Fixation', 5),

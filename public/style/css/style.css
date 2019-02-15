@@ -1,12 +1,21 @@
+.font-size-14{
+  font-size: 14px;
+}
+
+.bg-inactive {
+  background-color: rgba(108, 117, 125, 0.25);
+}
+
+.bg-opacity-75 {
+  background-color: rgba(0, 0, 0, 0.075);
+}
+
+
 /* validation alerts hidden by default in Bootstrap form theme */
 .invalid-feedback {
   display: block;
 }
 
-/* clicking on th sorts table (mission/list, mission/recap, address/list, user/list) */
-th:hover {
-  cursor: pointer;
-}
 
 /* mission/list.html.twig */
 h3 {
@@ -29,11 +38,6 @@ h3 {
 
 .input-date {
   width: 140px;
-}
-
-/* also used in user/list.html.twig */
-.bg-inactive {
-  background-color: rgba(108, 117, 125, 0.25);
 }
 
 
@@ -90,12 +94,46 @@ h3 {
   width: 60px;
 }
 
-
-/* address/list.html.twig */
-.addresses-table {
+/* inspection/new.html.twig */
+.form-to-text {
+  padding: 0;
+  background-color: #fff !important;
+  border: none;
   font-size: 14px;
+  height: 100%;
+  line-height: 100%;
 }
 
+.table-inspection-rank {
+  /*width: 20px;*/
+  width: 2%;
+}
+.table-inspection-theme {
+  /*width: 150px;*/
+  width: 8%;
+}
+.table-inspection-name {
+  width: 14%;
+  /*width: 250px;*/
+}
+.table-inspection-description {
+  /*width: 275px;*/
+  width: 15%;
+}
+.table-inspection-action {
+  /*width: 125px;*/
+  width: 7%;
+}
+.table-inspection-decision {
+  /*width: 200px;*/
+  width: 11%;
+}
+
+.resize-none {
+  resize: none;
+}
+
+/* address/list.html.twig */
 .btn-xs {
   padding: .18rem .38rem;
   line-height: 1.1;

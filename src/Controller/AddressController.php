@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Address;
+use App\Entity\User;
 use App\Form\AddressType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse; // function access
@@ -202,6 +203,7 @@ class AddressController extends Controller
         $id = $request->request->get('id');
 
         // Retrieve the requested Address
+        /** @var Address $address */
         $address = $this->getDoctrine()
             ->getRepository(Address::class)
             ->find($id);
@@ -209,11 +211,30 @@ class AddressController extends Controller
         // Get values
         $access = $address->getAccess();
         $ownerType = $address->getOwnerType();
+        $glaUser = $address->getGla();
+        $gla = [
+            'id' => $glaUser->getId(),
+            'name' => $glaUser->getName(),
+        ];
+        $referentUser = $address->getReferent();
+        $referent = [
+            'id' => 0,
+            'name' => '',
+        ];
+
+        if ($referentUser instanceof User) {
+            $referent = [
+                'id' => $referentUser->getId(),
+                'name' => $referentUser->getName(),
+            ];
+        }
 
         // Format values in JSON
         $json = [
             'access' => $access,
-            'ownerType' => $ownerType
+            'ownerType' => $ownerType,
+            'gla' => $gla,
+            'referent' => $referent,
         ];
 
         // Return a JSON response
