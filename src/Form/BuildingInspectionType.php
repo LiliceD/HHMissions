@@ -11,6 +11,7 @@ use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -74,6 +75,11 @@ class BuildingInspectionType extends AbstractType
                 'choice_label' => 'address',
                 'label' => 'Adresse de l\'immeuble :',
                 'placeholder' => false
+            ])
+            ->add('created', DateType::class, [
+                'label' => 'Date de la visite :',
+                'widget' => 'single_text',
+                'format' => 'dd/MM/yyyy'
             ])
             ->add('items', CollectionType::class, [
                 'entry_type' => BuildingInspectionItemType::class,

@@ -86,7 +86,7 @@ class BuildingInspectionManager
      */
     private function getItemHeaders(): array
     {
-        return $this->headersRepository->findAll();
+        return $this->headersRepository->findBy([], ['rank' => 'asc']);
     }
 
     /**
