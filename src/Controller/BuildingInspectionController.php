@@ -1,13 +1,10 @@
 <?php
 
-
 namespace App\Controller;
 
-
-use App\Entity\BuildingInspection;
-use App\Entity\BuildingInspectionItem;
 use App\Form\BuildingInspectionType;
-use App\Repository\BuildingInspectionItemHeadersRepository;
+use App\Manager\AddressManager;
+use App\Manager\BuildingInspectionManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,16 +26,16 @@ class BuildingInspectionController extends AbstractController
      *  name="app_inspection_list",
      * )
      *
+     * @param AddressManager $addressManager
+     *
      * @return Response
      */
-    public function list(): Response
+    public function list(AddressManager $addressManager): Response
     {
-//        $repository = $this->getDoctrine()->getRepository(Address::class);
-//
-//        $addresses = $repository->findBy([], ['street' => 'ASC']);
+        $addresses = $addressManager->getBuildings();
 
         return $this->render('inspection/list.html.twig', [
-//            'addresses' => $addresses
+            'addresses' => $addresses
         ]);
     }
 
@@ -48,41 +45,23 @@ class BuildingInspectionController extends AbstractController
      *  name="app_inspection_new"
      * )
      *
-     * @param Request                                 $request
-     * @param BuildingInspectionItemHeadersRepository $headersRepository
+     * @param Request                   $request
+     * @param BuildingInspectionManager $manager
      *
      * @return RedirectResponse|Response
      *
      * @throws \Exception
      */
-    public function new(Request $request, BuildingInspectionItemHeadersRepository $headersRepository)
+    public function new(Request $request, BuildingInspectionManager $manager)
     {
-        $inspection = new BuildingInspection();
-        $headers = $headersRepository->findAll();
-        foreach ($headers as $header) {
-            $item = new BuildingInspectionItem();
-            $item->setHeaders($header);
-            $inspection->addItem($item);
-        }
+        $inspection = $manager->getNew();
 
         $form = $this->createForm(BuildingInspectionType::class, $inspection);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Persist to DB
-            $em = $this->getDoctrine()->getManager();
+            $manager->persist($inspection);
 
-            /** @var BuildingInspection $inspection */
-            $inspection = $form->getData();
-            $items = $inspection->getItems()->getValues();
-
-            foreach ($items as $item) {
-                $em->persist($item);
-            }
-            $em->persist($inspection);
-            $em->flush();
-
-            // Set a "flash" success message
             $this->addFlash(
                 'notice',
                 'Le rapport de visite a bien été créé.'

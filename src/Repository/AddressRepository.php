@@ -14,11 +14,29 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
  */
 class AddressRepository extends ServiceEntityRepository
 {
+    /**
+     * AddressRepository constructor.
+     *
+     * @param RegistryInterface $registry
+     */
     public function __construct(RegistryInterface $registry)
     {
         parent::__construct($registry, Address::class);
     }
 
+    /**
+     * @return array
+     */
+    public function getBuildings(): array
+    {
+        return $this->qbBuildings()
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return QueryBuilder
+     */
     public function qbBuildings(): QueryBuilder
     {
         return $this->createQueryBuilder('a')

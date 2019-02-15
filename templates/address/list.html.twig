@@ -49,7 +49,8 @@
         <th scope="col">C.P. <i class="fas fa-sort"></i></th>
         <th scope="col">Ville <i class="fas fa-sort"></i></th>
         <th scope="col">Propriétaire <i class="fas fa-sort"></i></th>
-        <th scope="col">Accès <i class="fas fa-sort"></i></th>
+        <th scope="col">Responsable GLA <i class="fas fa-sort"></i></th>
+        <th scope="col">Référent Immeuble <i class="fas fa-sort"></i></th>
         {# edit button only visible for gla and admin #}
         {% if is_granted(constant('App\\Entity\\User::ROLE_GLA')) %}
           <th></th>
@@ -70,7 +71,8 @@
           <td>{{ address.zipCode }}</td>
           <td>{{ address.city }}</td>
           <td>{{ address.ownerType }}</td>
-          <td><div class="access-ellipsis" data-toggle="popover" data-content="{{ address.access }}">{{ address.access }}</div></td>
+          <td>{{ address.gla }}</td>
+          <td>{{ address.referent }}</td>
           {# edit button only visible for gla and admin #}
           {% if is_granted(constant('App\\Entity\\User::ROLE_GLA')) %}
             <td>

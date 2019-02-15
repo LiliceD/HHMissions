@@ -96,4 +96,12 @@ class AddressManager
             'referent' => $referent,
         ];
     }
+
+    /**
+     * @return array
+     */
+    public function getBuildings(): array
+    {
+        return $this->repository->getBuildings();
+    }
 }
