@@ -3,13 +3,14 @@
 namespace App\Controller;
 
 use App\Entity\Address;
-use App\Entity\User;
 use App\Form\AddressType;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\JsonResponse; // function access
+use App\Manager\AddressManager;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -19,7 +20,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @author Alice Dahan <lilice.dhn@gmail.com>
  */
-class AddressController extends Controller
+class AddressController extends AbstractController
 {
     
     //  ██████╗██████╗ ██╗   ██╗██████╗
@@ -194,50 +195,21 @@ class AddressController extends Controller
      *  "/info/",
      *  name="app_address_info",
      * )
-     * @param Request $request
+     *
+     * @param Request        $request
+     * @param AddressManager $manager
      *
      * @return JsonResponse
      */
-    public function info(Request $request): JsonResponse
+    public function info(Request $request, AddressManager $manager): JsonResponse
     {
         $id = $request->request->get('id');
+        $address = $manager->get($id);
 
-        // Retrieve the requested Address
-        /** @var Address $address */
-        $address = $this->getDoctrine()
-            ->getRepository(Address::class)
-            ->find($id);
-
-        // Get values
-        $access = $address->getAccess();
-        $ownerType = $address->getOwnerType();
-        $glaUser = $address->getGla();
-        $gla = [
-            'id' => $glaUser->getId(),
-            'name' => $glaUser->getName(),
-        ];
-        $referentUser = $address->getReferent();
-        $referent = [
-            'id' => 0,
-            'name' => '',
-        ];
-
-        if ($referentUser instanceof User) {
-            $referent = [
-                'id' => $referentUser->getId(),
-                'name' => $referentUser->getName(),
-            ];
+        if (!$address instanceof Address) {
+            throw new NotFoundHttpException(sprintf('Address with ID %d not found.', $id));
         }
 
-        // Format values in JSON
-        $json = [
-            'access' => $access,
-            'ownerType' => $ownerType,
-            'gla' => $gla,
-            'referent' => $referent,
-        ];
-
-        // Return a JSON response
-        return new JsonResponse($json);
+        return new JsonResponse($manager->getAddressInfo($address));
     }
 }
