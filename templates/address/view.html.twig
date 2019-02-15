@@ -38,10 +38,12 @@
             {{ address.gla }}
         </div>
 
-        <div class="col-sm-4">
-            <strong>Référent immeuble : </strong>
-            {{ address.referent ?? ' - '}}
-        </div>
+        {% if address.isBuilding %}
+            <div class="col-sm-4">
+                <strong>Référent immeuble : </strong>
+                {{ address.referent ?? ' - '}}
+            </div>
+        {% endif %}
     </div>
 {% endblock %}
 
