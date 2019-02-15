@@ -25,16 +25,16 @@ class UserRepository extends ServiceEntityRepository
         
         // Select active users
         $qb->select('u')
-           ->where('active = true')
+           ->where('u.active = true')
         ;
         
         // Possibly add filter on volunteer/gla
         switch ($category) {
             case User::CATEGORY_GLA:
-                $qb->where('u.gla = true');
+                $qb->andWhere('u.gla = true');
                 break;
             case User::CATEGORY_VOLUNTEER:
-                $qb->where('u.volunteer = true');
+                $qb->andWhere('u.volunteer = true');
         }
 
         // Return directly the query builder (for EntityType fields query_builder in MissionType)
