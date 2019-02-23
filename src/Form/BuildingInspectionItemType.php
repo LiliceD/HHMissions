@@ -20,19 +20,19 @@ class BuildingInspectionItemType extends AbstractType
     {
         $builder
             ->add('comment', TextareaType::class, [
-                'label' => 'Constats faits par le visiteur / Propositions d\'actions :',
+                'label' => BuildingInspectionItem::LABEL_COMMENT,
                 'data' => 'OK',
                 'trim' => false,
                 ])
             ->add('action', ChoiceType::class, [
                 'choices' => BuildingInspectionItem::getActions(),
-                'label' => 'Action :',
+                'label' => BuildingInspectionItem::LABEL_ACTION,
                 'required' => false,
                 'placeholder' => false,
             ])
             ->add('decisionMaker', ChoiceType::class, [
                 'choices' => BuildingInspectionItem::getDecisionMakers(),
-                'label' => 'Décisions d\'engagement  :',
+                'label' => BuildingInspectionItem::LABEL_DECISION_MAKER,
                 'required' => false,
                 'placeholder' => false,
             ])

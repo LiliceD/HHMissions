@@ -36,7 +36,7 @@ class BuildingInspectionType extends AbstractType
                 'choice_label' => 'name',
             ])
             ->add('gla_name', TextType::class, [
-                'label' => 'Responsable GLA :',
+                'label' => BuildingInspection::LABEL_GLA,
                 'disabled' => true,
                 'mapped' => false,
             ])
@@ -50,7 +50,7 @@ class BuildingInspectionType extends AbstractType
                 'choice_label' => 'name',
             ])
             ->add('referent_name', TextType::class, [
-                'label' => 'Référent immeuble :',
+                'label' => BuildingInspection::LABEL_REFERENT,
                 'disabled' => true,
                 'mapped' => false,
             ])
@@ -62,7 +62,7 @@ class BuildingInspectionType extends AbstractType
                     return $er->qbActiveByCategory(User::CATEGORY_VOLUNTEER);
                 },
                 'choice_label' => 'name',
-                'label' => 'Visiteur·se :',
+                'label' => BuildingInspection::LABEL_INSPECTOR,
                 'placeholder' => '-',
             ])
             ->add('address', EntityType::class, [
@@ -73,11 +73,11 @@ class BuildingInspectionType extends AbstractType
                     return $er->qbBuildings();
                 },
                 'choice_label' => 'address',
-                'label' => 'Adresse de l\'immeuble :',
+                'label' => BuildingInspection::LABEL_ADDRESS,
                 'placeholder' => false
             ])
             ->add('created', DateType::class, [
-                'label' => 'Date de la visite :',
+                'label' => BuildingInspection::LABEL_CREATED,
                 'widget' => 'single_text',
                 'format' => 'dd/MM/yyyy'
             ])

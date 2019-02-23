@@ -16,6 +16,12 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class BuildingInspection
 {
+    public const LABEL_ADDRESS = 'Adresse de l\'immeuble :';
+    public const LABEL_GLA = 'Responsable GLA :';
+    public const LABEL_REFERENT = 'Référent immeuble :';
+    public const LABEL_INSPECTOR = 'Visiteur·se :';
+    public const LABEL_CREATED = 'Date de la visite :';
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -68,7 +74,7 @@ class BuildingInspection
     private $inspector;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Address")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Address", inversedBy="inspections")
      * @ORM\JoinColumn(nullable=false)
      *
      * @var Address
@@ -156,27 +162,6 @@ class BuildingInspection
     public function getReferent(): ?User
     {
         return $this->referent;
-    }
-
-    /**
-     * @return string
-     */
-    public function getReferentInitials(): string
-    {
-        $initials = '';
-
-        if ($this->referent instanceof User) {
-            $nameWithoutHyphens = str_replace('-', ' ', $this->referent->getName());
-            $nameAsArray = explode(' ', $nameWithoutHyphens);
-            $initialsAsArray = (new ArrayCollection($nameAsArray))
-                ->map(function ($word): string {
-                    return strtoupper(substr($word, 0, 1));
-                })
-                ->getValues();
-            $initials = implode('', $initialsAsArray);
-        }
-
-        return $initials;
     }
 
     /**

@@ -14,9 +14,13 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class BuildingInspectionItem
 {
-    private const ACTION_URGENT = 'Urgente';
-    private const ACTION_FOLLOW = 'A suivre';
-    private const ACTION_REMEMBER = 'A retenir';
+    public const LABEL_COMMENT = "Constats faits par le visiteur / Propositions d'actions";
+    public const LABEL_ACTION = "Action";
+    public const LABEL_DECISION_MAKER = "Décisions d'engagement";
+
+    public const ACTION_URGENT = 'Urgente';
+    public const ACTION_FOLLOW = 'A suivre';
+    public const ACTION_REMEMBER = 'A retenir';
 
     private const DECISION_GLA = 'GLA';
     private const DECISION_DIY = 'Bricoleurs';
@@ -72,11 +76,11 @@ class BuildingInspectionItem
     private $headers;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", nullable=true)
      *
      * @var string
      *
-     * @Assert\Length(max="255")
+     * @Assert\Length(max="1000")
      */
     private $comment;
 

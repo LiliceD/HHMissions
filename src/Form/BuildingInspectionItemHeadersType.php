@@ -20,23 +20,23 @@ class BuildingInspectionItemHeadersType extends AbstractType
     {
         $builder
             ->add('rank', TextType::class, [
-                'label' => 'N°',
+                'label' => BuildingInspectionItemHeaders::LABEL_RANK,
                 'required' => false,
                 'disabled' => true,
             ])
             ->add('theme', TextareaType::class, [
-                'label' => 'Thématique',
+                'label' => BuildingInspectionItemHeaders::LABEL_THEME,
                 'required' => false,
                 'disabled' => true,
             ])
             ->add('name', TextareaType::class, [
-                'label' => 'Observation',
+                'label' => BuildingInspectionItemHeaders::LABEL_NAME,
                 'required' => false,
                 'disabled' => true,
                 'trim' => false,
             ])
             ->add('description', TextareaType::class, [
-                'label' => 'Points de surveillance',
+                'label' => BuildingInspectionItemHeaders::LABEL_DESCRIPTION,
                 'required' => false,
                 'disabled' => true,
                 'trim' => false,

@@ -14,6 +14,11 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class BuildingInspectionItemHeaders
 {
+    public const LABEL_RANK = 'N°';
+    public const LABEL_THEME = 'Thématique';
+    public const LABEL_NAME = 'Observation';
+    public const LABEL_DESCRIPTION = 'Points de surveillance';
+
     private const THEME_1 = '1_Sécurité';
     private const THEME_2 = '2_Hygiène_Propreté';
     private const THEME_3 = '3_Etat général';
