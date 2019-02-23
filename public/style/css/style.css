@@ -10,7 +10,6 @@
   background-color: rgba(0, 0, 0, 0.075);
 }
 
-
 /* validation alerts hidden by default in Bootstrap form theme */
 .invalid-feedback {
   display: block;
@@ -104,13 +103,20 @@ h3 {
   line-height: 100%;
 }
 
+/*.inspection-table {*/
+  /*max-width: 1800px;*/
+  /*display: block;*/
+  /*overflow-x: scroll;*/
+  /*white-space: nowrap;*/
+/*}*/
+
 .table-inspection-rank {
   /*width: 20px;*/
-  width: 2%;
+  width: 3%;
 }
 .table-inspection-theme {
   /*width: 150px;*/
-  width: 8%;
+  width: 7%;
 }
 .table-inspection-name {
   width: 14%;
@@ -129,6 +135,9 @@ h3 {
   width: 11%;
 }
 
+/*.table-inspection-recap {*/
+  /*width: 100px;*/
+/*}*/
 .resize-none {
   resize: none;
 }

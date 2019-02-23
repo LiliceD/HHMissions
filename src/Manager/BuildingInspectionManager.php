@@ -2,6 +2,7 @@
 
 namespace App\Manager;
 
+use App\Entity\Address;
 use App\Entity\BuildingInspection;
 use App\Entity\BuildingInspectionItem;
 use App\Repository\BuildingInspectionItemHeadersRepository;
@@ -39,6 +40,16 @@ class BuildingInspectionManager
     }
 
     /**
+     * @param int $id
+     *
+     * @return BuildingInspection|null
+     */
+    public function get(int $id): ?BuildingInspection
+    {
+        return $this->repository->findJoined($id);
+    }
+
+    /**
      * Get a new BuildingInspection with a set of new items associated to the list of headers
      *
      * @return BuildingInspection
@@ -57,6 +68,16 @@ class BuildingInspectionManager
         }
 
         return $inspection;
+    }
+
+    /**
+     * Get all BuildingInspectionItemHeaders
+     *
+     * @return array
+     */
+    public function getItemHeaders(): array
+    {
+        return $this->headersRepository->findBy([], ['rank' => 'asc']);
     }
 
     /**
@@ -80,13 +101,16 @@ class BuildingInspectionManager
     }
 
     /**
-     * Get all BuildingInspectionItemHeaders
+     * Get building inspections for a given address
      *
-     * @return array
+     * @param Address  $address
+     * @param int|null $limit
+     *
+     * @return BuildingInspection[]
      */
-    private function getItemHeaders(): array
+    public function getByAddress(Address $address, int $limit = null): array
     {
-        return $this->headersRepository->findBy([], ['rank' => 'asc']);
+        return $this->repository->findByAddressJoined($address->getId(), $limit);
     }
 
     /**

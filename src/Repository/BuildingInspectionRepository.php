@@ -22,4 +22,57 @@ class BuildingInspectionRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, BuildingInspection::class);
     }
+
+    /**
+     * @param int $id
+     *
+     * @return BuildingInspection|null
+     */
+    public function findJoined(int $id): ?BuildingInspection
+    {
+        try {
+            return $this->createQueryBuilder('bi')
+                ->leftJoin('bi.inspector', 'ins')
+                ->addSelect('ins')
+                ->innerJoin('bi.address', 'a')
+                ->addSelect('a')
+                ->innerJoin('a.gla', 'g')
+                ->addSelect('g')
+                ->leftJoin('a.referent', 'r')
+                ->addSelect('r')
+                ->innerJoin('bi.items', 'it')
+                ->addSelect('it')
+                ->where(sprintf('bi.id  = %d', $id))
+                ->getQuery()
+                ->getSingleResult();
+        } catch (\Exception $ex) {
+            return null;
+        }
+    }
+
+    /**
+     * @param int $addressId
+     * @param int|null $limit
+     *
+     * @return BuildingInspection[]
+     */
+    public function findByAddressJoined(int $addressId, ?int $limit = null): array
+    {
+        return $this->createQueryBuilder('bi')
+            ->leftJoin('bi.inspector', 'ins')
+            ->addSelect('ins')
+            ->innerJoin('bi.address', 'a')
+            ->addSelect('a')
+            ->innerJoin('a.gla', 'g')
+            ->addSelect('g')
+            ->leftJoin('a.referent', 'r')
+            ->addSelect('r')
+            ->innerJoin('bi.items', 'it')
+            ->addSelect('it')
+            ->where(sprintf('a.id  = %d', $addressId))
+            ->orderBy('bi.created', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
 }

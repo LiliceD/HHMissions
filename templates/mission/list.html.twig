@@ -139,7 +139,7 @@
                     assignedMissionsTable = $('table', $('#assignedMissions')),
                     finishedMissionsTable = $('table', $('#finishedMissions'));
 
-                addMissionsSorting([newMissionsTable, assignedMissionsTable, finishedMissionsTable]);
+                addTableSorting([$('table')]);
                 activateMyMissionsFilter();
                 displayNumberOfCheckedOptionsInBadges();
                 fillNewMissionsTable();

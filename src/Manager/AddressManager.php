@@ -112,6 +112,6 @@ class AddressManager
      */
     public function getBuildings(): array
     {
-        return $this->repository->getBuildings();
+        return $this->repository->getBuildingsJoined();
     }
 }

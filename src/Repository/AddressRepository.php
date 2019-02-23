@@ -27,9 +27,13 @@ class AddressRepository extends ServiceEntityRepository
     /**
      * @return array
      */
-    public function getBuildings(): array
+    public function getBuildingsJoined(): array
     {
         return $this->qbBuildings()
+            ->innerJoin('a.gla', 'g')
+            ->addSelect('g')
+            ->leftJoin('a.referent', 'r')
+            ->addSelect('r')
             ->getQuery()
             ->getResult();
     }

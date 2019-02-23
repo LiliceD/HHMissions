@@ -1,4 +1,5 @@
 {% extends 'layout-card-md.html.twig' %}
+{% from 'macros.html.twig' import backButton as backButton %}
 {% from 'macros.html.twig' import formButtons as formButtons %}
 
 {% block title %}
@@ -7,10 +8,7 @@
 
 
 {% block header_button %}
-  <a href="{{ path('app_address_list') }}" class="btn btn-outline-secondary">
-    <i class="fas fa-chevron-left"></i>
-    Retour à la liste
-  </a>
+  {{ backButton(path('app_address_list')) }}
 {% endblock %}
 
 

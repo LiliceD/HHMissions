@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Address;
 use App\Form\BuildingInspectionType;
 use App\Manager\AddressManager;
 use App\Manager\BuildingInspectionManager;
@@ -32,10 +33,9 @@ class BuildingInspectionController extends AbstractController
      */
     public function list(AddressManager $addressManager): Response
     {
-        $addresses = $addressManager->getBuildings();
-
         return $this->render('inspection/list.html.twig', [
-            'addresses' => $addresses
+            'addresses' => $addressManager->getBuildings(),
+            'inspection' => true,
         ]);
     }
 
@@ -72,6 +72,50 @@ class BuildingInspectionController extends AbstractController
 
         return $this->render('inspection/new.html.twig', [
             'form' => $form->createView()
+        ]);
+    }
+
+    /**
+     * @Route(
+     *  "/{id}/voir",
+     *  name="app_inspection_view",
+     *  requirements={"id"="\d+"}
+     * )
+     *
+     * @param int                       $id
+     * @param BuildingInspectionManager $manager
+     *
+     * @return Response
+     */
+    public function view(int $id, BuildingInspectionManager $manager): Response
+    {
+        return $this->render('inspection/view.html.twig', [
+            'inspection' => $manager->get($id),
+            'headers' => $manager->getItemHeaders(),
+        ]);
+    }
+
+    /**
+     * @Route(
+     *  "/recap/{id}/",
+     *  name="app_inspection_recap",
+     *  requirements={"id"="\d+"}
+     * )
+     *
+     * @param Address                   $address
+     * @param BuildingInspectionManager $manager
+     *
+     * @return Response
+     */
+    public function recap(Address $address, BuildingInspectionManager $manager): Response
+    {
+        $headers = $manager->getItemHeaders();
+        $inspections = $manager->getByAddress($address);
+
+        return $this->render('inspection/recap.html.twig', [
+            'address' => $address,
+            'headers' => $headers,
+            'inspections' => $inspections,
         ]);
     }
 }

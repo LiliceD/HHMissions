@@ -132,6 +132,12 @@ class Address
      */
     private $referent;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\BuildingInspection", mappedBy="address")
+     *
+     * @var ArrayCollection|Collection|array
+     */
+    private $inspections;
 
     /************** Methods *****************/
 
@@ -141,6 +147,7 @@ class Address
     public function __construct()
     {
         $this->missions = new ArrayCollection();
+        $this->inspections = new ArrayCollection();
     }
 
     /**
@@ -364,5 +371,13 @@ class Address
         $this->referent = $referent;
 
         return $this;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getInspections(): Collection
+    {
+        return $this->inspections;
     }
 }

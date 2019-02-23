@@ -271,6 +271,24 @@ class User implements AdvancedUserInterface, \Serializable
     }
 
     /**
+     * @return string
+     */
+    public function getInitials(): string
+    {
+        $nameWithoutHyphens = str_replace('-', ' ', $this->name);
+
+        $nameAsArray = explode(' ', $nameWithoutHyphens);
+
+        $initialsAsArray = (new ArrayCollection($nameAsArray))
+            ->map(function ($word): string {
+                return strtoupper(substr($word, 0, 1));
+            })
+            ->getValues();
+
+        return implode('', $initialsAsArray);
+    }
+
+    /**
      * Callback for User->$category
      * Category dropdown in UserType
      *

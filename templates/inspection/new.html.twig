@@ -1,4 +1,5 @@
 {% extends 'layout-large.html.twig' %}
+{% from 'macros.html.twig' import backButton as backButton %}
 {% from 'macros.html.twig' import formButtons as formButtons %}
 
 {% block title %}
@@ -6,10 +7,7 @@
 {% endblock %}
 
 {% block header_button %}
-    <a href="{{ path('app_inspection_list') }}" class="btn btn-outline-secondary">
-        <i class="fas fa-chevron-left"></i>
-        Retour à la liste
-    </a>
+    {{ backButton(path('app_inspection_list')) }}
 {% endblock %}
 
 {% block header_h2 %}
@@ -69,26 +67,31 @@
         <table class="table table-sm font-size-14">
             {% for item in form.items %}
                 {%  if loop.index == 1 %}
-                    <tr class="thead-light">
-                        <th scope="col" class="table-inspection-rank">{{ form_label(item.headers.rank) }}</th>
-                        <th scope="col" class="table-inspection-theme">{{ form_label(item.headers.theme) }}</th>
-                        <th scope="col" class="table-inspection-name">{{ form_label(item.headers.name) }}</th>
-                        <th scope="col" class="table-inspection-description">{{ form_label(item.headers.description) }}</th>
-                        <th scope="col">{{ form_label(item.comment) }}</th>
-                        <th scope="col" class="table-inspection-action">{{ form_label(item.action) }}</th>
-                        <th scope="col" class="table-inspection-decision">{{ form_label(item.decisionMaker) }}</th>
-                    </tr>
+                    <thead>
+                        <tr class="thead-light">
+                            <th scope="col" class="table-inspection-rank">{{ form_label(item.headers.rank) }}</th>
+                            <th scope="col" class="table-inspection-theme">{{ form_label(item.headers.theme) }}</th>
+                            <th scope="col" class="table-inspection-name">{{ form_label(item.headers.name) }}</th>
+                            <th scope="col" class="table-inspection-description">{{ form_label(item.headers.description) }}</th>
+                            <th scope="col">{{ form_label(item.comment) }}</th>
+                            <th scope="col" class="table-inspection-action">{{ form_label(item.action) }}</th>
+                            <th scope="col" class="table-inspection-decision">{{ form_label(item.decisionMaker) }}</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
                 {% endif %}
                 <tr>
                     <td>{{ form_widget(item.headers.rank, {'attr': {'class': 'form-to-text'}}) }}</td>
                     <td>{{ form_widget(item.headers.theme, {'attr': {'class': 'form-to-text resize-none'}}) }}</td>
-                    <td>{{ form_widget(item.headers.name, {'attr': {'class': 'form-to-text resize-none strong font-weight-bold'}}) }}</td>
+                    <td>{{ form_widget(item.headers.name, {'attr': {'class': 'form-to-text resize-none font-weight-bold'}}) }}</td>
                     <td>{{ form_widget(item.headers.description, {'attr': {'class': 'form-to-text resize-none'}}) }}</td>
                     <td class="bg-opacity-75">{{ form_widget(item.comment, {'attr': {'class': 'font-size-14'}}) }}</td>
                     <td class="bg-opacity-75">{{ form_widget(item.action) }}</td>
                     <td class="bg-opacity-75">{{ form_widget(item.decisionMaker) }}</td>
                 </tr>
             {% endfor %}
+            </tbody>
         </table>
     </div>
 
