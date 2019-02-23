@@ -23,7 +23,7 @@ class BuildingInspectionController extends AbstractController
 {
     /**
      * @Route(
-     *  "/",
+     *  "",
      *  name="app_inspection_list",
      * )
      *
@@ -41,7 +41,7 @@ class BuildingInspectionController extends AbstractController
 
     /**
      * @Route(
-     *  "/ajouter/",
+     *  "/ajouter",
      *  name="app_inspection_new"
      * )
      *
@@ -97,7 +97,7 @@ class BuildingInspectionController extends AbstractController
 
     /**
      * @Route(
-     *  "/recap/{id}/",
+     *  "/recap/{id}",
      *  name="app_inspection_recap",
      *  requirements={"id"="\d+"}
      * )

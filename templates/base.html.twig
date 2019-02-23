@@ -35,7 +35,6 @@
             <span class="navbar-toggler-icon"></span>
           </button>
 
-          {# left-hand-side nav #}
           <div class="collapse navbar-collapse" id="navbar">
             <ul class="navbar-nav mr-auto">
               <li class="nav-item dropdown">
@@ -43,11 +42,11 @@
                   Fiches Mission
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarMissions">
-                  <a class="dropdown-item {{ app.request.pathinfo == '/missions' or app.request.pathinfo starts with '/missions/voir' or app.request.pathinfo starts with '/missions/modifier' ? 'active' }}" 
+                  <a class="dropdown-item {{ app.request.pathinfo == '/missions' or (app.request.pathinfo starts with '/missions' and (app.request.pathinfo ends with '/voir/' or app.request.pathinfo ends with '/modifier/')) ? 'active' }}"
                      href="{{ path('app_mission_list') }}">
                     Liste
                   </a>
-                  <a class="dropdown-item {{ app.request.pathinfo == '/missions/recap' ? 'active' }}" 
+                  <a class="dropdown-item {{ app.request.pathinfo starts with '/missions/recap' ? 'active' }}"
                      href="{{ path('app_mission_recap') }}">
                     Récap FM ouvertes
                   </a>
@@ -65,6 +64,24 @@
                    href="{{ path('app_address_list') }}">
                   Logements
                 </a>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle {{ app.request.pathinfo starts with '/visites' ? 'active' }}" href="#" id="navbarInspections" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Visites Immeubles
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarInspections">
+                  <a class="dropdown-item {{ app.request.pathinfo == '/visites' or app.request.pathinfo starts with '/visites/recap/' or (app.request.pathinfo starts with '/visites/' and app.request.pathinfo ends with '/voir') ? 'active' }}"
+                     href="{{ path('app_inspection_list') }}">
+                    Liste des logements
+                  </a>
+                  {% if is_granted(constant('App\\Entity\\User::ROLE_VOLUNTEER')) %}
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item {{ app.request.pathinfo == '/visites/ajouter' ? 'active' }}"
+                       href="{{ path('app_inspection_new') }}">
+                      Créer une FVI
+                    </a>
+                  {% endif %}
+                </div>
               </li>
               {% if is_granted(constant('App\\Entity\\User::ROLE_ADMIN')) %}
                 <li class="nav-item">
