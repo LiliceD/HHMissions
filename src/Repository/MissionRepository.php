@@ -18,25 +18,6 @@ class MissionRepository extends ServiceEntityRepository
         parent::__construct($registry, Mission::class);
     }
 
-    public function findByStatusJoined(array $value)
-    {
-        $qb = $this->createQueryBuilder('m')
-            ->innerJoin('m.address', 'a')
-            ->addSelect('a')
-            ->innerJoin('m.gla', 'g')
-            ->addSelect('g')
-            ->leftJoin('m.volunteer', 'v')
-            ->addSelect('v')
-        ;
-        
-        return $qb->add('where', $qb->expr()->in('m.status', ':value'))
-            ->orderBy('m.id', 'DESC')
-            ->setParameter('value', $value)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-
     public function findByFiltersJoined(array $filters): array
     {
         $qb = $this->createQueryBuilder('m')
