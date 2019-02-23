@@ -45,4 +45,19 @@ class AddressRepository extends ServiceEntityRepository
             ->orderBy('a.street', 'ASC')
         ;
     }
+
+    /**
+     * @return array
+     */
+    public function findAllJoined(): array
+    {
+        return $this->createQueryBuilder('a')
+            ->innerJoin('a.gla', 'g')
+            ->addSelect('g')
+            ->leftJoin('a.referent', 'r')
+            ->addSelect('r')
+            ->orderBy('a.street', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

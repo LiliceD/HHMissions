@@ -188,16 +188,14 @@ class AddressController extends AbstractController
      *  name="app_address_list",
      * )
      *
+     * @param AddressManager $manager
+     *
      * @return Response
      */
-    public function list(): Response
+    public function list(AddressManager $manager): Response
     {
-        $repository = $this->getDoctrine()->getRepository(Address::class);
-
-        $addresses = $repository->findBy([], ['street' => 'ASC']);
-
         return $this->render('address/list.html.twig', [
-            'addresses' => $addresses
+            'addresses' => $manager->getAll(),
         ]);
     }
 

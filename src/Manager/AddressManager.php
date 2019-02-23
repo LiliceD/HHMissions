@@ -48,6 +48,16 @@ class AddressManager
     }
 
     /**
+     * Get all Addresses
+     *
+     * @return Address[]
+     */
+    public function getAll(): array
+    {
+        return $this->repository->findAllJoined();
+    }
+
+    /**
      * Get an Address from its ID
      *
      * @param int $id
