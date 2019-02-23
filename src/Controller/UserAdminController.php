@@ -7,7 +7,7 @@ use App\Form\UserEditType;
 use App\Entity\User;
 use App\Manager\UserManager;
 use App\Utils\Constant;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,7 +21,7 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
  *
  * @author Alice Dahan <lilice.dhn@gmail.com>
  */
-class UserAdminController extends Controller
+class UserAdminController extends AbstractController
 {
     
     //  ██████╗██████╗ ██╗   ██╗██████╗

@@ -4,7 +4,9 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\ResetPasswordType;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use App\Manager\MailManager;
+use SendGrid\Mail\TypeException;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,7 +20,7 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
  *
  * @author Alice Dahan <lilice.dhn@gmail.com>
  */
-class SecurityController extends Controller
+class SecurityController extends AbstractController
 {
     /**
      * @Route(
@@ -58,12 +60,15 @@ class SecurityController extends Controller
      *
      * @param Request                       $request
      * @param AuthorizationCheckerInterface $authChecker
-     * @param MailController                $mailController
+     * @param MailManager                   $mailManager
      * @param UserPasswordEncoderInterface  $passwordEncoder
      *
      * @return RedirectResponse|Response
+     *
+     * @throws TypeException
+     * @throws \Exception
      */
-    public function resetPassword(Request $request, AuthorizationCheckerInterface $authChecker, MailController $mailController, UserPasswordEncoderInterface $passwordEncoder)
+    public function resetPassword(Request $request, AuthorizationCheckerInterface $authChecker, MailManager $mailManager, UserPasswordEncoderInterface $passwordEncoder)
     {
         if ($authChecker->isGranted('IS_AUTHENTICATED_FULLY')) {
             // If user is connected, redirect to mission list
@@ -81,6 +86,7 @@ class SecurityController extends Controller
 
             // Retrieve user
             $repository = $this->getDoctrine()->getRepository(User::class);
+            /** @var User $user */
             $user = $repository->findOneBy(['username' => $username]);
 
             if ($user) {
@@ -100,7 +106,7 @@ class SecurityController extends Controller
                     'password' => $password,
                 ]);
 
-                $mailController->send($mailParams['subject'], $mailParams['to'], $view);
+                $mailManager->send($mailParams['subject'], $mailParams['to'], $view);
 
                 // Persist changes to DB
                 $em = $this->getDoctrine()->getManager();

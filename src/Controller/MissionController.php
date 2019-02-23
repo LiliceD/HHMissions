@@ -8,7 +8,7 @@ use App\Form\MissionType;
 use App\Form\MissionSearchType;
 use App\Manager\MissionManager;
 use App\Utils\Constant;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,7 +22,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @author Alice Dahan <lilice.dhn@gmail.com>
  */
-class MissionController extends Controller
+class MissionController extends AbstractController
 {
     
     //  ██████╗██████╗ ██╗   ██╗██████╗
