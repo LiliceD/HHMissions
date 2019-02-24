@@ -1,4 +1,4 @@
-<div class="table-responsive mt-4">
+<div class="table-responsive mt-4 mb-4">
     <table class="table table-sm table-hover font-size-14" id="inspection-table">
         <thead class="sticky-top thead-light">
             <tr>
@@ -6,24 +6,9 @@
                 <th scope="col" class="align-middle table-inspection-them">{{ constant('App\\Entity\\BuildingInspectionItemHeaders::LABEL_THEME') }} <i class="fas fa-sort"></i></th>
                 <th scope="col" class="align-middle table-inspection-name">{{ constant('App\\Entity\\BuildingInspectionItemHeaders::LABEL_NAME') }} <i class="fas fa-sort"></i></th>
                 <th scope="col" class="align-middle table-inspection-description">{{ constant('App\\Entity\\BuildingInspectionItemHeaders::LABEL_DESCRIPTION') }} <i class="fas fa-sort"></i></th>
-                {% if recap is defined %}
-                    {% for inspection in inspections %}
-                        <th scope="col" class="align-middle table-inspection-recap text-center text-dark" data-toggle="popover" data-content="{{ "Visite du %date% par %inspector%"|replace({'%date%': inspection.created|date('d/m/Y'), '%inspector%': inspection.inspector }) }}">
-                            {{ inspection.created|date('d/m/y') }}
-                            <br>
-                            {{ inspection.inspector.initials }}
-                            <br>
-                            <a href="{{ path('app_inspection_view', {'id': inspection.id}) }}" class="btn btn-sm btn-xs btn-primary">
-                                <i class="fas fa-eye"></i>
-                                Voir
-                            </a>
-                        </th>
-                    {% endfor %}
-                {% else %}
-                    <th scope="col" class="align-middle">{{ constant('App\\Entity\\BuildingInspectionItem::LABEL_COMMENT') }} <i class="fas fa-sort"></i></th>
-                    <th scope="col" class="align-middle table-inspection-action">{{ constant('App\\Entity\\BuildingInspectionItem::LABEL_ACTION') }} <i class="fas fa-sort"></i></th>
-                    <th scope="col" class="align-middle table-inspection-decision">{{ constant('App\\Entity\\BuildingInspectionItem::LABEL_DECISION_MAKER') }} <i class="fas fa-sort"></i></th>
-                {% endif %}
+                <th scope="col" class="align-middle">{{ constant('App\\Entity\\BuildingInspectionItem::LABEL_COMMENT') }} <i class="fas fa-sort"></i></th>
+                <th scope="col" class="align-middle table-inspection-action">{{ constant('App\\Entity\\BuildingInspectionItem::LABEL_ACTION') }} <i class="fas fa-sort"></i></th>
+                <th scope="col" class="align-middle table-inspection-decision">{{ constant('App\\Entity\\BuildingInspectionItem::LABEL_DECISION_MAKER') }} <i class="fas fa-sort"></i></th>
             </tr>
         </thead>
 
@@ -36,45 +21,23 @@
                     <td>{{ header.description|nl2br }}</td>
                     {% for inspection in inspections %}
                         {% for item in inspection.items if item.headers.id == header.id %}
-                            {% if recap is defined %}
-                                <td class="text-center">
-                                    <a href="{{ path('app_inspection_view', {'id': inspection.id}) }}" class="text-dark" data-toggle="popover" data-content="{{ item.comment }}">
-                                        {% if item.action  == '' %}
-                                            <i class="fas fa-check text-success"></i>
-                                        {% elseif item.action == constant('App\\Entity\\BuildingInspectionItem::ACTION_URGENT') %}
-                                            <i class="fas fa-stopwatch text-danger"></i>
-                                        {% elseif item.action == constant('App\\Entity\\BuildingInspectionItem::ACTION_FOLLOW') %}
-                                            <i class="fas fa-arrow-circle-right text-primary"></i>
-                                        {% elseif item.action == constant('App\\Entity\\BuildingInspectionItem::ACTION_REMEMBER') %}
-                                            <i class="fas fa-bell text-warning"></i>
-                                        {% endif %}
-                                        {{ item.action }}
-                                        {% if item.action  != '' %}
-                                            <br>
-                                            <i class="fas fa-user"></i>
-                                            {{ item.decisionMaker }}
-                                        {% endif %}
-                                    </a>
-                                </td>
-                            {% else %}
-                                <td>{{ item.comment|nl2br }}</td>
-                                <td>
-                                    {% if item.action == constant('App\\Entity\\BuildingInspectionItem::ACTION_URGENT') %}
-                                        <i class="fas fa-stopwatch text-danger"></i>
-                                    {% elseif item.action == constant('App\\Entity\\BuildingInspectionItem::ACTION_FOLLOW') %}
-                                        <i class="fas fa-arrow-circle-right text-primary"></i>
-                                    {% elseif item.action == constant('App\\Entity\\BuildingInspectionItem::ACTION_REMEMBER') %}
-                                        <i class="fas fa-bell text-warning"></i>
-                                    {% endif %}
-                                    {{ item.action }}
-                                </td>
-                                <td>
-                                    {% if item.decisionMaker  != '' %}
-                                        <i class="fas fa-user"></i>
-                                    {% endif %}
-                                    {{ item.decisionMaker }}
-                                </td>
-                            {% endif %}
+                            <td>{{ item.comment|nl2br }}</td>
+                            <td>
+                                {% if item.action == constant('App\\Entity\\BuildingInspectionItem::ACTION_URGENT') %}
+                                    <i class="fas fa-stopwatch text-danger"></i>
+                                {% elseif item.action == constant('App\\Entity\\BuildingInspectionItem::ACTION_FOLLOW') %}
+                                    <i class="fas fa-arrow-circle-right text-primary"></i>
+                                {% elseif item.action == constant('App\\Entity\\BuildingInspectionItem::ACTION_REMEMBER') %}
+                                    <i class="fas fa-bell text-warning"></i>
+                                {% endif %}
+                                {{ item.action }}
+                            </td>
+                            <td>
+                                {% if item.decisionMaker  != '' %}
+                                    <i class="fas fa-user"></i>
+                                {% endif %}
+                                {{ item.decisionMaker }}
+                            </td>
                         {% endfor %}
                     {% endfor %}
                 </tr>

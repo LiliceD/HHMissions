@@ -1,4 +1,8 @@
-.font-size-14{
+* {
+  box-sizing: border-box;
+}
+
+.font-size-14 {
   font-size: 14px;
 }
 
@@ -65,7 +69,6 @@ h3 {
   font-weight: bold;
 }
 
-
 /* mission/recap.html.twig */
 .table-recap {
   font-size: 12px;
@@ -103,41 +106,85 @@ h3 {
   line-height: 100%;
 }
 
-/*.inspection-table {*/
-  /*max-width: 1800px;*/
-  /*display: block;*/
-  /*overflow-x: scroll;*/
-  /*white-space: nowrap;*/
-/*}*/
+.table-inspection {
+  width: 1315px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+#table-inspection-headers {
+  width: 715px;
+}
+
+#table-inspection-body {
+  width: 600px;
+  overflow-x: scroll;
+}
+
+#table-inspection-headers thead, #table-inspection-body thead {
+  display: table-row;
+}
+
+#table-inspection-headers tbody, #table-inspection-body tbody {
+  height: 600px;
+  display: block;
+}
+
+#table-inspection-headers tbody {
+  overflow-y: hidden;
+}
+
+#table-inspection-body tbody {
+  overflow-y: scroll;
+}
+
+#table-inspection-headers tr, #table-inspection-body tr {
+  height: 75px;
+}
 
 .table-inspection-rank {
-  /*width: 20px;*/
-  width: 3%;
+  min-width: 40px;
+  max-width: 40px;
+  white-space: initial;
+  /*min-width: 3%;*/
 }
 .table-inspection-theme {
-  /*width: 150px;*/
-  width: 7%;
+  min-width: 150px;
+  max-width: 150px;
+  white-space: initial;
+  /*min-width: 7%;*/
 }
 .table-inspection-name {
-  width: 14%;
-  /*width: 250px;*/
+  /*min-width: 14%;*/
+  min-width: 250px;
+  max-width: 250px;
+  white-space: initial;
 }
 .table-inspection-description {
-  /*width: 275px;*/
-  width: 15%;
+  min-width: 275px;
+  max-width: 275px;
+  white-space: initial;
+  /*min-width: 15%;*/
 }
 .table-inspection-action {
-  /*width: 125px;*/
-  width: 7%;
+  min-width: 125px;
+  max-width: 125px;
+  white-space: initial;
+  /*min-width: 7%;*/
 }
 .table-inspection-decision {
-  /*width: 200px;*/
-  width: 11%;
+  min-width: 200px;
+  max-width: 200px;
+  white-space: initial;
+  /*min-width: 11%;*/
 }
 
-/*.table-inspection-recap {*/
-  /*width: 100px;*/
-/*}*/
+.table-inspection-recap {
+  min-width: 200px;
+  max-width: 200px;
+  white-space: initial;
+}
+
 .resize-none {
   resize: none;
 }

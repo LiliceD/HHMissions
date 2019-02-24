@@ -17,7 +17,7 @@
 {% endblock %}
 
 {% block large_content %}
-    {% include 'inspection/view-table.html.twig' with {'headers': headers, 'inspections': inspections, 'recap': true } %}
+    {% include 'inspection/recap-table.html.twig' with {'headers': headers, 'inspections': inspections } %}
 {% endblock %}
 
 
@@ -31,6 +31,13 @@
         (function() {
             $(function() {
                 addTableSorting([$('table')]);
+                bindScrollBetweenTables();
+
+                function bindScrollBetweenTables() {
+                    $('#table-inspection-body tbody').scroll(() => {
+                        $('#table-inspection-headers tbody').scrollTop($('#table-inspection-body tbody').scrollTop());
+                    });
+                }
             });
         })();
     </script>
