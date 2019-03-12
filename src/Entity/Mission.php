@@ -458,11 +458,11 @@ class Mission
     }
 
     /**
-     * @param string $info
+     * @param string|null $info
      *
      * @return Mission
      */
-    public function setInfo(string $info): Mission
+    public function setInfo(?string $info): Mission
     {
         $this->info = $info;
 
