@@ -1,0 +1,13 @@
+<tbody>
+{% for header in headers %}
+    <tr>
+        <td class="center table-inspection-rank">{{ header.rank }}</td>
+        <td></td>
+        <td>{{ header.theme }}</td>
+        <td>{{ header.name }}</td>
+        <td>{{ header.description|nl2br }}</td>
+        <td class="bg-yellow"></td>
+        <td class="bg-yellow"></td>
+    </tr>
+{% endfor %}
+</tbody>

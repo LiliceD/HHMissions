@@ -19,6 +19,7 @@ class BuildingInspection
     public const LABEL_ADDRESS = 'Adresse de l\'immeuble :';
     public const LABEL_GLA = 'Responsable GLA :';
     public const LABEL_REFERENT = 'Référent immeuble :';
+    public const LABEL_ACCESS = 'Accès :';
     public const LABEL_INSPECTOR = 'Visiteur·se :';
     public const LABEL_CREATED = 'Date de la visite :';
 

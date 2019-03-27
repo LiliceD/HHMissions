@@ -6,6 +6,7 @@ use App\Entity\Address;
 use App\Form\BuildingInspectionType;
 use App\Manager\AddressManager;
 use App\Manager\BuildingInspectionManager;
+use Knp\Snappy\GeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -117,5 +118,37 @@ class BuildingInspectionController extends AbstractController
             'headers' => $headers,
             'inspections' => $inspections,
         ]);
+    }
+
+    /**
+     * @Route(
+     *     "/pdf",
+     *     name="app_inspection_pdf"
+     * )
+     *
+     * @param BuildingInspectionManager $manager
+     * @param GeneratorInterface        $knpSnappy
+     *
+     * @return Response
+     */
+    public function downloadPdf(BuildingInspectionManager $manager, GeneratorInterface $knpSnappy): Response
+    {
+        $headers = $manager->getItemHeaders();
+        $html = $this->renderView('pdf/building-inspection-empty.html.twig', [
+            'headers' => $headers,
+        ]);
+        $filename = 'RVI_modele.pdf';
+
+        return new Response(
+            $knpSnappy->getOutputFromHtml($html, [
+                'page-size' => 'A4',
+                'orientation' => 'Landscape',
+            ]),
+            Response::HTTP_OK,
+            [
+                'Content-Type'        => 'application/pdf',
+                'Content-Disposition' => sprintf('attachment; filename="%s"', $filename),
+            ]
+        );
     }
 }
