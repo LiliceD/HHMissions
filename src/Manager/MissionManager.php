@@ -158,6 +158,11 @@ class MissionManager
         return new FLashMessage('La mission vous a bien été attribuée.');
     }
 
+    /**
+     * @param Mission $mission
+     *
+     * @return FLashMessage
+     */
     public function close(Mission $mission): FLashMessage
     {
         $status = $mission->getStatus();
@@ -179,6 +184,11 @@ class MissionManager
         return $flash;
     }
 
+    /**
+     * @param Mission $mission
+     *
+     * @return FLashMessage
+     */
     public function deleteAttachment(Mission $mission): FLashMessage
     {
         $fileName = $mission->getAttachment();
@@ -197,6 +207,11 @@ class MissionManager
         return $flash;
     }
 
+    /**
+     * @param Mission $mission
+     *
+     * @return FLashMessage
+     */
     public function delete(Mission $mission): FLashMessage
     {
         $this->deleteAttachment($mission);
@@ -207,6 +222,11 @@ class MissionManager
         return new FLashMessage('La fiche mission a bien été supprimée.');
     }
 
+    /**
+     * @param int $id
+     *
+     * @return Mission|null
+     */
     public function getById(int $id): ?Mission
     {
         /** @var Mission $mission */
@@ -215,6 +235,11 @@ class MissionManager
         return $mission;
     }
 
+    /**
+     * @param array $filters
+     *
+     * @return array
+     */
     public function getFilteredMissions(array $filters): array
     {
         // Create array of filters for query
@@ -265,6 +290,11 @@ class MissionManager
         return $this->repository->findByFiltersJoined($queryFilters);
     }
 
+    /**
+     * @param array $missions
+     *
+     * @return array
+     */
     public function getJsonMissions(array $missions): array
     {
         $missionsJson = [];

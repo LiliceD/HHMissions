@@ -49,7 +49,7 @@ class Mission
      * @ORM\Column(type="string", length=25)
      *
      * @Assert\NotBlank()
-     * @Assert\Choice(callback={"App\Entity\Mission", "getStatuses"})
+     * @Assert\Choice(callback="getStatuses")
      *
      * @var string
      */

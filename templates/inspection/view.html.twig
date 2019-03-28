@@ -1,0 +1,37 @@
+{% extends 'inspection/layout.html.twig' %}
+{% from 'macros.html.twig' import backButton as backButton %}
+{% from 'macros.html.twig' import buildingInspectionInfo as buildingInspectionInfo %}
+
+
+{% block header_button %}
+    {{ backButton(path('app_inspection_recap', {'id': inspection.address.id}), 'Retour aux rapports') }}
+{% endblock %}
+
+{% block header_h2 %}
+    Rapport de visite du {{ inspection.created|date('d/m/y') }}
+{% endblock %}
+
+
+{% block content %}
+    {{ buildingInspectionInfo(inspection.address, inspection.inspector, inspection.created) }}
+{% endblock %}
+
+{% block large_content %}
+    {% include 'inspection/view-table.html.twig' with {'headers': headers, 'inspections': {0: inspection} } %}
+{% endblock %}
+
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script src="{{ asset('js/functions.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.0/js/jquery.tablesorter.js"></script>
+
+    <script>
+        (function() {
+            $(function() {
+                addTableSorting([$('table')]);
+            });
+        })();
+    </script>
+{% endblock %}

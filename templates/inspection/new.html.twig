@@ -1,0 +1,136 @@
+{% extends 'layout-large.html.twig' %}
+{% from 'macros.html.twig' import backButton as backButton %}
+{% from 'macros.html.twig' import formButtons as formButtons %}
+
+{% block title %}
+    Rapports de Visite d'Immeuble - {{ parent() }}
+{% endblock %}
+
+{% block header_button %}
+    {{ backButton(path('app_inspection_list')) }}
+{% endblock %}
+
+{% block header_h2 %}
+    Rapport de visite d'immeuble
+{% endblock %}
+
+{% block content %}
+    {{ form_start(form) }}
+    {{ form_widget(form.gla, {'attr': {'hidden': 'true'}}) }}
+    {{ form_widget(form.referent, {'attr': {'hidden': 'true'}}) }}
+
+    <div class="row align-items-center mb-3">
+        <div class="col-lg-3 text-right">
+            {{ form_label(form.address) }}
+        </div>
+        <div class="col-lg-6">
+            {{ form_widget(form.address) }}
+        </div>
+    </div>
+    <div class="row align-items-center mb-3">
+        <div class="col-lg-3 text-right">
+            {{ form_label(form.gla_name) }}
+        </div>
+        <div class="col-lg-6">
+            {{ form_widget(form.gla_name) }}
+        </div>
+    </div>
+    <div class="row align-items-center mb-5">
+        <div class="col-lg-3 text-right">
+            {{ form_label(form.referent_name) }}
+        </div>
+        <div class="col-lg-6">
+            {{ form_widget(form.referent_name) }}
+        </div>
+    </div>
+    <div class="row align-items-center mb-3">
+        <div class="col-lg-3 text-right">
+            {{ form_label(form.inspector) }}
+        </div>
+        <div class="col-lg-6">
+            {{ form_widget(form.inspector) }}
+        </div>
+    </div>
+    <div class="row align-items-center mb-5">
+        <div class="col-lg-3 text-right">
+            {{ form_label(form.created) }}
+        </div>
+        <div class="col-lg-6">
+            {{ form_widget(form.created) }}
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block large_content %}
+    <div class="table-responsive mt-4">
+        <table class="table table-sm font-size-14">
+            {% for item in form.items %}
+                {%  if loop.index == 1 %}
+                    <thead>
+                        <tr class="thead-light">
+                            <th scope="col" class="table-inspection-rank">{{ form_label(item.headers.rank) }}</th>
+                            <th scope="col" class="table-inspection-theme">{{ form_label(item.headers.theme) }}</th>
+                            <th scope="col" class="table-inspection-name">{{ form_label(item.headers.name) }}</th>
+                            <th scope="col" class="table-inspection-description">{{ form_label(item.headers.description) }}</th>
+                            <th scope="col">{{ form_label(item.comment) }}</th>
+                            <th scope="col" class="table-inspection-action">{{ form_label(item.action) }}</th>
+                            <th scope="col" class="table-inspection-decision">{{ form_label(item.decisionMaker) }}</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                {% endif %}
+                <tr>
+                    <td>{{ form_widget(item.headers.rank, {'attr': {'class': 'form-to-text'}}) }}</td>
+                    <td>{{ form_widget(item.headers.theme, {'attr': {'class': 'form-to-text resize-none'}}) }}</td>
+                    <td>{{ form_widget(item.headers.name, {'attr': {'class': 'form-to-text resize-none font-weight-bold'}}) }}</td>
+                    <td>{{ form_widget(item.headers.description, {'attr': {'class': 'form-to-text resize-none'}}) }}</td>
+                    <td class="bg-opacity-75">{{ form_widget(item.comment, {'attr': {'class': 'font-size-14'}}) }}</td>
+                    <td class="bg-opacity-75">{{ form_widget(item.action) }}</td>
+                    <td class="bg-opacity-75">{{ form_widget(item.decisionMaker) }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <br>
+
+    {# Buttons Submit / Cancel #}
+    {{ formButtons(path('app_inspection_list'), null, 'center') }}
+
+    <br>
+    <br>
+
+    {{ form_end(form) }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script>
+        (function() {
+            $(function() {
+                prepopulateInspector();
+                prepopulateAddressInfo();
+                $('#building_inspection_address').change(prepopulateAddressInfo);
+
+                function prepopulateInspector() {
+                    $('#building_inspection_inspector').val("{{ app.user.id }}");
+                }
+
+                function prepopulateAddressInfo() {
+                    let addressId = encodeURIComponent($('#building_inspection_address').val());
+
+                    $.post("{{ path('app_address_info') }}", {'id': addressId}, data => {
+                        $('#building_inspection_gla').val(data.gla.id);
+                        $('#building_inspection_gla_name').val(data.gla.name);
+                        $('#building_inspection_referent').val(data.referent.id);
+                        $('#building_inspection_referent_name').val(data.referent.name);
+                    });
+                }
+            });
+        })();
+    </script>
+{% endblock %}

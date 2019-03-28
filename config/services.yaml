@@ -28,5 +28,7 @@ services:
     App\Service\FileUploader:
         arguments:
             $targetDir: '%app_attachment_directory%'
+
+    Knp\Snappy\GeneratorInterface: '@knp_snappy.pdf'
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

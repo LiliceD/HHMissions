@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Form\UserPasswordType;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,7 +17,7 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
  *
  * @author Alice Dahan <lilice.dhn@gmail.com>
  */
-class UserProfileController extends Controller
+class UserProfileController extends AbstractController
 {
     /**
      * @Route(

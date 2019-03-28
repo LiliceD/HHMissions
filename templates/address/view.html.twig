@@ -1,0 +1,63 @@
+{% extends 'address/layout.html.twig' %}
+
+{% block header_h2 %}
+    Détail du logement
+{% endblock %}
+
+{% block card_body %}
+    <div class="mb-4">
+        <strong>Adresse :</strong>
+
+        <br>
+
+        {% if address.name %}
+            {{ address.name }}
+            <br>
+        {% endif %}
+
+        {{ address.street }}
+
+        <br>
+
+        {{ address.zipCode }} {{ address.city }}
+    </div>
+
+    <div class="mb-4">
+        <strong>Accès : </strong>
+        {{ address.access }}
+    </div>
+
+    <div class="row">
+        <div class="col-sm-4">
+            <strong>Propriétaire : </strong>
+            {{ address.ownerType }}
+        </div>
+
+        <div class="col-sm-4">
+            <strong>Responsable GLA : </strong>
+            {{ address.gla }}
+        </div>
+
+        {% if address.isBuilding %}
+            <div class="col-sm-4">
+                <strong>Référent immeuble : </strong>
+                {{ address.referent ?? ' - '}}
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% if is_granted(constant('App\\Entity\\User::ROLE_GLA')) %}
+    {% block card_footer_left %}
+        <div>
+            <a href="{{ path('app_address_edit', {'id': address.id}) }}" class="btn btn-outline-primary">
+                <i class="fas fa-edit"></i>
+                Modifier
+            </a>
+        </div>
+    {% endblock %}
+{% endif %}
+
+{% block javascripts %}
+  {{ parent() }}
+{% endblock %}

@@ -28,3 +28,37 @@
     </a>
   </div>
 {% endmacro %}
+
+{% macro backButton(path, text = 'Retour à la liste') %}
+  <a href="{{ path }}" class="btn btn-outline-secondary">
+    <i class="fas fa-chevron-left"></i>
+    {{ text }}
+  </a>
+{% endmacro %}
+
+{% macro buildingInspectionInfo(address, inspector = false, created = false) %}
+  <div class="mb-2">
+    <strong>{{ constant('App\\Entity\\BuildingInspection::LABEL_ADDRESS') }}</strong>
+    {{ address.address }}
+  </div>
+  <div class="mb-2">
+    <strong>{{ constant('App\\Entity\\BuildingInspection::LABEL_GLA') }}</strong>
+    {{ address.gla }}
+  </div>
+  <div class="mb-4">
+    <strong>{{ constant('App\\Entity\\BuildingInspection::LABEL_REFERENT') }}</strong>
+    {{ address.referent }}
+  </div>
+  {% if inspector %}
+    <div class="mb-2">
+      <strong>{{ constant('App\\Entity\\BuildingInspection::LABEL_INSPECTOR') }}</strong>
+      {{ inspector }}
+    </div>
+  {% endif %}
+  {% if created %}
+    <div class="mb-2">
+      <strong>{{ constant('App\\Entity\\BuildingInspection::LABEL_CREATED') }}</strong>
+      {{ created|date('d/m/y') }}
+    </div>
+  {% endif %}
+{% endmacro %}

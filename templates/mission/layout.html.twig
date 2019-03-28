@@ -1,5 +1,5 @@
 {% extends 'layout-card-md.html.twig' %}
-
+{% from 'macros.html.twig' import backButton as backButton %}
 
 {% block title %}
   Fiches mission - {{ parent() }}
@@ -7,8 +7,5 @@
 
 
 {% block header_button %}
-  <a href="{{ path('app_mission_list') }}" class="btn btn-outline-secondary">
-    <i class="fas fa-chevron-left"></i>
-    Retour à la liste
-  </a>
+  {{ backButton(path('app_mission_list')) }}
 {% endblock %}

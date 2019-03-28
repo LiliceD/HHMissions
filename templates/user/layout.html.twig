@@ -1,4 +1,5 @@
 {% extends 'layout-card-sm.html.twig' %}
+{% from 'macros.html.twig' import backButton as backButton %}
 
 
 {% block title %}
@@ -8,9 +9,6 @@
 
 {% block header_button %}
   {% if is_granted(constant('App\\Entity\\User::ROLE_ADMIN')) and not ('/monprofil' in app.request.pathinfo) %}
-    <a href="{{ path('app_user_list') }}" class="btn btn-outline-secondary">
-      <i class="fas fa-chevron-left"></i>
-      Retour à la liste
-    </a>
+    {{ backButton(path('app_user_list')) }}
   {% endif %}
 {% endblock %}

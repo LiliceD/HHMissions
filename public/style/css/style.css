@@ -1,12 +1,24 @@
+* {
+  box-sizing: border-box;
+}
+
+.font-size-14 {
+  font-size: 14px;
+}
+
+.bg-inactive {
+  background-color: rgba(108, 117, 125, 0.25);
+}
+
+.bg-opacity-75 {
+  background-color: rgba(0, 0, 0, 0.075);
+}
+
 /* validation alerts hidden by default in Bootstrap form theme */
 .invalid-feedback {
   display: block;
 }
 
-/* clicking on th sorts table (mission/list, mission/recap, address/list, user/list) */
-th:hover {
-  cursor: pointer;
-}
 
 /* mission/list.html.twig */
 h3 {
@@ -29,11 +41,6 @@ h3 {
 
 .input-date {
   width: 140px;
-}
-
-/* also used in user/list.html.twig */
-.bg-inactive {
-  background-color: rgba(108, 117, 125, 0.25);
 }
 
 
@@ -62,7 +69,6 @@ h3 {
   font-weight: bold;
 }
 
-
 /* mission/recap.html.twig */
 .table-recap {
   font-size: 12px;
@@ -90,12 +96,100 @@ h3 {
   width: 60px;
 }
 
-
-/* address/list.html.twig */
-.addresses-table {
+/* inspection/new.html.twig */
+.form-to-text {
+  padding: 0;
+  background-color: #fff !important;
+  border: none;
   font-size: 14px;
+  height: 100%;
+  line-height: 100%;
 }
 
+.table-inspection {
+  width: 1315px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+#table-inspection-headers {
+  width: 715px;
+}
+
+#table-inspection-body {
+  width: 600px;
+  overflow-x: scroll;
+}
+
+#table-inspection-headers thead, #table-inspection-body thead {
+  display: table-row;
+}
+
+#table-inspection-headers tbody, #table-inspection-body tbody {
+  height: 600px;
+  display: block;
+}
+
+#table-inspection-headers tbody {
+  overflow-y: hidden;
+}
+
+#table-inspection-body tbody {
+  overflow-y: scroll;
+}
+
+#table-inspection-headers tr, #table-inspection-body tr {
+  height: 75px;
+}
+
+.table-inspection-rank {
+  min-width: 40px;
+  max-width: 40px;
+  white-space: initial;
+  /*min-width: 3%;*/
+}
+.table-inspection-theme {
+  min-width: 150px;
+  max-width: 150px;
+  white-space: initial;
+  /*min-width: 7%;*/
+}
+.table-inspection-name {
+  /*min-width: 14%;*/
+  min-width: 250px;
+  max-width: 250px;
+  white-space: initial;
+}
+.table-inspection-description {
+  min-width: 275px;
+  max-width: 275px;
+  white-space: initial;
+  /*min-width: 15%;*/
+}
+.table-inspection-action {
+  min-width: 125px;
+  max-width: 125px;
+  white-space: initial;
+  /*min-width: 7%;*/
+}
+.table-inspection-decision {
+  min-width: 200px;
+  max-width: 200px;
+  white-space: initial;
+  /*min-width: 11%;*/
+}
+
+.table-inspection-recap {
+  min-width: 200px;
+  max-width: 200px;
+  white-space: initial;
+}
+
+.resize-none {
+  resize: none;
+}
+
+/* address/list.html.twig */
 .btn-xs {
   padding: .18rem .38rem;
   line-height: 1.1;

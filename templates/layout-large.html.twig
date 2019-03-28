@@ -2,22 +2,17 @@
 
 
 {% block body %}
-
   <div class="container">
     <div class="d-flex justify-content-between align-items-center">
       <h2>
-
         {% block header_h2 %}
           Fiches Mission
         {% endblock %}
-
       </h2>
 
       <div>
-
         {% block header_button %}
         {% endblock %}
-
       </div>
     </div> {# div d-flex justify-content-between #}
 
@@ -29,6 +24,10 @@
     
     {% block content %}
     {% endblock %}
-
   </div> {# div container #}
+
+  <div class="container-fluid">
+    {% block large_content %}
+    {% endblock %}
+  </div>
 {% endblock %}

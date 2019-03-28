@@ -55,9 +55,9 @@ function getSelectedValue(select) {
 
 
 /**
- * Add sorting on clicking on one of the tables of missions' headers
+ * Add sorting on clicking on one of the tables' headers
  */
-function addMissionsSorting(tables) {
+function addTableSorting(tables) {
     tables.forEach(table => {
         table.tablesorter({dateFormat: "ddmmyyyy"});
     });

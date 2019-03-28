@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -18,29 +19,29 @@ class UserRepository extends ServiceEntityRepository
         parent::__construct($registry, User::class);
     }
 
-    public function qbActiveByCategory($category)
+    public function qbActiveByCategory($category): QueryBuilder
     {
         $qb = $this->createQueryBuilder('u');
         
         // Select active users
         $qb->select('u')
-           ->where('active = true')
+           ->where('u.active = true')
         ;
         
         // Possibly add filter on volunteer/gla
         switch ($category) {
             case User::CATEGORY_GLA:
-                $qb->where('u.gla = true');
+                $qb->andWhere('u.gla = true');
                 break;
             case User::CATEGORY_VOLUNTEER:
-                $qb->where('u.volunteer = true');
+                $qb->andWhere('u.volunteer = true');
         }
 
         // Return directly the query builder (for EntityType fields query_builder in MissionType)
         return $qb->orderBy('u.name', 'ASC');
     }
 
-    public function qbAllByCategory($category)
+    public function qbAllByCategory($category): QueryBuilder
     {
         $qb = $this->createQueryBuilder('u');
         
