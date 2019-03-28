@@ -4,11 +4,13 @@ namespace App\Controller;
 
 use App\Entity\Address;
 use App\Form\AddressType;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\JsonResponse; // function access
+use App\Manager\AddressManager;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -18,7 +20,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @author Alice Dahan <lilice.dhn@gmail.com>
  */
-class AddressController extends Controller
+class AddressController extends AbstractController
 {
     
     //  ██████╗██████╗ ██╗   ██╗██████╗
@@ -70,6 +72,24 @@ class AddressController extends Controller
 
     /**
      * @Route(
+     *     "/{id}/voir/",
+     *     name="app_address_view",
+     *     requirements={"id"="\d+"}
+     * )
+     *
+     * @param Address $address
+     *
+     * @return Response
+     */
+    public function view(Address $address): Response
+    {
+        return $this->render('address/view.html.twig', [
+            'address' => $address
+        ]);
+    }
+
+    /**
+     * @Route(
      *  "/{id}/modifier/",
      *  name="app_address_edit",
      *  requirements={
@@ -102,7 +122,9 @@ class AddressController extends Controller
                 'Les modifications ont bien été enregistrées.'
             );
 
-            return $this->redirectToRoute('app_address_list');
+            return $this->redirectToRoute('app_address_view', [
+                'id' => $address->getId()
+            ]);
         }
 
         return $this->render('address/edit.html.twig', [
@@ -166,16 +188,14 @@ class AddressController extends Controller
      *  name="app_address_list",
      * )
      *
+     * @param AddressManager $manager
+     *
      * @return Response
      */
-    public function list(): Response
+    public function list(AddressManager $manager): Response
     {
-        $repository = $this->getDoctrine()->getRepository(Address::class);
-
-        $addresses = $repository->findBy([], ['street' => 'ASC']);
-
         return $this->render('address/list.html.twig', [
-            'addresses' => $addresses
+            'addresses' => $manager->getAll(),
         ]);
     }
 
@@ -193,30 +213,21 @@ class AddressController extends Controller
      *  "/info/",
      *  name="app_address_info",
      * )
-     * @param Request $request
+     *
+     * @param Request        $request
+     * @param AddressManager $manager
      *
      * @return JsonResponse
      */
-    public function info(Request $request): JsonResponse
+    public function info(Request $request, AddressManager $manager): JsonResponse
     {
         $id = $request->request->get('id');
+        $address = $manager->get($id);
 
-        // Retrieve the requested Address
-        $address = $this->getDoctrine()
-            ->getRepository(Address::class)
-            ->find($id);
+        if (!$address instanceof Address) {
+            throw new NotFoundHttpException(sprintf('Address with ID %d not found.', $id));
+        }
 
-        // Get values
-        $access = $address->getAccess();
-        $ownerType = $address->getOwnerType();
-
-        // Format values in JSON
-        $json = [
-            'access' => $access,
-            'ownerType' => $ownerType
-        ];
-
-        // Return a JSON response
-        return new JsonResponse($json);
+        return new JsonResponse($manager->getAddressInfo($address));
     }
 }

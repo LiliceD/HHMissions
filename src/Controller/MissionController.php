@@ -8,7 +8,8 @@ use App\Form\MissionType;
 use App\Form\MissionSearchType;
 use App\Manager\MissionManager;
 use App\Utils\Constant;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Knp\Snappy\GeneratorInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,7 +23,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @author Alice Dahan <lilice.dhn@gmail.com>
  */
-class MissionController extends Controller
+class MissionController extends AbstractController
 {
     
     //  ██████╗██████╗ ██╗   ██╗██████╗
@@ -348,11 +349,12 @@ class MissionController extends Controller
      *     requirements={"id"="\d+"}
      * )
      *
-     * @param Mission $mission
+     * @param Mission            $mission
+     * @param GeneratorInterface $knpSnappy
      *
      * @return Response
      */
-    public function pdfExport(Mission $mission): Response
+    public function pdfExport(Mission $mission, GeneratorInterface $knpSnappy): Response
     {
         $html = $this->renderView('pdf/mission-view.html.twig', [
             'mission' => $mission
@@ -360,7 +362,7 @@ class MissionController extends Controller
         $filename = sprintf('fm-%s__%s.pdf', $mission->getId(), $mission->getFormattedDateCreated());
 
         return new Response(
-            $this->get('knp_snappy.pdf')->getOutputFromHtml($html),
+            $knpSnappy->getOutputFromHtml($html),
             Response::HTTP_OK,
             [
                 'Content-Type'        => 'application/pdf',
@@ -376,13 +378,14 @@ class MissionController extends Controller
      *     name="app_mission_recap_pdf-export"
      * )
      *
-     * @param string         $activity
-     * @param Request        $request
-     * @param MissionManager $missionManager
+     * @param string             $activity
+     * @param Request            $request
+     * @param MissionManager     $missionManager
+     * @param GeneratorInterface $knpSnappy
      *
      * @return Response
      */
-    public function recapPdfExport(string $activity, Request $request, MissionManager $missionManager): Response
+    public function recapPdfExport(string $activity, Request $request, MissionManager $missionManager, GeneratorInterface $knpSnappy): Response
     {
         $dateMin = $request->query->get('dateMin');
         $dateMax = $request->query->get('dateMax');
@@ -401,7 +404,7 @@ class MissionController extends Controller
         $filename = sprintf('fm-recap_%s.pdf', date('Y-m-d'));
 
         return new Response(
-            $this->get('knp_snappy.pdf')->getOutputFromHtml($html, [
+            $knpSnappy->getOutputFromHtml($html, [
                 'page-size' => 'A3',
                 'orientation' => 'Landscape',
             ]),

@@ -82,7 +82,7 @@ class Address
      * Address's type (building / single apartment) and owner (FHH / private)
      *
      * @ORM\Column(type="string", nullable=true)
-     * @Assert\Choice(callback={"App\Entity\Address", "getOwnerTypes"})
+     * @Assert\Choice(callback="getOwnerTypes")
      */
     private $ownerType;
 
@@ -101,6 +101,43 @@ class Address
      */
     private $missions;
 
+    /**
+     * GLA in charge of this Address
+     *
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="addressesAsGla")
+     * @ORM\JoinColumn(nullable=false)
+     *
+     * @Assert\NotBlank()
+     * @Assert\Expression(
+     *     "value.isGla() and value.isActive()",
+     *     message="Un logement doit être associé à un·e GLA actif·ve.",
+     * )
+     *
+     * @var User
+     */
+    private $gla;
+
+    /**
+     * If this Address is a building, volunteer who is referent
+     *
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="buildingsAsReferent")
+     * @ORM\JoinColumn(nullable=true)
+     *
+     * @Assert\Expression(
+     *     "!this.isBuilding() or (value and value.isVolunteer() and value.isActive())",
+     *     message="Un immeuble doit avoir un·e bénévole référent·e.",
+     * )
+     *
+     * @var User
+     */
+    private $referent;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\BuildingInspection", mappedBy="address")
+     *
+     * @var ArrayCollection|Collection|array
+     */
+    private $inspections;
 
     /************** Methods *****************/
 
@@ -110,6 +147,7 @@ class Address
     public function __construct()
     {
         $this->missions = new ArrayCollection();
+        $this->inspections = new ArrayCollection();
     }
 
     /**
@@ -283,5 +321,63 @@ class Address
     public function getMissions(): Collection
     {
         return $this->missions;
+    }
+
+    /**
+     * Is the Accommodation an entire building?
+     *
+     * @return bool
+     */
+    public function isBuilding(): bool
+    {
+        return in_array($this->ownerType, [self::OWNER_FFH_BUILDING, self::OWNER_PRIVATE_BUILDING]);
+    }
+
+    /**
+     * @return User
+     */
+    public function getGla(): ?User
+    {
+        return $this->gla;
+    }
+
+    /**
+     * @param User $gla
+     *
+     * @return Address
+     */
+    public function setGla(User $gla): Address
+    {
+        $this->gla = $gla;
+
+        return $this;
+    }
+
+    /**
+     * @return User
+     */
+    public function getReferent(): ?User
+    {
+        return $this->referent;
+    }
+
+    /**
+     * @param User|null $referent
+     *
+     * @return Address
+     */
+    public function setReferent(?User $referent): Address
+    {
+        $this->referent = $referent;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getInspections(): Collection
+    {
+        return $this->inspections;
     }
 }

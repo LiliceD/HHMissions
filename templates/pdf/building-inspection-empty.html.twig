@@ -1,0 +1,175 @@
+{% extends 'base.html.twig' %}
+
+
+{% block stylesheets %}
+  <style>
+    .pdf-content {
+      font-family: Arial;
+      font-size: 18px;
+      margin-top: -10px;
+    }
+
+    .information {
+      width: 750px;
+      font-size: 14px;
+      line-height: 24px;
+      margin: auto;
+      display: flex;
+      align-items: flex-end;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    .information div {
+      padding-left: 12px;
+    }
+    .information-headers {
+      width: 25%;
+      font-weight: bold;
+      text-align: right;
+    }
+    .information-content {
+      max-width: 180px;
+    }
+
+    table {
+      font-size: 14px;
+      border-collapse: collapse;
+      border: 2px solid #777;
+      table-layout: fixed;
+      width: 100%;
+    }
+
+    thead {
+      border-bottom: 2px solid #777;
+      border-top: 0;
+      background-color: #f2f2f2
+    }
+
+    tr {
+      height: 60px;
+    }
+
+    th, td {
+      padding: 4px;
+      border-left: 1px solid #777;
+      vertical-align: center;
+    }
+
+    th {
+      text-align: center;
+    }
+
+    td {
+      padding-left: 12px;
+      border-top: 1px solid #777;
+      word-wrap:break-word;
+    }
+
+    .center {
+      text-align: center;
+    }
+    .red {
+      color: red;
+    }
+    .bg-yellow {
+      background-color: #ffff99;
+    }
+    .small-font {
+      font-size: 12px;
+    }
+    .mb {
+      margin-bottom: 6px;
+    }
+
+    .table-inspection-rank {
+      width: 50px;
+      padding: 0;
+    }
+    .table-inspection-theme {
+      width: 125px;
+    }
+    .table-inspection-name {
+      width: 200px;
+    }
+    .table-inspection-description {
+      width: 220px;
+    }
+  </style>
+{% endblock %}
+
+
+{% block nav %}
+{% endblock %}
+
+
+{% block body %}
+  <div class="pdf-content">
+    <div class="mb center">
+      <strong>RAPPORT DE VISITE D'IMMEUBLE</strong>
+    </div>
+
+    <div class="information bg-yellow">
+      <div class="information-headers">
+        {{ constant('App\\Entity\\BuildingInspection::LABEL_GLA') }}<br>
+        {{ constant('App\\Entity\\BuildingInspection::LABEL_REFERENT') }}<br>
+        {{ constant('App\\Entity\\BuildingInspection::LABEL_ADDRESS') }}<br>
+        {{ constant('App\\Entity\\BuildingInspection::LABEL_ACCESS') }}
+      </div>
+      <div class="information-content">
+        {% if address is defined %}
+          {{ address.gla }}<br>
+          {{ address.referent }}<br>
+          {{ address.address }}<br>
+          {{ address.access }}
+        {% endif %}
+      </div>
+    </div>
+    <div class="information bg-yellow">
+      <div class="information-headers">
+        {{ constant('App\\Entity\\BuildingInspection::LABEL_INSPECTOR') }}
+      </div>
+      <div class="information-headers">
+      </div>
+      <div class="information-headers">
+        {{ constant('App\\Entity\\BuildingInspection::LABEL_CREATED') }}
+      </div>
+    </div>
+
+    <table>
+      {% include 'pdf/building-inspection-thead.html.twig' %}
+      {% include 'pdf/building-inspection-tbody.html.twig' with {'headers': headers|slice(0, 12)} %}
+    </table>
+
+    <br>
+
+    <div class="information bg-yellow">
+      <div class="information-headers">
+        {{ constant('App\\Entity\\BuildingInspection::LABEL_ADDRESS') }}
+      </div>
+      <div class="information-content">
+        {% if address is defined %}
+          {{ address.address }}
+        {% endif %}
+      </div>
+    </div>
+    <div class="information bg-yellow">
+      <div class="information-headers">
+        {{ constant('App\\Entity\\BuildingInspection::LABEL_INSPECTOR') }}
+      </div>
+      <div class="information-headers">
+      </div>
+      <div class="information-headers">
+        {{ constant('App\\Entity\\BuildingInspection::LABEL_CREATED') }}
+      </div>
+    </div>
+
+    <table>
+      {% include 'pdf/building-inspection-thead.html.twig' %}
+      {% include 'pdf/building-inspection-tbody.html.twig' with {'headers': headers|slice(12, 13)} %}
+    </table>
+  </div>
+{% endblock %}
+
+
+{% block javascripts %}
+{% endblock %}

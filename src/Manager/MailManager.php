@@ -1,18 +1,15 @@
 <?php
 
-namespace App\Controller;
+namespace App\Manager;
 
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use SendGrid\Mail\TypeException;
 
 /**
- * Class MailController
- *
- * @Route(service="app.mail_controller")
+ * Class MailManager
  *
  * @author Alice Dahan <lilice.dhn@gmail.com>
  */
-class MailController extends Controller
+class MailManager
 {
     private $mailer;
     private $senderAddress;
@@ -25,7 +22,14 @@ class MailController extends Controller
         $this->senderName = 'Alys';
     }
 
-    public function send($subject, $to, $view)
+    /**
+     * @param string $subject
+     * @param string $to
+     * @param string $view
+     *
+     * @throws TypeException
+     */
+    public function send(string $subject, string $to, string $view)
     {
         $email = new \SendGrid\Mail\Mail();
         $email->setFrom($this->senderAddress, $this->senderName);
@@ -35,11 +39,11 @@ class MailController extends Controller
 
         try {
             $response = $this->mailer->send($email);
-            print $response->statusCode() . "\n";
+            print $response->statusCode() . PHP_EOL;
             print_r($response->headers());
-            print $response->body() . "\n";
+            print $response->body() . PHP_EOL;
         } catch (\Exception $e) {
-            echo 'Caught exception: ',  $e->getMessage(), "\n";
+            echo 'Caught exception: ',  $e->getMessage(), PHP_EOL;
         }
     }
 }

@@ -1,0 +1,44 @@
+{% extends 'inspection/layout.html.twig' %}
+{% from 'macros.html.twig' import backButton as backButton %}
+{% from 'macros.html.twig' import buildingInspectionInfo as buildingInspectionInfo %}
+
+
+{% block header_button %}
+    {{ backButton(path('app_inspection_list')) }}
+{% endblock %}
+
+{% block header_h2 %}
+    Rapports de visite de l'immeuble
+{% endblock %}
+
+
+{% block content %}
+    {{ buildingInspectionInfo(address) }}
+{% endblock %}
+
+{% block large_content %}
+    {% include 'inspection/recap-table.html.twig' with {'headers': headers, 'inspections': inspections } %}
+{% endblock %}
+
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script src="{{ asset('js/functions.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.0/js/jquery.tablesorter.js"></script>
+
+    <script>
+        (function() {
+            $(function() {
+                addTableSorting([$('table')]);
+                bindScrollBetweenTables();
+
+                function bindScrollBetweenTables() {
+                    $('#table-inspection-body tbody').scroll(() => {
+                        $('#table-inspection-headers tbody').scrollTop($('#table-inspection-body tbody').scrollTop());
+                    });
+                }
+            });
+        })();
+    </script>
+{% endblock %}

@@ -42,16 +42,20 @@
   </div>
 
   {# Table #}
-  <table class="table table-sm table-hover addresses-table">
+  <table class="table table-sm table-hover font-size-14">
     <thead class="thead-light">
       <tr>
         <th scope="col">Adresse <i class="fas fa-sort"></i></th>
         <th scope="col">C.P. <i class="fas fa-sort"></i></th>
         <th scope="col">Ville <i class="fas fa-sort"></i></th>
         <th scope="col">Propriétaire <i class="fas fa-sort"></i></th>
-        <th scope="col">Accès <i class="fas fa-sort"></i></th>
+        <th scope="col">Responsable GLA <i class="fas fa-sort"></i></th>
+        <th scope="col">Référent Immeuble <i class="fas fa-sort"></i></th>
         {# edit button only visible for gla and admin #}
         {% if is_granted(constant('App\\Entity\\User::ROLE_GLA')) %}
+          <th></th>
+        {% endif %}
+        {% if inspection is defined %}
           <th></th>
         {% endif %}
       </tr>
@@ -70,16 +74,29 @@
           <td>{{ address.zipCode }}</td>
           <td>{{ address.city }}</td>
           <td>{{ address.ownerType }}</td>
-          <td><div class="access-ellipsis" data-toggle="popover" data-content="{{ address.access }}">{{ address.access }}</div></td>
-          {# edit button only visible for gla and admin #}
-          {% if is_granted(constant('App\\Entity\\User::ROLE_GLA')) %}
+          <td>{{ address.gla }}</td>
+          <td>{{ address.referent }}</td>
+          <td>
+            {% if inspection is defined %}
+              <a href="{{ path('app_inspection_recap', {'id': address.id}) }}" class="btn btn-sm btn-xs btn-primary">
+                <i class="fas fa-ellipsis-h mr-1"></i>
+                Visites
+              </a>
+            {% else %}
+              <a href="{{ path('app_address_view', {'id': address.id}) }}" class="btn btn-sm btn-xs btn-primary">
+                <i class="fas fa-eye"></i>
+                Voir
+              </a>
+            {% endif %}
+          </td>
+          {% if inspection is defined %}
             <td>
-              <a href="{{ path('app_address_edit', {'id': address.id}) }}" class="btn btn-sm btn-xs btn-outline-primary">
-                <i class="fas fa-edit"></i>
-                Modifier
+              <a href="{{ path('app_inspection_pdf-address', {'id': address.id}) }}" class="btn btn-sm btn-xs btn-secondary">
+                <i class="fas fa-download mr-1"></i>
+                Modèle
               </a>
             </td>
-          {% endif %}    
+          {% endif %}
         </tr>
       {% endfor %}
     </tbody>
@@ -99,7 +116,7 @@
         let table = $('table'),
             searchInput = $('#addressInput');
 
-        addMissionsSorting([table]);
+        addTableSorting([table]);
         filterTableWithSearch();
 
         searchInput.on('input', () => {
