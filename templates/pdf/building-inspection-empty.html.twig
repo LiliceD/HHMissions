@@ -12,15 +12,23 @@
     .information {
       width: 750px;
       font-size: 14px;
-      font-weight: bold;
       line-height: 24px;
-      text-align: right;
       margin: auto;
       display: flex;
       align-items: flex-end;
+      white-space: nowrap;
+      overflow: hidden;
     }
     .information div {
+      padding-left: 12px;
+    }
+    .information-headers {
       width: 25%;
+      font-weight: bold;
+      text-align: right;
+    }
+    .information-content {
+      max-width: 180px;
     }
 
     table {
@@ -101,16 +109,29 @@
     </div>
 
     <div class="information bg-yellow">
-      <div>
+      <div class="information-headers">
         {{ constant('App\\Entity\\BuildingInspection::LABEL_GLA') }}<br>
         {{ constant('App\\Entity\\BuildingInspection::LABEL_REFERENT') }}<br>
         {{ constant('App\\Entity\\BuildingInspection::LABEL_ADDRESS') }}<br>
-        {{ constant('App\\Entity\\BuildingInspection::LABEL_ACCESS') }}<br>
-        {{ constant('App\\Entity\\BuildingInspection::LABEL_INSPECTOR') }}<br>
+        {{ constant('App\\Entity\\BuildingInspection::LABEL_ACCESS') }}
       </div>
-      <div></div>
-      <div>
-        {{ constant('App\\Entity\\BuildingInspection::LABEL_CREATED') }}<br>
+      <div class="information-content">
+        {% if address is defined %}
+          {{ address.gla }}<br>
+          {{ address.referent }}<br>
+          {{ address.address }}<br>
+          {{ address.access }}
+        {% endif %}
+      </div>
+    </div>
+    <div class="information bg-yellow">
+      <div class="information-headers">
+        {{ constant('App\\Entity\\BuildingInspection::LABEL_INSPECTOR') }}
+      </div>
+      <div class="information-headers">
+      </div>
+      <div class="information-headers">
+        {{ constant('App\\Entity\\BuildingInspection::LABEL_CREATED') }}
       </div>
     </div>
 
@@ -122,13 +143,23 @@
     <br>
 
     <div class="information bg-yellow">
-      <div>
-        {{ constant('App\\Entity\\BuildingInspection::LABEL_ADDRESS') }}<br>
-        {{ constant('App\\Entity\\BuildingInspection::LABEL_INSPECTOR') }}<br>
+      <div class="information-headers">
+        {{ constant('App\\Entity\\BuildingInspection::LABEL_ADDRESS') }}
       </div>
-      <div></div>
-      <div>
-        {{ constant('App\\Entity\\BuildingInspection::LABEL_CREATED') }}<br>
+      <div class="information-content">
+        {% if address is defined %}
+          {{ address.address }}
+        {% endif %}
+      </div>
+    </div>
+    <div class="information bg-yellow">
+      <div class="information-headers">
+        {{ constant('App\\Entity\\BuildingInspection::LABEL_INSPECTOR') }}
+      </div>
+      <div class="information-headers">
+      </div>
+      <div class="information-headers">
+        {{ constant('App\\Entity\\BuildingInspection::LABEL_CREATED') }}
       </div>
     </div>
 

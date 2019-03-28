@@ -122,25 +122,64 @@ class BuildingInspectionController extends AbstractController
 
     /**
      * @Route(
-     *     "/pdf",
-     *     name="app_inspection_pdf"
+     *  "/pdf/{id}",
+     *  name="app_inspection_pdf-address",
+     *  requirements={"id"="\d+"}
      * )
      *
+     * @param Address                   $address
      * @param BuildingInspectionManager $manager
-     * @param GeneratorInterface        $knpSnappy
+     * @param GeneratorInterface        $pdfGenerator
      *
      * @return Response
      */
-    public function downloadPdf(BuildingInspectionManager $manager, GeneratorInterface $knpSnappy): Response
+    public function downloadPdf(Address $address, BuildingInspectionManager $manager, GeneratorInterface $pdfGenerator): Response
     {
         $headers = $manager->getItemHeaders();
+
+        $html = $this->renderView('pdf/building-inspection-empty.html.twig', [
+            'headers' => $headers,
+            'address' => $address,
+        ]);
+
+        $filename = sprintf('RVI_modele_%s.pdf', $address);
+
+        return new Response(
+            $pdfGenerator->getOutputFromHtml($html, [
+                'page-size' => 'A4',
+                'orientation' => 'Landscape',
+            ]),
+            Response::HTTP_OK,
+            [
+                'Content-Type'        => 'application/pdf',
+                'Content-Disposition' => sprintf('attachment; filename="%s"', $filename),
+            ]
+        );
+    }
+
+    /**
+     * @Route(
+     *     "/pdf",
+     *     name="app_inspection_pdf-empty"
+     * )
+     *
+     * @param BuildingInspectionManager $manager
+     * @param GeneratorInterface        $pdfGenerator
+     *
+     * @return Response
+     */
+    public function downloadEmptyPdf(BuildingInspectionManager $manager, GeneratorInterface $pdfGenerator): Response
+    {
+        $headers = $manager->getItemHeaders();
+
         $html = $this->renderView('pdf/building-inspection-empty.html.twig', [
             'headers' => $headers,
         ]);
+
         $filename = 'RVI_modele.pdf';
 
         return new Response(
-            $knpSnappy->getOutputFromHtml($html, [
+            $pdfGenerator->getOutputFromHtml($html, [
                 'page-size' => 'A4',
                 'orientation' => 'Landscape',
             ]),

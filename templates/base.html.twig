@@ -72,15 +72,19 @@
                 <div class="dropdown-menu" aria-labelledby="navbarInspections">
                   <a class="dropdown-item {{ app.request.pathinfo == '/visites' or app.request.pathinfo starts with '/visites/recap/' or (app.request.pathinfo starts with '/visites/' and app.request.pathinfo ends with '/voir') ? 'active' }}"
                      href="{{ path('app_inspection_list') }}">
-                    Liste des logements
+                    Liste des immeubles
                   </a>
+                  <div class="dropdown-divider"></div>
                   {% if is_granted(constant('App\\Entity\\User::ROLE_VOLUNTEER')) %}
-                    <div class="dropdown-divider"></div>
                     <a class="dropdown-item {{ app.request.pathinfo == '/visites/ajouter' ? 'active' }}"
                        href="{{ path('app_inspection_new') }}">
-                      Créer une FVI
+                      Créer un RVI
                     </a>
                   {% endif %}
+                  <a class="dropdown-item"
+                     href="{{ path('app_inspection_pdf-empty') }}">
+                    Télécharger un modèle de RVI
+                  </a>
                 </div>
               </li>
               {% if is_granted(constant('App\\Entity\\User::ROLE_ADMIN')) %}

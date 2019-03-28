@@ -55,6 +55,9 @@
         {% if is_granted(constant('App\\Entity\\User::ROLE_GLA')) %}
           <th></th>
         {% endif %}
+        {% if inspection is defined %}
+          <th></th>
+        {% endif %}
       </tr>
     </thead>
 
@@ -86,6 +89,14 @@
               </a>
             {% endif %}
           </td>
+          {% if inspection is defined %}
+            <td>
+              <a href="{{ path('app_inspection_pdf-address', {'id': address.id}) }}" class="btn btn-sm btn-xs btn-secondary">
+                <i class="fas fa-download mr-1"></i>
+                Modèle
+              </a>
+            </td>
+          {% endif %}
         </tr>
       {% endfor %}
     </tbody>
