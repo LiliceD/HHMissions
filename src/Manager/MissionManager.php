@@ -7,7 +7,9 @@ use App\Entity\User;
 use App\Model\FLashMessage;
 use App\Repository\MissionRepository;
 use App\Service\FileUploader;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Exception\InvalidParameterException;
@@ -114,7 +116,7 @@ class MissionManager
         }
 
         // Description and Info can only be changed by GLA or admin
-        if (!$user->isAdmin()) {
+        if (!$user->isAdmin() && $mission->getGla() !== $user) {
             $mission->setDescription($oldMission->getDescription());
             $mission->setInfo($oldMission->getInfo());
         }
@@ -132,8 +134,6 @@ class MissionManager
             $mission->setAttachment($oldMission->getAttachment());
         }
 
-//        $mission = $form->getData();
-
         $this->persist($mission);
     }
 
@@ -143,12 +143,12 @@ class MissionManager
      *
      * @return FLashMessage
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function assignVolunteer(Mission $mission, User $user): FLashMessage
     {
         $mission->setVolunteer($user)
-            ->setDateAssigned(new \DateTime())
+            ->setDateAssigned(new DateTime())
             ->setStatus(Mission::STATUS_ASSIGNED);
 
         self::updateStatus($mission);
@@ -246,7 +246,7 @@ class MissionManager
         $queryFilters = [];
 
         if (!empty($filters['statuses'])) {
-            $statusFilter = ['field' => 'm.status', 'value' => \explode('|', $filters['statuses'])];
+            $statusFilter = ['field' => 'm.status', 'value' => explode('|', $filters['statuses'])];
             $queryFilters['statuses'] = $statusFilter;
         }
 
