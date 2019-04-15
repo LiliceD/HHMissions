@@ -216,6 +216,7 @@ class MissionController extends AbstractController
      */
     public function list(Request $request, MissionManager $missionManager, String $activity = Constant::ACTIVITY_GLA)
     {
+        dump($this->getUser()->getLastLogin());
         // Create search by id form
         $searchFormById = $this->createForm(MissionSearchByIdType::class);
         $searchFormById->handleRequest($request);
