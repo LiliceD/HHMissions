@@ -15,10 +15,10 @@ final class Version20190415180019 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE mission ADD updated_at DATETIME');
+        $this->addSql('ALTER TABLE mission ADD description_updated_at DATETIME');
         $this->addSql('ALTER TABLE user ADD last_login DATETIME');
-        $this->addSql('UPDATE mission SET updated_at=date_created WHERE 1');
-        $this->addSql('ALTER TABLE mission CHANGE updated_at updated_at DATETIME NOT NULL');
+        $this->addSql('UPDATE mission SET description_updated_at=date_created WHERE 1');
+        $this->addSql('ALTER TABLE mission CHANGE description_updated_at description_updated_at DATETIME NOT NULL');
     }
 
     public function down(Schema $schema) : void
@@ -26,7 +26,7 @@ final class Version20190415180019 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE mission DROP updated_at');
+        $this->addSql('ALTER TABLE mission DROP description_updated_at');
         $this->addSql('ALTER TABLE user DROP last_login');
     }
 }

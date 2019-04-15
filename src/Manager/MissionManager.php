@@ -76,6 +76,8 @@ class MissionManager
 
     public function create(Mission $mission): void
     {
+        $mission->setDescriptionLastUpdate(new DateTime());
+
         $file = $mission->getAttachment();
         if ($file) {
             $fileName = $this->fileUploader->upload($file);
@@ -119,6 +121,8 @@ class MissionManager
         if (!$user->isAdmin() && $mission->getGla() !== $user) {
             $mission->setDescription($oldMission->getDescription());
             $mission->setInfo($oldMission->getInfo());
+        } else {
+            $mission->setDescriptionLastUpdate(new DateTime());
         }
 
         $mission = $this->updateStatus($mission);

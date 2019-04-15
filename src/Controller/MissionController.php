@@ -8,6 +8,7 @@ use App\Form\MissionType;
 use App\Form\MissionSearchType;
 use App\Manager\MissionManager;
 use App\Utils\Constant;
+use Exception;
 use Knp\Snappy\GeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -44,7 +45,7 @@ class MissionController extends AbstractController
      *
      * @return RedirectResponse|Response
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function new(Request $request, MissionManager $missionManager)
     {
@@ -216,7 +217,6 @@ class MissionController extends AbstractController
      */
     public function list(Request $request, MissionManager $missionManager, String $activity = Constant::ACTIVITY_GLA)
     {
-        dump($this->getUser()->getLastLogin());
         // Create search by id form
         $searchFormById = $this->createForm(MissionSearchByIdType::class);
         $searchFormById->handleRequest($request);
@@ -274,7 +274,7 @@ class MissionController extends AbstractController
      *
      * @return RedirectResponse
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function assign(Mission $mission, MissionManager $missionManager): RedirectResponse
     {

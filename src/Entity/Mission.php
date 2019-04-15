@@ -232,11 +232,11 @@ class Mission
     /**
      * Last date and time when the user logged in
      *
-     * @ORM\Column(name="updated_at", ="datetime")
+     * @ORM\Column(name="description_updated_at", type="datetime")
      *
      * @var DateTime
      */
-    private $updated;
+    private $descriptionLastUpdate;
 
     // ███╗   ███╗███████╗████████╗██╗  ██╗ ██████╗ ██████╗ ███████╗
     // ████╗ ████║██╔════╝╚══██╔══╝██║  ██║██╔═══██╗██╔══██╗██╔════╝
@@ -655,19 +655,19 @@ class Mission
     /**
      * @return DateTime
      */
-    public function getUpdated(): ?DateTime
+    public function getDescriptionLastUpdate(): ?DateTime
     {
-        return $this->updated;
+        return $this->descriptionLastUpdate;
     }
 
     /**
-     * @param DateTime $updated
+     * @param DateTime $descriptionLastUpdate
      *
      * @return Mission
      */
-    public function setUpdated(DateTime $updated): Mission
+    public function setDescriptionLastUpdate(DateTime $descriptionLastUpdate): Mission
     {
-        $this->updated = $updated;
+        $this->descriptionLastUpdate = $descriptionLastUpdate;
 
         return $this;
     }
