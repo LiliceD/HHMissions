@@ -2,9 +2,11 @@
 
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Serializable;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -28,7 +30,7 @@ use Symfony\Component\Security\Core\User\AdvancedUserInterface;
  *
  * @author Alice Dahan <lilice.dhn@gmail.com>
  */
-class User implements AdvancedUserInterface, \Serializable
+class User implements AdvancedUserInterface, Serializable
 {
     const ROLE_SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
     const ROLE_ADMIN = 'ROLE_ADMIN';
@@ -226,6 +228,15 @@ class User implements AdvancedUserInterface, \Serializable
      * @var Collection
      */
     private $buildingsAsReferent;
+
+    /**
+     * Last date and time when the user logged in
+     *
+     * @ORM\Column(type="datetime", nullable=true)
+     *
+     * @var DateTime
+     */
+    private $lastLogin;
 
     // ███╗   ███╗███████╗████████╗██╗  ██╗ ██████╗ ██████╗ ███████╗
     // ████╗ ████║██╔════╝╚══██╔══╝██║  ██║██╔═══██╗██╔══██╗██╔════╝
@@ -485,8 +496,8 @@ class User implements AdvancedUserInterface, \Serializable
 
         // ROLE_GLA (resp. ROLE_VOLUNTEER) is only in Gla list (resp. Volunteer list)
         // ROLE_ADMIN is in both lists
-        $this->gla = \in_array(self::ROLE_ADMIN, $roles) || \in_array(self::ROLE_GLA, $roles);
-        $this->volunteer = \in_array(self::ROLE_ADMIN, $roles) || \in_array(self::ROLE_VOLUNTEER, $roles);
+        $this->gla = in_array(self::ROLE_ADMIN, $roles) || in_array(self::ROLE_GLA, $roles);
+        $this->volunteer = in_array(self::ROLE_ADMIN, $roles) || in_array(self::ROLE_VOLUNTEER, $roles);
 
         return $this;
     }
@@ -669,6 +680,26 @@ class User implements AdvancedUserInterface, \Serializable
                 $buildingsAsReferent->setReferent(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return DateTime
+     */
+    public function getLastLogin(): ?DateTime
+    {
+        return $this->lastLogin;
+    }
+
+    /**
+     * @param DateTime $lastLogin
+     *
+     * @return User
+     */
+    public function setLastLogin(DateTime $lastLogin): User
+    {
+        $this->lastLogin = $lastLogin;
 
         return $this;
     }
