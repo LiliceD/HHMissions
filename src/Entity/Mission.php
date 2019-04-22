@@ -236,7 +236,7 @@ class Mission
      *
      * @var DateTime
      */
-    private $contentLastUpdateAt;
+    private $contentLastUpdatedAt;
 
     /**
      * Last User who updated the description or information or conclusions
@@ -248,7 +248,7 @@ class Mission
      *
      * @var User
      */
-    private $contentLastUpdateBy;
+    private $contentLastUpdatedBy;
 
     // ███╗   ███╗███████╗████████╗██╗  ██╗ ██████╗ ██████╗ ███████╗
     // ████╗ ████║██╔════╝╚══██╔══╝██║  ██║██╔═══██╗██╔══██╗██╔════╝
@@ -667,19 +667,19 @@ class Mission
     /**
      * @return DateTime
      */
-    public function getContentLastUpdateAt(): ?DateTime
+    public function getContentLastUpdatedAt(): ?DateTime
     {
-        return $this->contentLastUpdateAt;
+        return $this->contentLastUpdatedAt;
     }
 
     /**
-     * @param DateTime $contentLastUpdateAt
+     * @param DateTime $contentLastUpdatedAt
      *
      * @return Mission
      */
-    public function setContentLastUpdateAt(DateTime $contentLastUpdateAt): Mission
+    public function setContentLastUpdatedAt(DateTime $contentLastUpdatedAt): Mission
     {
-        $this->contentLastUpdateAt = $contentLastUpdateAt;
+        $this->contentLastUpdatedAt = $contentLastUpdatedAt;
 
         return $this;
     }
@@ -687,19 +687,19 @@ class Mission
     /**
      * @return User
      */
-    public function getContentLastUpdateBy(): ?User
+    public function getContentLastUpdatedBy(): ?User
     {
-        return $this->contentLastUpdateBy;
+        return $this->contentLastUpdatedBy;
     }
 
     /**
-     * @param User $contentLastUpdateBy
+     * @param User $contentLastUpdatedBy
      *
      * @return Mission
      */
-    public function setContentLastUpdateBy(User $contentLastUpdateBy): Mission
+    public function setContentLastUpdatedBy(User $contentLastUpdatedBy): Mission
     {
-        $this->contentLastUpdateBy = $contentLastUpdateBy;
+        $this->contentLastUpdatedBy = $contentLastUpdatedBy;
 
         return $this;
     }

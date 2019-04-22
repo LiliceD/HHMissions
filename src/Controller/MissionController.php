@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -209,13 +210,14 @@ class MissionController extends AbstractController
      *     name="app_mission_list"
      * )
      *
-     * @param Request        $request
-     * @param String         $activity
-     * @param MissionManager $missionManager
+     * @param Request          $request
+     * @param MissionManager   $missionManager
+     * @param SessionInterface $session
+     * @param String           $activity
      *
      * @return RedirectResponse|Response
      */
-    public function list(Request $request, MissionManager $missionManager, String $activity = Constant::ACTIVITY_GLA)
+    public function list(Request $request, MissionManager $missionManager, SessionInterface $session, String $activity = Constant::ACTIVITY_GLA)
     {
         // Create search by id form
         $searchFormById = $this->createForm(MissionSearchByIdType::class);
@@ -246,9 +248,12 @@ class MissionController extends AbstractController
 
         $fullSearchForm = $this->createForm(MissionSearchType::class);
 
+        $updatedMissions = $missionManager->getByIds($session->get('updatedMissions'));
+
         return $this->render('mission/list.html.twig', [
             'form' => $searchFormById->createView(),
             'searchForm' => $fullSearchForm->createView(),
+            'updatedMissions' => $updatedMissions,
         ]);
     }
 
