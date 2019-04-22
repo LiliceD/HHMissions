@@ -76,7 +76,7 @@ class Mission
      * User who created the Mission
      *
      * @ORM\ManyToOne(
-     *     targetEntity="App\Entity\User",
+     *     targetEntity="User",
      *     inversedBy="missionsAsGla",
      * )
      * @ORM\JoinColumn(nullable=false)
@@ -95,7 +95,7 @@ class Mission
      * User (volunteer) assigned to the mission
      *
      * @ORM\ManyToOne(
-     *     targetEntity="App\Entity\User",
+     *     targetEntity="User",
      *     inversedBy="missionsAsVolunteer",
      * )
      * @ORM\JoinColumn(nullable=true)
@@ -230,13 +230,25 @@ class Mission
     protected $distance;
 
     /**
-     * Last date and time when the user logged in
+     * Last date and time when the description or information or conclusions were updated
      *
-     * @ORM\Column(name="description_updated_at", type="datetime")
+     * @ORM\Column(name="content_updated_at", type="datetime")
      *
      * @var DateTime
      */
-    private $descriptionLastUpdate;
+    private $contentLastUpdateAt;
+
+    /**
+     * Last User who updated the description or information or conclusions
+     *
+     * @ORM\ManyToOne(
+     *     targetEntity="User"
+     * )
+     * @ORM\JoinColumn(name="content_updated_by_id", nullable=false)
+     *
+     * @var User
+     */
+    private $contentLastUpdateBy;
 
     // ███╗   ███╗███████╗████████╗██╗  ██╗ ██████╗ ██████╗ ███████╗
     // ████╗ ████║██╔════╝╚══██╔══╝██║  ██║██╔═══██╗██╔══██╗██╔════╝
@@ -655,19 +667,39 @@ class Mission
     /**
      * @return DateTime
      */
-    public function getDescriptionLastUpdate(): ?DateTime
+    public function getContentLastUpdateAt(): ?DateTime
     {
-        return $this->descriptionLastUpdate;
+        return $this->contentLastUpdateAt;
     }
 
     /**
-     * @param DateTime $descriptionLastUpdate
+     * @param DateTime $contentLastUpdateAt
      *
      * @return Mission
      */
-    public function setDescriptionLastUpdate(DateTime $descriptionLastUpdate): Mission
+    public function setContentLastUpdateAt(DateTime $contentLastUpdateAt): Mission
     {
-        $this->descriptionLastUpdate = $descriptionLastUpdate;
+        $this->contentLastUpdateAt = $contentLastUpdateAt;
+
+        return $this;
+    }
+
+    /**
+     * @return User
+     */
+    public function getContentLastUpdateBy(): ?User
+    {
+        return $this->contentLastUpdateBy;
+    }
+
+    /**
+     * @param User $contentLastUpdateBy
+     *
+     * @return Mission
+     */
+    public function setContentLastUpdateBy(User $contentLastUpdateBy): Mission
+    {
+        $this->contentLastUpdateBy = $contentLastUpdateBy;
 
         return $this;
     }

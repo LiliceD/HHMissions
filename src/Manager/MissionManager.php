@@ -74,9 +74,10 @@ class MissionManager
         return $mission;
     }
 
-    public function create(Mission $mission): void
+    public function create(Mission $mission, User $user): void
     {
-        $mission->setDescriptionLastUpdate(new DateTime());
+        $mission->setContentLastUpdateAt(new DateTime());
+        $mission->setContentLastUpdateBy($user);
 
         $file = $mission->getAttachment();
         if ($file) {
@@ -121,8 +122,11 @@ class MissionManager
         if (!$user->isAdmin() && $mission->getGla() !== $user) {
             $mission->setDescription($oldMission->getDescription());
             $mission->setInfo($oldMission->getInfo());
-        } else {
-            $mission->setDescriptionLastUpdate(new DateTime());
+        }
+
+        if ($this->hasContentChanged($mission, $oldMission)) {
+            $mission->setContentLastUpdateAt(new DateTime());
+            $mission->setContentLastUpdateBy($user);
         }
 
         $mission = $this->updateStatus($mission);
@@ -344,5 +348,19 @@ class MissionManager
         }
 
         return $missionsJson;
+    }
+
+    /**
+     * @param Mission $mission
+     * @param Mission $oldMission
+     *
+     * @return bool
+     */
+    private function hasContentChanged(Mission $mission, Mission $oldMission)
+    {
+        return $oldMission->getDescription() !== $mission->getDescription()
+            || $oldMission->getInfo() !== $mission->getInfo()
+            || $oldMission->getConclusions() !== $mission->getConclusions()
+        ;
     }
 }

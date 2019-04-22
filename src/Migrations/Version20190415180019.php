@@ -15,10 +15,20 @@ final class Version20190415180019 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE mission ADD description_updated_at DATETIME');
+        $this->addSql('ALTER TABLE mission 
+            ADD content_updated_at DATETIME, 
+            ADD content_updated_by_id INT');
+        $this->addSql('UPDATE mission 
+            SET content_updated_at = date_created, 
+                content_updated_by_id = gla_id 
+            WHERE 1');
+        $this->addSql('ALTER TABLE mission 
+            CHANGE content_updated_at content_updated_at DATETIME NOT NULL, 
+            CHANGE content_updated_by_id content_updated_by_id INT NOT NULL');
+        $this->addSql('ALTER TABLE mission 
+            ADD CONSTRAINT FK_9067F23C907E1793 FOREIGN KEY (content_updated_by_id) REFERENCES user (id)');
+        $this->addSql('CREATE INDEX IDX_9067F23C907E1793 ON mission (content_updated_by_id)');
         $this->addSql('ALTER TABLE user ADD last_login DATETIME');
-        $this->addSql('UPDATE mission SET description_updated_at=date_created WHERE 1');
-        $this->addSql('ALTER TABLE mission CHANGE description_updated_at description_updated_at DATETIME NOT NULL');
     }
 
     public function down(Schema $schema) : void
@@ -26,7 +36,9 @@ final class Version20190415180019 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE mission DROP description_updated_at');
+        $this->addSql('ALTER TABLE mission DROP FOREIGN KEY FK_9067F23C907E1793');
+        $this->addSql('DROP INDEX IDX_9067F23C907E1793 ON mission');
+        $this->addSql('ALTER TABLE mission DROP content_updated_at, DROP content_updated_by_id');
         $this->addSql('ALTER TABLE user DROP last_login');
     }
 }

@@ -54,7 +54,7 @@ class MissionController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $mission = $form->getData();
-            $missionManager->create($mission);
+            $missionManager->create($mission, $this->getUser());
 
             return $this->redirectToRoute('app_mission_view', [
                 'id' => $mission->getId()
