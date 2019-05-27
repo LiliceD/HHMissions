@@ -74,8 +74,11 @@ class MissionManager
         return $mission;
     }
 
-    public function create(Mission $mission): void
+    public function create(Mission $mission, User $user): void
     {
+        $mission->setContentLastUpdatedAt(new DateTime());
+        $mission->setContentLastUpdatedBy($user);
+
         $file = $mission->getAttachment();
         if ($file) {
             $fileName = $this->fileUploader->upload($file);
@@ -119,6 +122,11 @@ class MissionManager
         if (!$user->isAdmin() && $mission->getGla() !== $user) {
             $mission->setDescription($oldMission->getDescription());
             $mission->setInfo($oldMission->getInfo());
+        }
+
+        if ($this->hasContentChanged($mission, $oldMission)) {
+            $mission->setContentLastUpdatedAt(new DateTime());
+            $mission->setContentLastUpdatedBy($user);
         }
 
         $mission = $this->updateStatus($mission);
@@ -230,7 +238,20 @@ class MissionManager
     public function getById(int $id): ?Mission
     {
         /** @var Mission $mission */
-        $mission = $this->repository->findOneBy(['id' => $id]);
+        $mission = $this->repository->find($id);
+
+        return $mission;
+    }
+
+    /**
+     * @param array $ids
+     *
+     * @return Mission[]
+     */
+    public function getByIds(array $ids): array
+    {
+        /** @var Mission[] $mission */
+        $mission = $this->repository->findBy(['id' => $ids]);
 
         return $mission;
     }
@@ -340,5 +361,31 @@ class MissionManager
         }
 
         return $missionsJson;
+    }
+
+    /**
+     * Get a given User's non-closed Missions that have been updated by someone else since their last login
+     *
+     * @param User $user
+     *
+     * @return array
+     */
+    public function getMissionsUpdatedSinceUserLastLogin(User $user): array
+    {
+        return $this->repository->findUpdatedSinceLastLoginByUser($user);
+    }
+
+    /**
+     * @param Mission $mission
+     * @param Mission $oldMission
+     *
+     * @return bool
+     */
+    private function hasContentChanged(Mission $mission, Mission $oldMission): bool
+    {
+        return $oldMission->getDescription() !== $mission->getDescription()
+            || $oldMission->getInfo() !== $mission->getInfo()
+            || $oldMission->getConclusions() !== $mission->getConclusions()
+        ;
     }
 }

@@ -8,12 +8,14 @@ use App\Form\MissionType;
 use App\Form\MissionSearchType;
 use App\Manager\MissionManager;
 use App\Utils\Constant;
+use Exception;
 use Knp\Snappy\GeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -44,7 +46,7 @@ class MissionController extends AbstractController
      *
      * @return RedirectResponse|Response
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function new(Request $request, MissionManager $missionManager)
     {
@@ -53,7 +55,7 @@ class MissionController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $mission = $form->getData();
-            $missionManager->create($mission);
+            $missionManager->create($mission, $this->getUser());
 
             return $this->redirectToRoute('app_mission_view', [
                 'id' => $mission->getId()
@@ -208,13 +210,14 @@ class MissionController extends AbstractController
      *     name="app_mission_list"
      * )
      *
-     * @param Request        $request
-     * @param String         $activity
-     * @param MissionManager $missionManager
+     * @param Request          $request
+     * @param MissionManager   $missionManager
+     * @param SessionInterface $session
+     * @param String           $activity
      *
      * @return RedirectResponse|Response
      */
-    public function list(Request $request, MissionManager $missionManager, String $activity = Constant::ACTIVITY_GLA)
+    public function list(Request $request, MissionManager $missionManager, SessionInterface $session, String $activity = Constant::ACTIVITY_GLA)
     {
         // Create search by id form
         $searchFormById = $this->createForm(MissionSearchByIdType::class);
@@ -245,9 +248,12 @@ class MissionController extends AbstractController
 
         $fullSearchForm = $this->createForm(MissionSearchType::class);
 
+        $updatedMissions = $missionManager->getByIds($session->get('updatedMissions'));
+
         return $this->render('mission/list.html.twig', [
             'form' => $searchFormById->createView(),
             'searchForm' => $fullSearchForm->createView(),
+            'updatedMissions' => $updatedMissions,
         ]);
     }
 
@@ -273,7 +279,7 @@ class MissionController extends AbstractController
      *
      * @return RedirectResponse
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function assign(Mission $mission, MissionManager $missionManager): RedirectResponse
     {
