@@ -3,7 +3,9 @@
 namespace App\Entity;
 
 use App\Utils\Constant;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
+use Exception;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -74,7 +76,7 @@ class Mission
      * User who created the Mission
      *
      * @ORM\ManyToOne(
-     *     targetEntity="App\Entity\User",
+     *     targetEntity="User",
      *     inversedBy="missionsAsGla",
      * )
      * @ORM\JoinColumn(nullable=false)
@@ -93,7 +95,7 @@ class Mission
      * User (volunteer) assigned to the mission
      *
      * @ORM\ManyToOne(
-     *     targetEntity="App\Entity\User",
+     *     targetEntity="User",
      *     inversedBy="missionsAsVolunteer",
      * )
      * @ORM\JoinColumn(nullable=true)
@@ -163,7 +165,7 @@ class Mission
      *     message="La date de demande ne peut pas être dans le futur.",
      * )
      *
-     * @var \DateTime
+     * @var DateTime
      */
     protected $dateCreated;
 
@@ -178,7 +180,7 @@ class Mission
      *     message="La date de prise en charge doit être après la date de demande.",
      * )
      *
-     * @var \DateTime
+     * @var DateTime
      */
     protected $dateAssigned;
 
@@ -193,7 +195,7 @@ class Mission
      *     message="La date de fin de mission doit être après la date de prise en charge."
      * )
      *
-     * @var \DateTime
+     * @var DateTime
      */
     protected $dateFinished;
 
@@ -226,6 +228,27 @@ class Mission
      * @var int
      */
     protected $distance;
+
+    /**
+     * Last date and time when the description or information or conclusions were updated
+     *
+     * @ORM\Column(name="content_updated_at", type="datetime")
+     *
+     * @var DateTime
+     */
+    private $contentLastUpdatedAt;
+
+    /**
+     * Last User who updated the description or information or conclusions
+     *
+     * @ORM\ManyToOne(
+     *     targetEntity="User"
+     * )
+     * @ORM\JoinColumn(name="content_updated_by_id", nullable=false)
+     *
+     * @var User
+     */
+    private $contentLastUpdatedBy;
 
     // ███╗   ███╗███████╗████████╗██╗  ██╗ ██████╗ ██████╗ ███████╗
     // ████╗ ████║██╔════╝╚══██╔══╝██║  ██║██╔═══██╗██╔══██╗██╔════╝
@@ -286,12 +309,12 @@ class Mission
     /**
      * Mission constructor.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct()
     {
         $this->status = self::getStatuses()[self::STATUS_DEFAULT];
-        $this->dateCreated = new \DateTime();
+        $this->dateCreated = new DateTime();
         $this->activity = Constant::ACTIVITY_GLA;
     }
 
@@ -490,9 +513,9 @@ class Mission
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getDateCreated(): \DateTime
+    public function getDateCreated(): DateTime
     {
         return $this->dateCreated;
     }
@@ -506,11 +529,11 @@ class Mission
     }
 
     /**
-     * @param \DateTime $dateCreated
+     * @param DateTime $dateCreated
      *
      * @return Mission
      */
-    public function setDateCreated(\DateTime $dateCreated): Mission
+    public function setDateCreated(DateTime $dateCreated): Mission
     {
         $this->dateCreated = $dateCreated;
 
@@ -518,9 +541,9 @@ class Mission
     }
 
     /**
-     * @return \DateTime|null
+     * @return DateTime|null
      */
-    public function getDateAssigned(): ?\DateTime
+    public function getDateAssigned(): ?DateTime
     {
         return $this->dateAssigned;
     }
@@ -530,7 +553,7 @@ class Mission
      */
     public function getFormattedDateAssigned(): ?string
     {
-        if ($this->dateAssigned instanceof \DateTime) {
+        if ($this->dateAssigned instanceof DateTime) {
             return $this->dateAssigned->format('d/m/Y');
         }
 
@@ -538,11 +561,11 @@ class Mission
     }
 
     /**
-     * @param \DateTime|null $dateAssigned
+     * @param DateTime|null $dateAssigned
      *
      * @return Mission
      */
-    public function setDateAssigned(?\DateTime $dateAssigned): Mission
+    public function setDateAssigned(?DateTime $dateAssigned): Mission
     {
         $this->dateAssigned = $dateAssigned;
 
@@ -550,9 +573,9 @@ class Mission
     }
 
     /**
-     * @return \DateTime|null
+     * @return DateTime|null
      */
-    public function getDateFinished(): ?\DateTime
+    public function getDateFinished(): ?DateTime
     {
         return $this->dateFinished;
     }
@@ -562,7 +585,7 @@ class Mission
      */
     public function getFormattedDateFinished(): ?string
     {
-        if ($this->dateFinished instanceof \DateTime) {
+        if ($this->dateFinished instanceof DateTime) {
             return $this->dateFinished->format('d/m/Y');
         }
 
@@ -570,11 +593,11 @@ class Mission
     }
 
     /**
-     * @param \DateTime|null $dateFinished
+     * @param DateTime|null $dateFinished
      *
      * @return Mission
      */
-    public function setDateFinished(?\DateTime $dateFinished): Mission
+    public function setDateFinished(?DateTime $dateFinished): Mission
     {
         $this->dateFinished = $dateFinished;
 
@@ -637,6 +660,46 @@ class Mission
     public function setDistance(string $distance): Mission
     {
         $this->distance = $distance;
+
+        return $this;
+    }
+
+    /**
+     * @return DateTime
+     */
+    public function getContentLastUpdatedAt(): ?DateTime
+    {
+        return $this->contentLastUpdatedAt;
+    }
+
+    /**
+     * @param DateTime $contentLastUpdatedAt
+     *
+     * @return Mission
+     */
+    public function setContentLastUpdatedAt(DateTime $contentLastUpdatedAt): Mission
+    {
+        $this->contentLastUpdatedAt = $contentLastUpdatedAt;
+
+        return $this;
+    }
+
+    /**
+     * @return User
+     */
+    public function getContentLastUpdatedBy(): ?User
+    {
+        return $this->contentLastUpdatedBy;
+    }
+
+    /**
+     * @param User $contentLastUpdatedBy
+     *
+     * @return Mission
+     */
+    public function setContentLastUpdatedBy(User $contentLastUpdatedBy): Mission
+    {
+        $this->contentLastUpdatedBy = $contentLastUpdatedBy;
 
         return $this;
     }
